@@ -1,0 +1,78 @@
+###########################
+# Quartus gitignore files #
+###########################
+
+# Quartus II workspace file
+*.qws
+
+# Nativelink reports
+*_nativelink_simulation.rpt
+
+# Quartus directories
+db/
+incremental_db/
+output_files/
+
+# backups
+*.bak
+*.bak[0-9]
+*.bak[0-9][0-9]
+*.bak[0-9][0-9][0-9]
+
+# ???
+greybox_tmp
+*.ipinfo
+*.tis_db_list.ddb
+
+############################
+# Modelsim gitignore files #
+############################
+simulation/modelsim/*.sft
+simulation/modelsim/*.svo
+simulation/modelsim/*.sdo
+simulation/modelsim/*.sdo_typ.csd
+simulation/modelsim/*.xrf
+
+simulation/modelsim/msim_transcript
+simulation/modelsim/modelsim.ini
+simulation/modelsim/*_run_msim_*verilog.do
+simulation/modelsim/rtl_work
+simulation/modelsim/gate_work
+simulation/modelsim/verilog_libs
+simulation/modelsim/vsim.wlf
+simulation/modelsim/wlf*
+
+
+# Memory initialization file
+simulation/modelsim/*ram*.hdl.mif
+#mp?/simulation/modelsim/memory.lst
+
+#######################
+# Vim gitignore files #
+#######################
+#.*.sw[op]
+
+###############
+# OS detritus #
+###############
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Mac store
+.DS_Store
+
+# NFS
+.nfs*
+
+#backup files
+*.tar.xz
+
+*~
