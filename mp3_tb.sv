@@ -14,7 +14,7 @@ logic [127:0] pmem_wdata;
 /* Clock generator */
 initial clk = 0;
 always #5 clk = ~clk;
-
+/*
 mp3 dut
 (
     .clk,
@@ -36,5 +36,6 @@ physical_memory memory
     .resp(pmem_resp),
     .rdata(pmem_rdata)
 );
+*/
 
 endmodule : mp3_tb
