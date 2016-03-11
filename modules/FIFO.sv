@@ -1,10 +1,16 @@
 /* Synchronous FIFO Module */
 /* Can read and write on the same cycle */
-module FIFO #(parameter w = 6, parameter n = 8)
+module FIFO #(parameter w = 6, parameter n = 4)
 (
 	input clk, WE, RE,
 	input logic [w-1:0] data_in,
+	input logic B_in,
+	input logic tag_in,
+	input logic instruc_in,
 	output logic [w-1:0] data_out,
+	output logic B_out,
+	output logic tag_out,
+	output logic instruc_out,
 	output logic empty, full
 );
 
