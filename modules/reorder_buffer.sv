@@ -7,7 +7,7 @@ module reorder_buffer #(parameter w = 8, parameter n = 4, parameter tag_width = 
 	input logic busy_in,
 	input [tag_width:0] logic tag_in,
 	input [2**n-1:0] logic instruc_in,
-	input logic valid_in,
+	//input logic valid_in,
 	input ld_value, ld_busy, ld_tag, ld_instruc, ld_valid,
 	input [w-1:0] addr_in,
 	output logic [w-1:0] value_out,
@@ -44,7 +44,7 @@ begin
 			busy[i] <= 0;
 			tag[i] <= 0;
 			instruc[i] <= 0;
-			valid[i] <= 0;
+			valid[i] <= 1'b0;
 	end
 end
 
@@ -57,7 +57,7 @@ begin
 				begin
 					r_addr <= 0;
 					w_addr <= 0;
-					valid[i] <= 0;
+					valid[i] <= 1'b0;
 				end	
 		end
 	if(WE)
@@ -68,7 +68,7 @@ begin
 			busy[w_addr] <= B_in;
 			tag[w_addr] <= tag_in;
 			instruc[w_addr] <= instruc_in;
-			valid[w_addr] <= valid_in;
+			valid[w_addr] <= 1'b1;
 			w_addr <= w_addr + 8'b1;
 		end
 	end		
@@ -84,7 +84,11 @@ begin
 				instruc[addr_in] <= instruc_in;
 			if(ld_valid)
 				valid[addr_in] <= valid_in;
-		end	
+		end
+	if(RE)
+	begin
+		valid[r_addr] <= 1'b0;
+	end
 end
 
 always_ff @ ( posedge clk)
