@@ -1,6 +1,6 @@
 import lc3b_types::*;
 
-module add_res_station #(parameter data_width = 16, parameter tag_width = 3)
+module res_station #(parameter data_width = 16, parameter tag_width = 3)
 (
 	input clk, flush,
 	input ld_op, ld_Vj, ld_Qj, ld_Vk, ld_Qk, ld_busy,

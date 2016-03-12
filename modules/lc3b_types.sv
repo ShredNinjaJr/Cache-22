@@ -36,7 +36,7 @@ typedef enum bit [3:0] {
     op_trap = 4'b1111
 } lc3b_opcode;
 
-typedef enum bit [3:0] {
+typedef enum bit [2:0] {
     alu_add,
     alu_and,
     alu_not,
@@ -46,4 +46,18 @@ typedef enum bit [3:0] {
     alu_sra
 } lc3b_aluop;
 
+
+/* Struct for the common data bus(CDB)*/
+typedef struct packed 
+{
+	logic valid;
+	logic[15:0] data;
+	logic [2:0] tag;
+} CDB;
+
 endpackage : lc3b_types
+
+
+
+
+

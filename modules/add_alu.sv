@@ -13,7 +13,10 @@ begin
         alu_add: f = a + b;
         alu_and: f = a & b;
         alu_not: f = ~a;
-        default: $display("Unknown aluop");
+        default: begin
+				f = a;
+				$display("Unknown aluop");
+		  end
     endcase
 end
 
