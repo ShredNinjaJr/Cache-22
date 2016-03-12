@@ -76,4 +76,4 @@ register #(4) op
 );
 
 
-endmodule: res_station
+endmodule: add_res_station
