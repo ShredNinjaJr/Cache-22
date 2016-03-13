@@ -3,16 +3,16 @@ import lc3b_types::*;
 module res_station #(parameter data_width = 16, parameter tag_width = 3)
 (
 	input clk, flush,
-	input ld_op, ld_Vj, ld_Qj, ld_Vk, ld_Qk, ld_busy,
+	input ld_op, ld_Vj, ld_Qj, ld_Vk, ld_Qk, ld_busy, ld_dest,
 	input [data_width - 1: 0] Vj_in, Vk_in,
-	input [tag_width - 1: 0] Qj_in, Qk_in,
+	input [tag_width - 1: 0] Qj_in, Qk_in, dest_in,
 	input lc3b_opcode op_in,
 	input busy_in,
 	input Vk_valid_in,
 	input Vj_valid_in,
 	
 	output logic [data_width - 1: 0] Vj_out, Vk_out,
-	output logic [tag_width - 1: 0] Qj_out, Qk_out,
+	output logic [tag_width - 1: 0] Qj_out, Qk_out, dest_out,
 	output lc3b_opcode op_out,
 	output logic busy_out,
 	output logic Vk_valid_out,
@@ -59,6 +59,13 @@ register #(.width(data_width)) Vj
     .clk, .load(ld_Vj), .clr(flush),
     .in(Vj_in),
     .out(Vj_out)
+);
+
+register #(.width(tag_width)) dest
+(
+    .clk, .load(ld_dest), .clr(flush),
+    .in(dest_in),
+    .out(dest_out)
 );
 
 register #(.width(1)) busy
