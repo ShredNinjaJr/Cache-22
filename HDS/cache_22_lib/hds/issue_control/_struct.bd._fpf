@@ -1,0 +1,10 @@
+ARCHITECTURES list {
+ {issue_control {}} list {
+  SYNTHESIS_FILE list {
+   IS_ACTIVE atom 0
+  }
+  SIMULATION_FILE list {
+   IS_COPIED atom 0
+  }
+ }
+}

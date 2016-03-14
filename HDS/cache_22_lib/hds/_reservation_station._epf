@@ -1,0 +1,2 @@
+DEFAULT_ARCHITECTURE atom reservation_station
+DEFAULT_FILE atom reservation_station/struct.bd

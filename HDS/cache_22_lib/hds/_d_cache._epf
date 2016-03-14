@@ -1,0 +1,2 @@
+DEFAULT_ARCHITECTURE atom d_cache
+DEFAULT_FILE atom d_cache/struct.bd

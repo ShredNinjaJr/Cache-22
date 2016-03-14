@@ -1,0 +1,17 @@
+[hdl]
+cache_22_lib = /home/vemulpt2/ece411/Cache-22
+[hds]
+cache_22_lib = $HDS_PROJECT_DIR/cache_22_lib/hds
+[hds_settings]
+default_library = cache_22_lib
+design_root = cache_22_lib.alu_res_station()datapath/alu_res_station.sv
+project_description = Tomasulo CPU
+version = 2
+[includes_search_path]
+cache_22_lib = $cache_22_lib
+[library_files_inclusion]
+cache_22_lib = specify
+[library_type]
+cache_22_lib = regular
+[shared]
+others = $HDS_TEAM_HOME/shared.hdp

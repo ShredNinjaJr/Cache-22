@@ -1,0 +1,2 @@
+DEFAULT_ARCHITECTURE atom regfile
+DEFAULT_FILE atom regfile/struct.bd

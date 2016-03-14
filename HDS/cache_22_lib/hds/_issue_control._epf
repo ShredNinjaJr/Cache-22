@@ -1,0 +1,2 @@
+DEFAULT_ARCHITECTURE atom issue_control
+DEFAULT_FILE atom issue_control/struct.bd

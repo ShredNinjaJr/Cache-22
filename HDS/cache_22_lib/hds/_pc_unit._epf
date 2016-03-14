@@ -1,0 +1,2 @@
+DEFAULT_ARCHITECTURE atom pc_unit
+DEFAULT_FILE atom pc_unit/struct.bd

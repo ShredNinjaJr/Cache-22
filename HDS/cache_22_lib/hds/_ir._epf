@@ -1,0 +1,2 @@
+DEFAULT_ARCHITECTURE atom ir
+DEFAULT_FILE atom modules/ir.sv

@@ -1,0 +1,2 @@
+DEFAULT_ARCHITECTURE atom cc_unit
+DEFAULT_FILE atom cc_unit/struct.bd

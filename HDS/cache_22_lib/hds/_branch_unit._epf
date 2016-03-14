@@ -1,0 +1,2 @@
+DEFAULT_ARCHITECTURE atom branch_unit
+DEFAULT_FILE atom branch_unit/struct.bd

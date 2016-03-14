@@ -1,0 +1,2 @@
+DEFAULT_ARCHITECTURE atom cpu_datapath
+DEFAULT_FILE atom cpu_datapath/struct.bd
