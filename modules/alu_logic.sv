@@ -1,3 +1,5 @@
+import lc3b_types::*;
+
 module alu_logic
 (
 	input lc3b_opcode op,

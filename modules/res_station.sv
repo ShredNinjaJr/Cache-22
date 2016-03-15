@@ -21,7 +21,7 @@ module res_station #(parameter data_width = 16, parameter tag_width = 3)
 
 register #(.width(1)) Vk_valid
 (
-    .clk, .load(ld_Qk), .clr(flush),
+    .clk, .load(ld_Vk), .clr(flush),
     .in(Vk_valid_in),
     .out(Vk_valid_out)
 );
@@ -49,7 +49,7 @@ register #(.width(tag_width)) Qj
 
 register #(.width(1)) Vj_valid
 (
-    .clk, .load(ld_Qj), .clr(flush),
+    .clk, .load(ld_Vj), .clr(flush),
     .in(Vj_valid_in),
     .out(Vj_valid_out)
 );
@@ -75,7 +75,7 @@ register #(.width(1)) busy
     .out(busy_out)
 );
 
-register #(4) op
+register #(.width(4)) op
 (
     .clk, .load(ld_op), .clr(flush),
     .in(op_in),
