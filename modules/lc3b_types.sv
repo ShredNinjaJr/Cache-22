@@ -11,8 +11,8 @@ typedef logic [4:0] lc3b_imm5;
 typedef logic [3:0] lc3b_imm4;
 typedef logic [7:0] lc3b_trapvect8;
 typedef logic [10:0] lc3b_offset11;
-
-
+typedef logic [2:0] lc3b_rob_addr;
+typedef logic [3:0] lc3b_opcode;
 typedef logic  [2:0] lc3b_reg;
 typedef logic  [2:0] lc3b_nzp;
 typedef logic  [1:0] lc3b_mem_wmask;

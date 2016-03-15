@@ -26,7 +26,7 @@ always_ff @(posedge clk)
 begin
     if (load == 1)
     begin
-        data[dest] = in;
+        data[dest] <= in;
     end
 end
 
