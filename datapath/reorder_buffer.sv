@@ -3,7 +3,7 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 (
 	input clk, WE, RE, flush,
 	input lc3b_opcode inst,
-	input [2:0] dest,
+	input lc3b_reg dest,
 	input [data_width - 1:0] value,
 	input predict,
 	input addr,
@@ -12,7 +12,7 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	output logic [tag_width-1:0] waddr,
 	output logic valid_out,
 	output lc3b_opcode inst_out,
-	output [2:0] dest_out, 
+	output lc3b_reg dest_out, 
 	output logic value_out,
 	output logic predict_out,
 	output logic full_out
@@ -20,7 +20,7 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 );
 
 lc3b_opcode inst_in;
-logic [2:0] dest_in; 
+lc3b_reg dest_in; 
 logic valid_in;
 logic [data_width - 1: 0] value_in;
 logic predict_in;

@@ -4,7 +4,7 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	input clk, WE, RE, flush,
 	
 	input lc3b_opcode	inst_in,
-	input logic [2:0] dest_in,
+	input lc3b_reg dest_in,
 	input logic valid_in,
 	input logic [data_width-1:0] value_in,
 	input logic predict_in,
@@ -13,7 +13,7 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	input [tag_width-1:0] addr_in,
 
 	output lc3b_opcode inst_out,
-	output logic [2:0] dest_out,
+	output lc3b_reg dest_out,
 	output logic valid_out,
 	output logic [data_width-1:0] value_out,
 	output logic predict_out,
