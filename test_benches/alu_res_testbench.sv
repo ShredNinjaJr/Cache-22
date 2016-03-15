@@ -27,32 +27,19 @@ always #1 clk = ~clk;
 initial begin: CLOCK_INITIALIZATION
 	clk = 1;
 end
-
+int ErrCnt = 0;	/* Error count */
 initial begin: TEST_VECTORS
 
 #2 flush = 1;
-
+ErrCnt = 0;
 #4 flush = 0;
 CDB_in = 0;
 
-#1 
-/* Simple add test */
-busy_in = 1;
-op_in = op_add;
-Vj = 16'h15;
-Vk = 16'h42;
 
-#1
-ld_busy = 1;
-issue_ld_Vj = 1;
-issue_ld_Vk = 1;
 
-#2
-
-ld_busy = 0;
-issue_ld_Vj = 0;
-issue_ld_Vk = 0;
-$display("Alu add test out = %x; Expected out = %x", CDB_out.data, (Vj+Vk));
+test1(ErrCnt);
+test1(ErrCnt);
+test1(ErrCnt);
 
 #2
 flush = 1;
@@ -78,10 +65,15 @@ ld_busy = 0;
 issue_ld_Vj = 0;
 issue_ld_Qk = 0;
 #2
-
+if(CDB_out.data != (Vj-12))
+{
+	ErrCnt++;
+	$display("TEST 2 Failed!");
+}
 $display("Alu add test out = %x; Expected out = %x", CDB_out.data, (Vj - 12));
 
-/* ADD Test with wrong both registers waiting; CDB outputs wrong tags */
+/* TEST 3 */
+/* AND Test with wrong both registers waiting; CDB outputs wrong tags */
 #2
 flush = 1;
 
@@ -90,6 +82,7 @@ flush = 0;
 Qk = 3'h2;
 Qj = 3'h3;
 busy_in = 1;
+op = op_and;
 
 #1
 ld_busy = 1;
@@ -117,6 +110,62 @@ CDB_in.tag = 3'h3;
 CDB_in.data = 16'h600f;
 CDB_in.valid = 1;
 CDB_in.tag = 3'h2;
+
+#2
+if(CDB_out.data != (0x600d & 0x600f))
+{
+	ErrCnt++;
+	$display("TEST 2 Failed!");
+}
+
+
+
+if(ErrCnt != 0)
+{
+	$display("%c[1;34m",27);
+	$display("PASSED TEST CASES!!!");
+        $display("*************************");
+	$write("%c[0m",27);
+		
+}
+else
+{
+	$display("%c[1;31m", 27);
+	$display("%d TEST CASES FAILED", ErrCnt);
+	$display("%c[0m",27);
+}
+
+
 end
+
+
+task test1(ref int ErrCnt);
+
+#1 
+/* Simple add test */
+busy_in = 1;
+op_in = op_add;
+Vj = $urandom();
+Vk = $urandom();
+
+#1
+ld_busy = 1;
+issue_ld_Vj = 1;
+issue_ld_Vk = 1;
+
+#2
+
+ld_busy = 0;
+issue_ld_Vj = 0;
+issue_ld_Vk = 0;
+if(CDB_out.data != (Vj+Vk))
+{
+	ErrCnt++;
+
+	$display("TEST 1 Failed! inputs: %x, %x; Output value %x", Vj, Vk, CDB_out.data);
+}
+$display("Alu add test out = %x; Expected out = %x", CDB_out.data, (Vj+Vk));
+
+endtask
 
 endmodule : alu_res_testbench
