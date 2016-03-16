@@ -1,3 +1,4 @@
+import lc3b_types::*;
 
 module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 (
@@ -28,21 +29,22 @@ logic ld_value, ld_dest, ld_inst, ld_valid, ld_predict;
 logic [2:0] addr_in;
 logic empty, full;
 
-
+assign ld_inst = WE;
 assign inst_in = inst;
 
-assign dest_in = dest;
-assign valid_in = (WE) ? 1'b0 : ((dest_out == CDB_in.tag) & CDB_in.valid);
-assign value_in = ((dest_out == CDB_in.tag) & CDB_in.valid) ? CDB_in.data : value;
-assign predict_in = predict;
-	
-assign ld_value = ((dest_out == CDB_in.tag) & CDB_in.valid) ? 1'b1 : WE; 
 assign ld_dest = WE;
-assign ld_inst = WE;
-assign ld_valid = ((dest_out == CDB_in.tag) & CDB_in.valid) ? 1'b1 : WE;
+assign dest_in = dest;
+
+assign ld_valid = (CDB_in.valid & 1) ? 1'b1 : WE;
+assign valid_in = (WE) ? 1'b0 : (CDB_in.valid & 1);
+
+assign ld_value = (CDB_in.valid & 1) ? 1'b1 : WE; 
+assign value_in = (CDB_in.valid & 1) ? CDB_in.data : value;
+
+assign predict_in = predict;
 assign ld_predict = WE;
 
-assign addr_in = addr;
+assign addr_in = (CDB_in.valid & 1) ? CDB_in.tag : addr;
 
 assign full_out = full;
 
