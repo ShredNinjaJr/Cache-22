@@ -5,6 +5,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input clk,
 	// Fetch -> Issue Control
 	input lc3b_word instr,
+	input instr_is_new,
 	// CDB -> Issue Control
 	input CDB CDB_in,
 	// Reservation Station -> Issue Control
@@ -15,7 +16,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// Regfile -> Issue Control
 	input lc3b_word reg_value [7:0],
 	input logic reg_busy [7:0],
-	input lc3b_rob_addr reg0_rob_e [7:0],
+	input lc3b_rob_addr reg_robs[7:0],
 	// Issue Control -> Reservation Station
 	output lc3b_opcode res_op_in,
 	output logic [data_width-1:0] res_Vj, res_Vk,
@@ -56,8 +57,8 @@ assign sr1_reg_busy = reg_busy[sr1];
 assign sr2_reg_busy = reg_busy[sr2];
 assign sr1_value = reg_value[sr1];
 assign sr2_value = reg_value[sr2];
-assign sr1_rob_e = reg_rob_entry[sr1];
-assign sr2_rob_e = reg_rob_entry[sr2];
+assign sr1_rob_e = reg_robs[sr1];
+assign sr2_rob_e = reg_robs[sr2];
 
 sext #(.width(5)) sext5
 (
@@ -91,7 +92,7 @@ begin
 	ld_reg_busy_dest = 0;
 	reg_rob_entry = 0;
 	
-	if (rob_full || (alu_res1_busy && alu_res2_busy && alu_res3_busy))
+	if (rob_full || (alu_res1_busy && alu_res2_busy && alu_res3_busy) || !instr_is_new)
 	begin
 		// STALL
 	end
