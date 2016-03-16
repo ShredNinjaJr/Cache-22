@@ -36,10 +36,9 @@ ErrCnt = 0;
 CDB_in = 0;
 
 
+for(int i = 0; i < 10; i++)
+  test1(ErrCnt);
 
-test1(ErrCnt);
-test1(ErrCnt);
-test1(ErrCnt);
 
 #2
 flush = 1;
@@ -66,10 +65,10 @@ issue_ld_Vj = 0;
 issue_ld_Qk = 0;
 #2
 if(CDB_out.data != (Vj-12))
-{
+begin
 	ErrCnt++;
 	$display("TEST 2 Failed!");
-}
+end
 $display("Alu add test out = %x; Expected out = %x", CDB_out.data, (Vj - 12));
 
 /* TEST 3 */
@@ -82,7 +81,7 @@ flush = 0;
 Qk = 3'h2;
 Qj = 3'h3;
 busy_in = 1;
-op = op_and;
+op_in = op_and;
 
 #1
 ld_busy = 1;
@@ -112,35 +111,30 @@ CDB_in.valid = 1;
 CDB_in.tag = 3'h2;
 
 #2
-if(CDB_out.data != (0x600d & 0x600f))
-{
+if(CDB_out.data != (16'h600d & 16'h600f))
+begin
 	ErrCnt++;
 	$display("TEST 2 Failed!");
-}
-
+end
 
 
 if(ErrCnt != 0)
-{
-	$display("%c[1;34m",27);
+begin
 	$display("PASSED TEST CASES!!!");
-        $display("*************************");
-	$write("%c[0m",27);
-		
-}
+  $display("*************************");
+end
 else
-{
-	$display("%c[1;31m", 27);
+begin
 	$display("%d TEST CASES FAILED", ErrCnt);
-	$display("%c[0m",27);
-}
+end
 
 
 end
 
 
-task test1(ref int ErrCnt);
-
+task automatic test1(ref int ErrCnt);
+#2 flush = 1;
+#2 flush = 0;
 #1 
 /* Simple add test */
 busy_in = 1;
@@ -159,11 +153,11 @@ ld_busy = 0;
 issue_ld_Vj = 0;
 issue_ld_Vk = 0;
 if(CDB_out.data != (Vj+Vk))
-{
+begin
 	ErrCnt++;
 
 	$display("TEST 1 Failed! inputs: %x, %x; Output value %x", Vj, Vk, CDB_out.data);
-}
+end
 $display("Alu add test out = %x; Expected out = %x", CDB_out.data, (Vj+Vk));
 
 endtask
