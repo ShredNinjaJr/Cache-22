@@ -18,7 +18,7 @@ logic [2:0] addr_out;
 logic valid_out;
 lc3b_opcode inst_out;
 lc3b_reg dest_out;
-logic value_out;
+logic [15:0] value_out;
 logic predict_out;
 logic full_out;
 
@@ -32,7 +32,6 @@ end
 
 initial begin: TEST_VECTORS
 
-clk = 0;
 WE = 0;
 RE = 0;
 flush = 0;
@@ -45,6 +44,57 @@ addr = 0;
 CDB_in.data = 0;
 CDB_in.valid = 0;
 CDB_in.tag = 0;
+
+#2
+
+inst = op_add;
+dest = 2;
+WE = 1;
+
+#2 WE = 0;
+
+#2
+
+inst = op_and;
+dest = 4;
+WE = 1;
+
+#2 WE = 0;
+
+
+#2
+
+inst = op_add;
+dest = 1;
+WE = 1;
+
+#2 WE = 0;
+
+#2
+
+inst = op_add;
+dest = 3;
+WE = 1;
+
+#2 WE = 0;
+
+#2
+RE = 1;
+
+#2 RE = 0;
+
+#2
+CDB_in.valid = 1;
+CDB_in.tag = 3;
+CDB_in.data = 15;
+
+#2
+CDB_in.valid = 0;
+CDB_in.tag = 0;
+CDB_in.data = 24;
+
+
+
 
 end
 

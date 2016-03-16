@@ -1,3 +1,4 @@
+import lc3b_types::*;
 
 module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 (
@@ -75,7 +76,7 @@ begin
 			value[w_addr] <= value_in;
 			dest[w_addr] <= dest_in;
 			inst[w_addr] <= inst_in;
-			valid[w_addr] <= 1'b1;
+			valid[w_addr] <= 1'b0;
 			predict[w_addr] <= predict_in;
 			w_addr <= w_addr + 3'b1;
 		end
