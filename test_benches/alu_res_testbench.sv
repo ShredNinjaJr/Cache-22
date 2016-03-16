@@ -37,13 +37,67 @@ CDB_in = 0;
 
 
 for(int i = 0; i < 10; i++)
-  test1(ErrCnt);
+begin
+ test1();
+ test2();
+ test3();
+end
 
 
+
+
+
+
+if(ErrCnt != 0)
+begin
+	$display("PASSED TEST CASES!!!");
+  $display("*************************");
+end
+else
+begin
+	$display("%d TEST CASES FAILED", ErrCnt);
+end
+
+
+end
+
+
+/* Simple Test, when both operands are given by Issue control */
+task automatic test1();
+#2 flush = 1;
+#2 flush = 0;
+#1 
+/* Simple add test */
+busy_in = 1;
+op_in = op_add;
+Vj = $urandom();
+Vk = $urandom();
+
+#1
+ld_busy = 1;
+issue_ld_Vj = 1;
+issue_ld_Vk = 1;
+
+#2
+
+ld_busy = 0;
+issue_ld_Vj = 0;
+issue_ld_Vk = 0;
+if(CDB_out.data != (Vj+Vk))
+begin
+	ErrCnt++;
+
+	$display("TEST 1 Failed! inputs: %x, %x; Output value %x", Vj, Vk, CDB_out.data);
+$display("Alu add test out = %x; Expected out = %x", CDB_out.data, (Vj+Vk));
+end
+endtask
+
+
+/* Add with waiting on 1 register */
+task test2();
 #2
 flush = 1;
 
-/* Add with waiting on 1 register */
 #1
 flush = 0;
 busy_in = 1;
@@ -68,8 +122,12 @@ if(CDB_out.data != (Vj-12))
 begin
 	ErrCnt++;
 	$display("TEST 2 Failed!");
+	$display("Alu add test out = %x; Expected out = %x", CDB_out.data, (Vj - 12));
+	$display(" %x, %x; Output value %x", Vj, Vk, CDB_out.data);
 end
-$display("Alu add test out = %x; Expected out = %x", CDB_out.data, (Vj - 12));
+endtask
+
+task test3();
 
 /* TEST 3 */
 /* AND Test with wrong both registers waiting; CDB outputs wrong tags */
@@ -116,50 +174,6 @@ begin
 	ErrCnt++;
 	$display("TEST 2 Failed!");
 end
-
-
-if(ErrCnt != 0)
-begin
-	$display("PASSED TEST CASES!!!");
-  $display("*************************");
-end
-else
-begin
-	$display("%d TEST CASES FAILED", ErrCnt);
-end
-
-
-end
-
-
-task automatic test1(ref int ErrCnt);
-#2 flush = 1;
-#2 flush = 0;
-#1 
-/* Simple add test */
-busy_in = 1;
-op_in = op_add;
-Vj = $urandom();
-Vk = $urandom();
-
-#1
-ld_busy = 1;
-issue_ld_Vj = 1;
-issue_ld_Vk = 1;
-
-#2
-
-ld_busy = 0;
-issue_ld_Vj = 0;
-issue_ld_Vk = 0;
-if(CDB_out.data != (Vj+Vk))
-begin
-	ErrCnt++;
-
-	$display("TEST 1 Failed! inputs: %x, %x; Output value %x", Vj, Vk, CDB_out.data);
-end
-$display("Alu add test out = %x; Expected out = %x", CDB_out.data, (Vj+Vk));
-
 endtask
 
 endmodule : alu_res_testbench
