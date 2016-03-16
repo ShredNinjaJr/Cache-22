@@ -51,7 +51,7 @@ typedef enum bit [2:0] {
 typedef struct packed 
 {
 	logic valid;
-	logic[15:0] data;
+	logic [15:0] data;
 	logic [2:0] tag;
 } CDB;
 

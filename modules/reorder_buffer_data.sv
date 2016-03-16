@@ -17,7 +17,8 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	output logic valid_out,
 	output logic [data_width-1:0] value_out,
 	output logic predict_out,
-
+	output [tag_width-1:0] addr_out,
+	
 	output logic empty, full
 );
 
@@ -40,6 +41,8 @@ assign dest_out = dest[r_addr];
 assign valid_out = valid[r_addr];
 assign predict_out = predict[r_addr];
 
+assign addr_out = w_addr;
+
 initial
 begin
 	r_addr = 0;
@@ -48,7 +51,7 @@ begin
     begin
 		value[i] <= 0;
 		dest[i] <= 0;
-		inst[i] <= 0;
+		inst[i] <= op_br;
 		valid[i] <= 0;
 		predict[i] <= 0;
 	end
