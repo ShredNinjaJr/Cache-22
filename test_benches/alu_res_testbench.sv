@@ -28,8 +28,8 @@ initial begin: CLOCK_INITIALIZATION
 	clk = 1;
 end
 int ErrCnt = 0;	/* Error count */
+int testnum;
 initial begin: TEST_VECTORS
-
 #2 flush = 1;
 ErrCnt = 0;
 #4 flush = 0;
@@ -43,19 +43,13 @@ begin
  test3();
 end
 
-
-
-
-
-
-if(ErrCnt != 0)
+if(ErrCnt == 0)
 begin
-	$display("PASSED TEST CASES!!!");
-  $display("*************************");
+  $display("PASSED TEST CASES!!!");
 end
 else
 begin
-	$display("%d TEST CASES FAILED", ErrCnt);
+ $display("%d TEST CASES FAILED", ErrCnt);
 end
 
 
@@ -65,6 +59,7 @@ end
 /* Simple Test, when both operands are given by Issue control */
 task automatic test1();
 #2 flush = 1;
+testnum = 1;
 #2 flush = 0;
 #1 
 /* Simple add test */
@@ -97,9 +92,11 @@ endtask
 task test2();
 #2
 flush = 1;
+testnum = 2;
+#2
+flush = 0;
 
 #1
-flush = 0;
 busy_in = 1;
 op_in = op_add;
 Vj = 16'h32;
@@ -133,9 +130,11 @@ task test3();
 /* AND Test with wrong both registers waiting; CDB outputs wrong tags */
 #2
 flush = 1;
+testnum = 3;
+#2
+flush = 0;
 
 #1
-flush = 0;
 Qk = 3'h2;
 Qj = 3'h3;
 busy_in = 1;
@@ -147,6 +146,9 @@ issue_ld_Qk = 1;
 issue_ld_Qj = 1;
 
 #2
+ld_busy = 0;
+issue_ld_Qk = 1;
+issue_ld_Qj = 1;
 CDB_in.valid = 0;
 #1
 CDB_in.data = 16'hBAAD;
@@ -173,6 +175,7 @@ if(CDB_out.data != (16'h600d & 16'h600f))
 begin
 	ErrCnt++;
 	$display("TEST 2 Failed!");
+	$display("Inputs %x, %x; Output %x", 16'h600d, 16'h600f, CDB_out.data);
 end
 endtask
 
