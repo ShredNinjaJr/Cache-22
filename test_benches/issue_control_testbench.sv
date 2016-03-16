@@ -79,7 +79,7 @@ issue_control I_C(
 always #1 clk = ~clk;
 
 initial begin: CLOCK_INITIALIZATION
-	clk = 0;
+	clk = 1;
 end
 
 initial begin: TEST_VECTORS
@@ -108,9 +108,31 @@ reg_busy[1] = 0;
 reg_busy[2] = 0;
 reg_robs[0] = 0;
 
-#1 
-instr = 16'b1001000010111111; // R0 
+#2
+instr = 16'b0101100000000001; // R4 <- R0 & R1
 instr_is_new = 1;
+
+CDB_in.valid = 1;
+CDB_in.tag = 1;
+CDB_in.data = 2523;
+
+alu_res1_busy = 1;
+alu_res2_busy = 1;
+alu_res3_busy = 0;
+
+rob_addr = 2;
+
+reg_busy[0] = 1;
+reg_busy[1] = 1;
+reg_robs[1] = 1;
+
+#2
+instr_is_new = 1;
+alu_res1_busy = 1;
+alu_res2_busy = 1;
+alu_res3_busy = 1;
+
+
 
 
 
