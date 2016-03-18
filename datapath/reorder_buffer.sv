@@ -13,7 +13,8 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	input CDB CDB_in,
 
 	/* NON FIFO style read address */
-	input [tag_width - 1: 0] read_addr, 
+	input [tag_width - 1: 0] sr1_read_addr, 
+	input [tag_width - 1: 0] sr2_read_addr, 
 
 	/* Tail address */
 	output logic [tag_width-1:0] addr_out,
@@ -27,9 +28,11 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	output logic empty_out,
 	output logic full_out,
 	/* Non FIFO style read outputs */
-	output logic [data_width-1:0] read_value_out,
-        output logic read_valid_out	
+	output logic [data_width-1:0] sr1_value_out,
+    output logic sr1_valid_out,
 
+	output logic [data_width-1:0] sr2_value_out,
+    output logic sr2_valid_out	
 );
 
 lc3b_opcode inst_in;

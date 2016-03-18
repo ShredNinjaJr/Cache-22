@@ -27,7 +27,8 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	input [tag_width-1:0] addr_in,	
 
 	/* Address to read from in non FIFO manner */
-	input [tag_width-1: 0] read_addr,
+	input [tag_width-1: 0] sr1_read_addr,
+	input [tag_width-1: 0] sr2_read_addr,
 	/* Outputs from each of the fields, from the head of the queue */
 	output lc3b_opcode inst_out,
 	output lc3b_reg dest_out,
@@ -41,8 +42,11 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	/* Signals if the Buffer is empty/full */
 	output logic empty, full,
 
-	output logic [data_width-1:0] read_value_out,
-	output logic read_valid_out
+	output logic [data_width-1:0] sr1_value_out,
+	output logic sr1_valid_out,
+	output logic [data_width-1:0] sr2_value_out,
+	output logic sr2_valid_out
+);
 );
 
 logic [tag_width-1:0] r_addr, w_addr; 	/* Read and write addr for the FIFO */
@@ -65,8 +69,12 @@ assign valid_out = valid[r_addr];
 assign predict_out = predict[r_addr];
 
 assign addr_out = w_addr;
-assign read_value_out = value[read_addr];
-assign read_valid_out = valid[read_addr];
+
+/* Assign non FIFO style outputs */
+assign sr1_value_out = value[sr1_read_addr];
+assign sr1_valid_out = valid[sr1_read_addr];
+assign sr2_value_out = value[sr2_read_addr];
+assign sr2_valid_out = value[sr2_read_addr];
 
 /* Clear the buffer initially */
 initial

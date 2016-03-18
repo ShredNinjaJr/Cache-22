@@ -14,12 +14,13 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// ROB -> Issue Control
 	input rob_full,
 	input lc3b_rob_addr rob_addr,
-	input lc3b_word rob_value_out [7:0],
-	input logic rob_valid_out[7:0],
+	input lc3b_word rob_sr2_value_out,
+	input lc3b_word rob_sr1_value_out,
+	input logic rob_sr1_valid_out,
+	input logic rob_sr2_valid_out,
 	// Regfile -> Issue Control
-	input lc3b_word reg_value [7:0],
-	input logic reg_busy [7:0],
-	input lc3b_rob_addr reg_robs[7:0],
+	input regfile_t sr1_in, sr2_in, dest_in;
+
 	// Issue Control -> Reservation Station
 	output lc3b_opcode res_op_in,
 	output logic [data_width-1:0] res_Vj, res_Vk,
@@ -29,20 +30,22 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output logic  res_validJ, res_validK, // [valid J, valid K]
  	// Issue Control -> ROB
 	output logic rob_write_enable,
-	output logic [6:0] rob_inst,
+	output lc3b_opcode rob_opcode, 
+	output lc3b_reg rob_dest,
 	output logic [data_width-1:0] rob_value_in,
 	// Issue Control -> Regfile
-	output lc3b_reg reg_dest,
+	output lc3b_reg reg_dest, sr1, sr2,
 	output logic ld_reg_busy_dest,
 	output lc3b_rob_addr reg_rob_entry
+	output [tag_width-1:0] rob_sr1_read_addr,
+	output [tag_width-1:0] rob_sr2_read_addr,
+
 );
 
 lc3b_word sext5_out;
 
 lc3b_reg dest_reg;
 lc3b_opcode opcode;
-lc3b_reg sr1;
-lc3b_reg sr2;
 
 logic sr1_reg_busy;
 logic sr2_reg_busy;
@@ -62,14 +65,14 @@ assign sr2 = instr[2:0];
 
 assign sr1_reg_busy = reg_busy[sr1];
 assign sr2_reg_busy = reg_busy[sr2];
-assign sr1_value = reg_value[sr1];
-assign sr2_value = reg_value[sr2];
-assign sr1_rob_e = reg_robs[sr1];
-assign sr2_rob_e = reg_robs[sr2];
-assign sr1_rob_value = rob_value_out[sr1_rob_e];
-assign sr2_rob_value = rob_value_out[sr2_rob_e];
-assign sr1_rob_valid = rob_valid_out[sr1_rob_e];
-assign sr2_rob_valid = rob_valid_out[sr2_rob_e];
+assign sr1_value = sr1_in.value;
+assign sr2_value = sr2_in.value;
+assign sr1_rob_e = sr1_in.rob_entry;
+assign sr2_rob_e = sr2_in.rob_entry;
+assign sr1_rob_value = rob_value_out;
+assign sr2_rob_value = rob_value_out;
+assign sr1_rob_valid = rob_valid_out;
+assign sr2_rob_valid = rob_valid_out;
 
 sext #(.width(5)) sext5
 (
@@ -201,7 +204,8 @@ begin
 				
 				/* ROB OUTPUTS */
 				rob_write_enable = 1'b1;
-				rob_inst = instr[15:9];
+				rob_opcode = opcode ;
+				rob_dest = dest_reg;
 				
 				/* REGFILE OUTPUTS */
 				reg_dest = dest_reg;
