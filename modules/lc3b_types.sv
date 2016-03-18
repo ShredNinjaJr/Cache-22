@@ -55,6 +55,14 @@ typedef struct packed
 	logic [2:0] tag;
 } CDB;
 
+typedef struct packed
+{
+	logic busy;
+	lc3b_reg rob_entry;
+	lc3b_word data; 
+}
+
+
 endpackage : lc3b_types
 
 
