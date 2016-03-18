@@ -1,15 +1,15 @@
 import lc3b_types::*;
 
-module regfile
+module regfile_data # (parameter data_width = 16, parameter tag_width = 3)
 (
     input clk,
     input load,
-    input lc3b_word in,
-    input lc3b_reg src_a, src_b, dest,
-    output lc3b_word reg_a, reg_b
+    input [data_width - 1:0] in,
+    input [tag_width - 1:0] src_a, src_b, dest,
+    output [data_width - 1:0] reg_a, reg_b
 );
 
-lc3b_word data [7:0] /* synthesis ramstyle = "logic" */;
+logic [data_width - 1:0] data [7:0] /* synthesis ramstyle = "logic" */;
 
 /* Altera device registers are 0 at power on. Specify this
  * so that Modelsim works as expected.
@@ -18,7 +18,7 @@ initial
 begin
     for (int i = 0; i < $size(data); i++)
     begin
-        data[i] = 16'b0;
+        data[i] = 0;
     end
 end
 
@@ -26,7 +26,7 @@ always_ff @(posedge clk)
 begin
     if (load == 1)
     begin
-        data[dest] = in;
+        data[dest] <= in;
     end
 end
 
@@ -36,4 +36,4 @@ begin
     reg_b = data[src_b];
 end
 
-endmodule : regfile
+endmodule : regfile_data
