@@ -19,7 +19,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input logic rob_sr1_valid_out,
 	input logic rob_sr2_valid_out,
 	// Regfile -> Issue Control
-	input regfile_t sr1_in, sr2_in, dest_in;
+	input regfile_t sr1_in, sr2_in, dest_in,
 
 	// Issue Control -> Reservation Station
 	output lc3b_opcode res_op_in,
@@ -36,9 +36,9 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// Issue Control -> Regfile
 	output lc3b_reg reg_dest, sr1, sr2,
 	output logic ld_reg_busy_dest,
-	output lc3b_rob_addr reg_rob_entry
+	output lc3b_rob_addr reg_rob_entry,
 	output [tag_width-1:0] rob_sr1_read_addr,
-	output [tag_width-1:0] rob_sr2_read_addr,
+	output [tag_width-1:0] rob_sr2_read_addr
 
 );
 
@@ -63,16 +63,16 @@ assign opcode = lc3b_opcode'(instr[15:12]);
 assign sr1 = instr[8:6];
 assign sr2 = instr[2:0];
 
-assign sr1_reg_busy = reg_busy[sr1];
-assign sr2_reg_busy = reg_busy[sr2];
-assign sr1_value = sr1_in.value;
-assign sr2_value = sr2_in.value;
+assign sr1_reg_busy = sr1_in.busy;
+assign sr2_reg_busy = sr2_in.busy;
+assign sr1_value = sr1_in.data;
+assign sr2_value = sr2_in.data;
 assign sr1_rob_e = sr1_in.rob_entry;
 assign sr2_rob_e = sr2_in.rob_entry;
-assign sr1_rob_value = rob_value_out;
-assign sr2_rob_value = rob_value_out;
-assign sr1_rob_valid = rob_valid_out;
-assign sr2_rob_valid = rob_valid_out;
+assign sr1_rob_value = rob_sr1_value_out;
+assign sr2_rob_value = rob_sr2_value_out;
+assign sr1_rob_valid = rob_sr1_valid_out;
+assign sr2_rob_valid = rob_sr2_valid_out;
 
 sext #(.width(5)) sext5
 (
@@ -100,7 +100,6 @@ begin
 	res_station_id = 0;
 	res_dest = rob_addr;
 	rob_write_enable = 0;
-	rob_inst = 0;
 	rob_value_in = 0;
 	reg_dest = 0;
 	ld_reg_busy_dest = 0;

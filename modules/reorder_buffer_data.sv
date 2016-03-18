@@ -47,7 +47,7 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	output logic [data_width-1:0] sr2_value_out,
 	output logic sr2_valid_out
 );
-);
+
 
 logic [tag_width-1:0] r_addr, w_addr; 	/* Read and write addr for the FIFO */
 /* The 5 Data fields */
