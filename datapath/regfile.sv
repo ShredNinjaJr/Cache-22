@@ -49,7 +49,7 @@ regfile_data #(.data_width(1),.tag_width(3)) busy_reg (
 	 .dest(dest_busy),
 	 .reg_a(sr1_out.busy), 
 	 .reg_b(sr2_out.busy),
-	 .dest(dest_out.busy)
+	 .dest_out(dest_out.busy)
 );
 
 regfile_data #(.data_width(16),.tag_width(3)) value_reg (
@@ -61,7 +61,7 @@ regfile_data #(.data_width(16),.tag_width(3)) value_reg (
 	 .dest(dest_rob),
 	 .reg_a(sr1_out.data), 
 	 .reg_b(sr2_out.data),
-	 .dest(dest_out.data)
+	 .dest_out(dest_out.data)
 );
 
 regfile_data #(.data_width(3),.tag_width(3)) rob_entry_reg (
@@ -73,7 +73,7 @@ regfile_data #(.data_width(3),.tag_width(3)) rob_entry_reg (
 	 .dest(dest_ic),
 	 .reg_a(sr1_out.rob_entry), 
 	 .reg_b(sr2_out.rob_entry),
-	 .dest(dest_out.rob_entry)
+	 .dest_out(dest_out.rob_entry)
 );
 
 endmodule :regfile

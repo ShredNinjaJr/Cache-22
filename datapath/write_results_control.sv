@@ -10,7 +10,7 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	input [data_width - 1:0] value_in,
 	
 	/* From L1 - Cache */
-	input cL1_mem_resp,
+	input dmem_resp,
 	
 	/* To Regfile */
 	output lc3b_reg dest_a,
@@ -19,7 +19,7 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	output ld_regfile_busy,
 	
 	/* TO L1 - Cache  */
-	output cL1_mem_read, cL1_mem_write,
+	output dmem_read, dmem_write,
 	
 	/* TO ROB */
 	output RE_out
@@ -31,13 +31,16 @@ assign value_out = value_in;
 
 always_comb
 begin
-
+	ld_regfile_busy = 0;
+	ld_regfile_value = 0;
+	RE_out = 0;
 	if(valid_in)
-		begin
-			ld_regfile_busy = 1'b1;
-			ld_regfile_value = 1'b1;
-			RE_out = 1'b1;
-		end
+	begin
+		ld_regfile_busy = 1'b1;
+		ld_regfile_value = 1'b1;
+		RE_out = 1'b1;
+	end
+	
 end
 
 

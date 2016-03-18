@@ -5,7 +5,7 @@ module regfile_data # (parameter data_width = 16, parameter tag_width = 3)
     input clk,
     input load,
     input [data_width - 1:0] in,
-    input [tag_width - 1:0] src_a, src_b, dest,
+    input [tag_width - 1:0] sr1, sr2, dest,
     output [data_width - 1:0] reg_a, reg_b, dest_out
 );
 
@@ -32,8 +32,8 @@ end
 
 always_comb
 begin
-    reg_a = data[src_a];
-    reg_b = data[src_b];
+    reg_a = data[sr1];
+    reg_b = data[sr2];
 	 dest_out = data[dest];
 end
 

@@ -7,12 +7,12 @@ module fetch_unit
 	input imem_resp,
 	input [1:0] pcmux_sel,
 	output imem_read,
-	output imem_address,
+	output lc3b_word imem_address,
 	output lc3b_word ir_out,
 	output lc3b_word pc_out
 );
 
-lc3b_word pc_out, pc_plus2_out;
+lc3b_word pc_plus2_out;
 
 logic load_pc, load_ir;
 assign load_pc = imem_resp;

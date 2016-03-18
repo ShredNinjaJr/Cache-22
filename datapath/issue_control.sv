@@ -74,6 +74,9 @@ assign sr2_rob_value = rob_sr2_value_out;
 assign sr1_rob_valid = rob_sr1_valid_out;
 assign sr2_rob_valid = rob_sr2_valid_out;
 
+assign rob_sr1_read_addr = sr1_in.rob_entry;
+assign rob_sr2_read_addr = sr2_in.rob_entry;
+
 sext #(.width(5)) sext5
 (
 	.in(instr[4:0]),
@@ -82,6 +85,8 @@ sext #(.width(5)) sext5
 
 always_comb
 begin
+	rob_opcode = op_br;
+	rob_dest = 0;
 	res_op_in = op_br;
 	res_Vj = 0;
 	res_Vk = 0;

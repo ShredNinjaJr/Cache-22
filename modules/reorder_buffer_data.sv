@@ -74,7 +74,7 @@ assign addr_out = w_addr;
 assign sr1_value_out = value[sr1_read_addr];
 assign sr1_valid_out = valid[sr1_read_addr];
 assign sr2_value_out = value[sr2_read_addr];
-assign sr2_valid_out = value[sr2_read_addr];
+assign sr2_valid_out = valid[sr2_read_addr];
 
 /* Clear the buffer initially */
 initial
