@@ -4,7 +4,7 @@ typedef logic [127:0] pmem_bus;
 
 typedef logic [15:0] lc3b_word;
 typedef logic  [7:0] lc3b_byte;
-
+typedef logic  [2:0] lc3b_rob_addr;
 typedef logic  [8:0] lc3b_offset9;
 typedef logic  [5:0] lc3b_offset6;
 typedef logic [4:0] lc3b_imm5;
