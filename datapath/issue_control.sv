@@ -6,6 +6,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// Fetch -> Issue Control
 	input lc3b_word instr,
 	input instr_is_new,
+	input lc3b_word curr_pc,
 	// CDB -> Issue Control
 	input CDB CDB_in,
 	// Reservation Station -> Issue Control
@@ -13,6 +14,8 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// ROB -> Issue Control
 	input rob_full,
 	input lc3b_rob_addr rob_addr,
+	input lc3b_word rob_value_out [7:0],
+	input logic rob_valid_out[7:0],
 	// Regfile -> Issue Control
 	input lc3b_word reg_value [7:0],
 	input logic reg_busy [7:0],
@@ -47,6 +50,10 @@ lc3b_word sr1_value;
 lc3b_word sr2_value;
 lc3b_rob_addr sr1_rob_e;
 lc3b_rob_addr sr2_rob_e;
+lc3b_word sr1_rob_value;
+lc3b_word sr2_rob_value;
+logic sr1_rob_valid;
+logic sr2_rob_valid;
 
 assign dest_reg = instr[11:9];
 assign opcode = lc3b_opcode'(instr[15:12]);
@@ -59,6 +66,10 @@ assign sr1_value = reg_value[sr1];
 assign sr2_value = reg_value[sr2];
 assign sr1_rob_e = reg_robs[sr1];
 assign sr2_rob_e = reg_robs[sr2];
+assign sr1_rob_value = rob_value_out[sr1_rob_e];
+assign sr2_rob_value = rob_value_out[sr2_rob_e];
+assign sr1_rob_valid = rob_valid_out[sr1_rob_e];
+assign sr2_rob_valid = rob_valid_out[sr2_rob_e];
 
 sext #(.width(5)) sext5
 (
@@ -123,6 +134,13 @@ begin
 						issue_ld_validJ = 1'b1;
 						issue_ld_Vj = 1'b1;
 					end
+					else if (sr1_rob_valid) // ROB has value for J
+					begin
+						res_validJ = 1'b1;
+						res_Vj = sr1_rob_value;
+						issue_ld_validJ = 1'b1;
+						issue_ld_Vj = 1'b1;
+					end
 					else
 					begin
 						res_validJ = 1'b0;
@@ -154,6 +172,13 @@ begin
 						begin
 							res_validK = 1'b1;
 							res_Vk = CDB_in.data;
+							issue_ld_validK = 1'b1;
+							issue_ld_Vk = 1'b1;
+						end
+						else if (sr2_rob_valid) // ROB has value for J
+						begin
+							res_validK = 1'b1;
+							res_Vk = sr2_rob_value;
 							issue_ld_validK = 1'b1;
 							issue_ld_Vk = 1'b1;
 						end
