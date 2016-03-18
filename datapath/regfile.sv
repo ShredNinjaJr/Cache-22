@@ -4,18 +4,22 @@ module regfile #(parameter data_width = 16, parameter tag_width = 3)
 (
     input clk,
 	 
+	/* Load signals for each register */
 	 input ld_busy_ic,
 	 input ld_busy_rob,
 	 input ld_rob_entry,
 	 input ld_value,
 	 
-	 input regfile_t rob_in;
-	 input regfile_t ic_in;
-
+	 /* ROB ENTRY input from Issue Control */
+	 input [tag_width - 1:0] rob_entry_in,
+	 /* VALUE input from ROB */
+	 input [data_width - 1:0] value_in,
+	
 	 input lc3b_reg sr1_ic, sr2_ic, dest_ic,
 	 input lc3b_reg sr1_rob, sr2_rob, dest_rob,
 
-	 output regfile_t sr1_ic_out, sr2_ic_out, dest_ic_out;
+	 /* Dest output needed for Issue Control */
+	 output regfile_t sr1_out, sr2_out, dest_out
 );
 
 logic ld_busy;
@@ -43,8 +47,9 @@ regfile_data #(.data_width(1),.tag_width(3)) busy_reg (
 	 .sr1(sr1_busy), 
 	 .sr2(sr2_busy), 
 	 .dest(dest_busy),
-	 .reg_a(sr1_busy_out), 
-	 .reg_b(sr2_busy_out)
+	 .reg_a(sr1_out.busy), 
+	 .reg_b(sr2_out.busy),
+	 .dest(dest_out.busy)
 );
 
 regfile_data #(.data_width(16),.tag_width(3)) value_reg (
@@ -54,8 +59,9 @@ regfile_data #(.data_width(16),.tag_width(3)) value_reg (
 	 .sr1(sr1_rob), 
 	 .sr2(sr2_rob), 
 	 .dest(dest_rob),
-	 .reg_a(sr1_value_out), 
-	 .reg_b(sr2_value_out)
+	 .reg_a(sr1_out.data), 
+	 .reg_b(sr2_out.data),
+	 .dest(dest_out.data)
 );
 
 regfile_data #(.data_width(3),.tag_width(3)) rob_entry_reg (
@@ -65,8 +71,9 @@ regfile_data #(.data_width(3),.tag_width(3)) rob_entry_reg (
 	 .sr1(sr1_ic), 
 	 .sr2(sr2_ic), 
 	 .dest(dest_ic),
-	 .reg_a(sr1_rob_entry_out), 
-	 .reg_b(sr2_rob_entry_out)
+	 .reg_a(sr1_out.rob_entry), 
+	 .reg_b(sr2_out.rob_entry),
+	 .dest(dest_out.rob_entry)
 );
 
 endmodule :regfile
