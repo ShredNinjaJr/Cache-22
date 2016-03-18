@@ -38,7 +38,7 @@
 
 set_global_assignment -name FAMILY "Stratix III"
 set_global_assignment -name DEVICE AUTO
-set_global_assignment -name TOP_LEVEL_ENTITY reorder_buffer
+set_global_assignment -name TOP_LEVEL_ENTITY alu_res_station
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "00:00:00  AUGUST 25, 2014"
 set_global_assignment -name LAST_QUARTUS_VERSION 13.1
@@ -51,7 +51,7 @@ set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "SYSTEMVERILOG HDL" -section_
 
 set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH rob_testbench_2 -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH alu_res_tb -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_NAME mp3_tb -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id mp3_tb
 set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "200 ns" -section_id mp3_tb
@@ -63,13 +63,12 @@ set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name FITTER_EFFORT "AUTO FIT"
 set_global_assignment -name TIMEQUEST_DO_CCPP_REMOVAL ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT NORMAL
-set_global_assignment -name EDA_TEST_BENCH_NAME alu_res -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id alu_res
-set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "2 us" -section_id alu_res
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME alu_res_testbench -section_id alu_res
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name EDA_TEST_BENCH_NAME rob_testbench_2 -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id rob_testbench_2
+set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "200 ns" -section_id rob_testbench_2
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME rob_testbench_2 -section_id rob_testbench_2
+set_global_assignment -name SYSTEMVERILOG_FILE test_benches/alu_res_testbench.sv
+set_global_assignment -name SYSTEMVERILOG_FILE datapath/issue_control.sv
 set_global_assignment -name SYSTEMVERILOG_FILE test_benches/rob_testbench.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/reorder_buffer_data.sv
 set_global_assignment -name SYSTEMVERILOG_FILE datapath/alu_res_station.sv
@@ -84,7 +83,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE modules/zext.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/trapadj.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/sext.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/register.sv
-set_global_assignment -name SYSTEMVERILOG_FILE modules/regfile.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/plus2.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/mux4.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/mux2.sv
@@ -100,12 +98,17 @@ set_global_assignment -name SYSTEMVERILOG_FILE mp3.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/alu_logic.sv
 set_global_assignment -name SYSTEMVERILOG_FILE datapath/write_results_control.sv
 set_global_assignment -name SYSTEMVERILOG_FILE test_benches/rob_testbench_2.sv
-set_global_assignment -name EDA_TEST_BENCH_NAME rob_testbench_2 -section_id eda_simulation
-set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id rob_testbench_2
-set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "200 ns" -section_id rob_testbench_2
-set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME rob_testbench_2 -section_id rob_testbench_2
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name EDA_TEST_BENCH_NAME alu_res_tb -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id alu_res_tb
+set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "1 us" -section_id alu_res_tb
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME alu_res_testbench -section_id alu_res_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE mp3_tb.sv -section_id mp3_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE physical_memory.sv -section_id mp3_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE test_benches/alu_res_testbench.sv -section_id alu_res
 set_global_assignment -name EDA_TEST_BENCH_FILE test_benches/rob_testbench_2.sv -section_id rob_testbench_2
+set_global_assignment -name EDA_TEST_BENCH_FILE test_benches/alu_res_testbench.sv -section_id alu_res_tb
+set_global_assignment -name SYSTEMVERILOG_FILE modules/regfile_data.sv
+set_global_assignment -name SYSTEMVERILOG_FILE datapath/regfile.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

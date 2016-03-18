@@ -170,11 +170,11 @@ CDB_in.data = 16'h600f;
 CDB_in.valid = 1;
 CDB_in.tag = 3'h2;
 
-#2
+#3
 if(CDB_out.data != (16'h600d & 16'h600f))
 begin
 	ErrCnt++;
-	$display("TEST 2 Failed!");
+	$display("TEST 3 Failed!");
 	$display("Inputs %x, %x; Output %x", 16'h600d, 16'h600f, CDB_out.data);
 end
 endtask
