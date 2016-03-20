@@ -55,13 +55,13 @@ logic dmem_write;
 mp3 dut
 (
 	.*
-)
+);
 
-magic_memory_dp
+magic_memory_dp memory
 (
 	.clk,
 	.read_a(imem_read),
-	.write_a(0),
+	.write_a(1'b0),
 	.address_a(imem_address),
 	.resp_a(imem_resp),
 	.rdata_a(imem_rdata),

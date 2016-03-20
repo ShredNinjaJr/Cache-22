@@ -14,6 +14,6 @@ module mp3
 	output logic dmem_write
 );
 
-cpu_datapath(.*);
+cpu_datapath cpu_datapath(.*);
  
  endmodule: mp3

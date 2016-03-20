@@ -6,7 +6,7 @@ module regfile_data # (parameter data_width = 16, parameter tag_width = 3)
     input load,
     input [data_width - 1:0] in,
     input [tag_width - 1:0] sr1, sr2, dest,
-    output [data_width - 1:0] reg_a, reg_b, dest_out
+    output logic [data_width - 1:0] reg_a, reg_b, dest_out
 );
 
 logic [data_width - 1:0] data [7:0] /* synthesis ramstyle = "logic" */;

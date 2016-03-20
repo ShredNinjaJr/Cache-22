@@ -1,3 +1,4 @@
+import lc3b_types::*;
 
 module write_results_control #(parameter data_width = 16, parameter tag_width = 3)
 (
@@ -14,15 +15,15 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	
 	/* To Regfile */
 	output lc3b_reg dest_a,
-	output [data_width - 1: 0] value_out,
-	output ld_regfile_value,
-	output ld_regfile_busy,
+	output logic[data_width - 1: 0] value_out,
+	output logic ld_regfile_value,
+	output logic ld_regfile_busy,
 	
 	/* TO L1 - Cache  */
-	output dmem_read, dmem_write,
+	output logic dmem_read, dmem_write,
 	
 	/* TO ROB */
-	output RE_out
+	output logic RE_out
 		
 );
 
