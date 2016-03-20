@@ -18,7 +18,7 @@ initial
 begin
     for (int i = 0; i < $size(data); i++)
     begin
-        data[i] = 0;
+        data[i] = 16'h1234;
     end
 end
 

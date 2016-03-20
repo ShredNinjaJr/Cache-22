@@ -15,7 +15,7 @@ module cpu_datapath
 );
 
 CDB C_D_B;
-logic flush;
+logic flush = 0;
 lc3b_word ir_out, pc_out;
 
 /**********************************************CHANGE PCMUX_SEL *****************************/
@@ -171,6 +171,7 @@ write_results_control wr_control
 alu_res_station RS1
 (
 	.clk,
+	.flush,
 	.busy_in(1'b1),
 	.op_in(res_op_in),
 	.CDB_in(C_D_B),
@@ -194,6 +195,7 @@ regfile regfile
 
 	.rob_entry_in(reg_rob_entry),
 	.sr1_ic(sr1), .sr2_ic(sr2), .dest_ic(reg_dest),
+	.value_in(regfile_value_in),
 	
 	/******************************************************************************/
 	.dest_rob(rob_regfile_dest_in),
