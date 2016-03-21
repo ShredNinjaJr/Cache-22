@@ -21,7 +21,7 @@ module load_buffer #(parameter data_width = 16, parameter entries_addr = 2)
 	output logic valid_out,
 	
 	/* To Dcache */
-	output logic dcache_addr,
+	output logic dmem_addr,
 	
 	/* To Issue Control */
 	output logic empty,
@@ -54,6 +54,6 @@ assign addr_in = (CDB_in.tag == Q_out0) ? 2'b00 : (CDB_in.tag == Q_out1) ? 2'b01
 
 load_buffer_data LB (.*);
 
-assign dcache_addr = (V_out + offset_out);
+assign dmem_addr = (V_out + offset_out);
 
 endmodule : load_buffer
