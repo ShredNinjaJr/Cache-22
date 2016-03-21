@@ -27,9 +27,8 @@ fetch_unit fetch_unit
 );
 
 /* Reservation station -> Issue Control */
-logic alu_res1_busy;
-logic alu_res2_busy = 1;
-logic alu_res3_busy = 1;
+
+logic alu_RS_busy [0:2];
 
 /* ROB -> Issue control */
 logic rob_full;
@@ -69,7 +68,7 @@ issue_control issue_control
 	// CDB -> Issue Control
 	.CDB_in(C_D_B),
 	// Reservation Station -> Issue Control
-	.alu_res1_busy, .alu_res2_busy, .alu_res3_busy,
+	.alu_res1_busy(alu_RS_busy[0]), .alu_res2_busy(alu_RS_busy[1]), .alu_res3_busy(alu_RS_busy[2]),
 	// ROB -> Issue Control
 	.rob_full,
 	.rob_addr,
@@ -168,21 +167,25 @@ write_results_control wr_control
 	.RE_out
 );
 
-alu_res_station RS1
+
+
+
+alu_RS_unit alu_RS
 (
 	.clk,
-	.flush,
-	.busy_in(1'b1),
+	.flush(flush),
 	.op_in(res_op_in),
 	.CDB_in(C_D_B),
-	
 	.Vj(res_Vj), .Vk(res_Vk),
 	.Qj(res_Qj), .Qk(res_Qk), .dest(res_dest),
 	.ld_busy(issue_ld_busy_dest),
 	.issue_ld_Vj, .issue_ld_Vk, .issue_ld_Qk, .issue_ld_Qj,
-	.busy_out(alu_res1_busy),
+	.busy_out(alu_RS_busy),
 	.CDB_out(C_D_B)
 );
+
+
+
 
 regfile regfile
 (

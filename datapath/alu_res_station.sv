@@ -3,7 +3,6 @@ import lc3b_types::*;
 module alu_res_station #(parameter data_width = 16, parameter tag_width = 3)
 (
 	input clk, flush,
-	input busy_in,
 	input lc3b_word instr,
 	input lc3b_opcode op_in,
 	input CDB CDB_in,
@@ -29,6 +28,7 @@ assign ld_dest = ld_busy;
 
 logic Vk_valid_in = 1;
 logic Vj_valid_in = 1;
+logic busy_in = 1;
 	
 logic [data_width - 1: 0] Vj_out, Vk_out;
 logic [tag_width - 1: 0] Qj_out, Qk_out, dest_out;

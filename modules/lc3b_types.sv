@@ -46,6 +46,7 @@ typedef enum bit [2:0] {
     alu_sra
 } lc3b_aluop;
 
+`define NUM 2
 
 /* Struct for the common data bus(CDB)*/
 typedef struct packed 

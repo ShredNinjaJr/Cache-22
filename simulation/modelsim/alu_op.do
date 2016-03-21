@@ -60,8 +60,10 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/dest_a
 add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/ld_regfile_value
 add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/ld_regfile_busy
 add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/RE_out
+add wave -noupdate /mp3_tb/dut/cpu_datapath/regfile/busy_reg/data
+add wave -noupdate /mp3_tb/dut/cpu_datapath/regfile/rob_entry_reg/data
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {28540 ps} 0}
+WaveRestoreCursors {{Cursor 1} {9261 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100
