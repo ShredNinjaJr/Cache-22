@@ -38,6 +38,7 @@ module load_buffer_data #(parameter data_width = 16, parameter entries_addr = 2)
 
 /* Addresses */
 logic [entries_addr-1:0] r_addr, w_addr;
+logic [entries_addr:0] counter;
 
 /* Arrays */
 logic  valid [2**entries_addr-1:0];
@@ -47,8 +48,8 @@ logic [data_width-1:0] offset [2**entries_addr-1:0];
 lc3b_rob_addr dest [2**entries_addr-1:0];
 
 /* Output Signals */
-assign empty = (r_addr == w_addr);
-assign full = (r_addr == (w_addr + 1));
+assign empty = (counter == 3'b0);
+assign full = (counter == 2**entries_addr);
 assign valid_out = valid[r_addr];
 assign Q_out0 = Q[2'b00];
 assign Q_out1 = Q[2'b01];
@@ -64,6 +65,7 @@ initial
 begin
 	r_addr = 0;
 	w_addr = 0;
+	counter <= 0;
    for (int i = 0; i < 2**entries_addr; i++)
     begin
 	 	valid[i] <= 0;
@@ -96,7 +98,7 @@ begin
 				V[w_addr] <= V_in;
 				offset[w_addr] <= offset_in;
 				dest[w_addr] <= dest_in;
-				
+				counter <= counter + 3'b01;
 				w_addr <= w_addr + 2'b1;
 			end
 		end		
@@ -112,6 +114,7 @@ begin
 		if(RE)
 		begin
 			valid[r_addr] <= 1'b0;
+			counter <= counter - 3'b1;
 		end
 	end		
 end
