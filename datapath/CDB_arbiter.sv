@@ -1,11 +1,11 @@
 import lc3b_types::*;
 
-module CDB_arbiter
+module CDB_arbiter #(parameter n = 2)
 (
 	input clk,
-	input CDB RS_CDB_in[0:`NUM],
+	input CDB RS_CDB_in[0:n],
 	
-	output logic RS_flush[0:`NUM],
+	output logic RS_flush[0:n],
 	output CDB CDB_out
 );
 
@@ -17,7 +17,7 @@ logic [2:0] pri_en_out;
 priority_encoder pri_en
 (
   .binary_out(pri_en_out) , //  3 bit binary output
-  .in({RS_CDB_in[0], RS_CDB_in[1], RS_CDB_in[2], 5'b0}) , //  8-bit input 
+  .in({5'b0, RS_CDB_in[2].valid, RS_CDB_in[1].valid, RS_CDB_in[0].valid}) , //  8-bit input 
   .enable(1'b1),
   .V(pri_en_valid)			/* Valid output */
 );
@@ -33,7 +33,7 @@ begin
 		end
 		default:begin
 		CDB_out <= 0;
-		for(i = 0; i <= `NUM; i++)
+		for(i = 0; i <= n; i++)
 			RS_flush[i] <= 0;
 		end
 		endcase
@@ -42,7 +42,7 @@ begin
 	else
 	begin
 		CDB_out <= 0;
-		for(i = 0; i <= `NUM; i++)
+		for(i = 0; i <= n; i++)
 			RS_flush[i] <= 0;
 	end
 end

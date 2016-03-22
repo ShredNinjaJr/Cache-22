@@ -18,7 +18,10 @@ initial
 begin
     for (int i = 0; i < $size(data); i++)
     begin
-        data[i] = 0;
+		  if(data_width == 16)
+				data[i] = $random() ; 
+		  else
+				data[i] = 0;
     end
 end
 
