@@ -1,6 +1,6 @@
 import lc3b_types::*;
 
-module alu_RS_unit #(parameter data_width = 16, parameter tag_width = 3)
+module alu_RS_unit #(parameter data_width = 16, parameter tag_width = 3, parameter n = 2)
 (
 	input clk, flush,
 	input lc3b_opcode op_in,
@@ -11,7 +11,7 @@ module alu_RS_unit #(parameter data_width = 16, parameter tag_width = 3)
 	input ld_busy, issue_ld_Vj, issue_ld_Vk, issue_ld_Qk, issue_ld_Qj,
 	input [2:0] res_station_id,
 	
-	output logic busy_out[0:`NUM],
+	output logic busy_out[0:n],
 	output CDB CDB_out
 );
 
@@ -21,18 +21,18 @@ module alu_RS_unit #(parameter data_width = 16, parameter tag_width = 3)
 RS_decoder RS_decoder (.*);
 
 /* RS wires */
-logic RS_flush   [0:`NUM];
-logic RS_ld_busy [0:`NUM];
-logic RS_issue_ld_Vj[0:`NUM];
-logic RS_issue_ld_Vk[0:`NUM];
-logic RS_issue_ld_Qk[0:`NUM];
-logic RS_issue_ld_Qj[0:`NUM];
+logic RS_flush   [0:n];
+logic RS_ld_busy [0:n];
+logic RS_issue_ld_Vj[0:n];
+logic RS_issue_ld_Vk[0:n];
+logic RS_issue_ld_Qk[0:n];
+logic RS_issue_ld_Qj[0:n];
 
-CDB RS_CDB_out[0:`NUM];
+CDB RS_CDB_out[0:n];
 
 /* Generate the RS */
 genvar i;
-generate for(i = 0; i <= `NUM; i++)
+generate for(i = 0; i <= n; i++)
 begin: RS_generate
 	alu_res_station RS
 	(

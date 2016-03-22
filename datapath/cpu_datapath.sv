@@ -57,6 +57,7 @@ lc3b_reg reg_dest, sr1, sr2;
 logic ld_reg_busy_dest;
 lc3b_rob_addr reg_rob_entry;
 lc3b_rob_addr rob_sr1_read_addr, rob_sr2_read_addr;
+logic [2:0] res_station_id;
 
 issue_control issue_control
 (
@@ -86,7 +87,7 @@ issue_control issue_control
 	.res_Qj, .res_Qk, .res_dest,
 	.issue_ld_busy_dest, .issue_ld_Vj, .issue_ld_Vk, 
 	.issue_ld_Qk, .issue_ld_Qj, 
-	//output logic [2:0] res_station_id,
+	.res_station_id,
 //	 logic  res_validJ, res_validK, // [valid J, valid K]
  	// Issue Control -> ROB
 	.rob_write_enable,
@@ -176,6 +177,7 @@ alu_RS_unit alu_RS
 	.flush(flush),
 	.op_in(res_op_in),
 	.CDB_in(C_D_B),
+	.res_station_id,
 	.Vj(res_Vj), .Vk(res_Vk),
 	.Qj(res_Qj), .Qk(res_Qk), .dest(res_dest),
 	.ld_busy(issue_ld_busy_dest),
