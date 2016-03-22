@@ -28,9 +28,8 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output logic [data_width-1:0] res_Vj, res_Vk,
 	output logic [tag_width-1:0] res_Qj, res_Qk, 
 	output lc3b_rob_addr res_dest,
-	output logic issue_ld_busy_dest, issue_ld_Vj, issue_ld_Vk, issue_ld_Qk, issue_ld_Qj, issue_ld_validJ, issue_ld_validK,
+	output logic issue_ld_busy_dest, issue_ld_Vj, issue_ld_Vk, issue_ld_Qk, issue_ld_Qj,
 	output logic [2:0] res_station_id,
-	output logic  res_validJ, res_validK, // [valid J, valid K]
 	// Issue Control -> Load Buffer NOTE: res_Vj, res_Qj, and res_dest are all used for load buffer as well
 	output logic load_buf_write_enable,
 	output lc3b_word load_buf_offset,
@@ -108,16 +107,12 @@ begin
 	res_Vk = 0;
 	res_Qj = 0;
 	res_Qk = 0;
-	res_validJ = 0;
-	res_validK = 0;
 	load_buf_write_enable = 0;
 	issue_ld_busy_dest = 0;
 	issue_ld_Vj = 0;
 	issue_ld_Vk = 0;
 	issue_ld_Qj = 0;
 	issue_ld_Qk = 0;
-	issue_ld_validJ = 0;
-	issue_ld_validK = 0;
 	res_station_id = 0;
 	res_dest = rob_addr;
 	rob_write_enable = 0;
@@ -154,39 +149,29 @@ begin
 				begin
 					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1)	// CDB has value for J
 					begin
-						res_validJ = 1'b1;
 						res_Vj = CDB_in.data;
-						issue_ld_validJ = 1'b1;
 						issue_ld_Vj = 1'b1;
 					end
 					else if (sr1_rob_valid) // ROB has value for J
 					begin
-						res_validJ = 1'b1;
 						res_Vj = sr1_rob_value;
-						issue_ld_validJ = 1'b1;
 						issue_ld_Vj = 1'b1;
 					end
 					else
 					begin
-						res_validJ = 1'b0;
 						res_Qj = sr1_rob_e;
-						issue_ld_validJ = 1'b1;
 						issue_ld_Qj = 1'b1;
 					end
 				end
 				else	// sr1_reg not busy
 				begin
-					res_validJ = 1'b1;
 					res_Vj = sr1_value;
-					issue_ld_validJ = 1'b1;
 					issue_ld_Vj = 1'b1;
 				end
 				/* K */
 				if (instr[5])	// Immediate
 				begin
-					res_validK = 1'b1;
 					res_Vk = sext5_out;
-					issue_ld_validK = 1'b1;
 					issue_ld_Vk = 1'b1;
 				end
 				else	// Not immediate
@@ -195,31 +180,23 @@ begin
 					begin
 						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr2)	// CDB has value for K
 						begin
-							res_validK = 1'b1;
 							res_Vk = CDB_in.data;
-							issue_ld_validK = 1'b1;
 							issue_ld_Vk = 1'b1;
 						end
 						else if (sr2_rob_valid) // ROB has value for J
 						begin
-							res_validK = 1'b1;
 							res_Vk = sr2_rob_value;
-							issue_ld_validK = 1'b1;
 							issue_ld_Vk = 1'b1;
 						end
 						else
 						begin
-							res_validK = 1'b0;
 							res_Qk = sr2_rob_e;
-							issue_ld_validK = 1'b1;
 							issue_ld_Qk = 1'b1;
 						end
 					end	// sr2_reg not busy
 					else
 					begin
-						res_validK = 1'b1;
 						res_Vk = sr2_value;
-						issue_ld_validK = 1'b1;
 						issue_ld_Vk = 1'b1;
 					end
 				end
