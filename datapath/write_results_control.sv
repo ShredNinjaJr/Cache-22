@@ -14,6 +14,9 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	input dmem_resp,
 	input lc3b_word dmem_rdata,
 	
+	/* From Load Buffer */
+	input ld_buf_valid_in,
+	
 	/* To Regfile */
 	output lc3b_reg dest_a,
 	output logic[data_width - 1: 0] value_out,
@@ -42,7 +45,7 @@ begin
 	dmem_read = 0;
 	if(valid_in)
 	begin
-		if(dmem_resp)
+		if(dmem_resp && ld_buf_valid_in)
 		begin
 			mem = 1;
 			ld_regfile_busy = 1'b1;

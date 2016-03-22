@@ -21,7 +21,7 @@ module load_buffer #(parameter data_width = 16, parameter entries_addr = 2)
 	output logic valid_out,
 	
 	/* To Dcache */
-	output logic dmem_addr,
+	output lc3b_word dmem_addr,
 	
 	/* To Issue Control */
 	output logic empty,
@@ -39,8 +39,8 @@ logic valid_in;
 logic [data_width - 1: 0] V_out;
 logic [data_width - 1: 0] offset_out;
 
-logic Q_out0, Q_out1, Q_out2, Q_out3;
-logic [2:0] addr_in;
+lc3b_reg Q_out0, Q_out1, Q_out2, Q_out3;
+logic [1:0] addr_in;
 
 /* Handling of Input Signals from CDB and Issue Control*/
 assign ld_valid = (CDB_in.valid) ? 1'b1 : WE;
