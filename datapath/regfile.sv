@@ -16,7 +16,7 @@ module regfile #(parameter data_width = 16, parameter tag_width = 3)
 	 input [data_width - 1:0] value_in,
 	
 	 input lc3b_reg sr1_ic, sr2_ic, dest_ic,
-	 input lc3b_reg sr1_rob, sr2_rob, dest_rob,
+	 input lc3b_reg dest_rob,
 
 	 /* Dest output needed for Issue Control */
 	 output regfile_t sr1_out, sr2_out, dest_out
@@ -24,8 +24,8 @@ module regfile #(parameter data_width = 16, parameter tag_width = 3)
 
 logic ld_busy;
 logic busy_in;
-logic [tag_width - 1: 0] sr1_busy;
-logic [tag_width - 1: 0] sr2_busy;
+//logic [tag_width - 1: 0] sr1_busy;
+//logic [tag_width - 1: 0] sr2_busy;
 logic [tag_width - 1: 0] dest_busy;
 
 /* Muxing ld of busy reg  with  ic and rob */
@@ -35,8 +35,8 @@ assign ld_busy = (ld_busy_ic) ? 1'b1 : ld_busy_rob;
 assign busy_in = (ld_busy_ic) ? 1'b1 : 1'b0;
 
 /* Muxing inputs */
-assign sr1_busy = (ld_busy_ic) ? sr1_ic : sr1_rob;
-assign sr2_busy = (ld_busy_ic) ? sr2_ic : sr2_rob;
+//assign sr1_busy = (ld_busy_ic) ? sr1_ic : sr1_rob;
+//assign sr2_busy = (ld_busy_ic) ? sr2_ic : sr2_rob;
 assign dest_busy = (ld_busy_ic) ? dest_ic : dest_rob;
 
 
@@ -44,8 +44,8 @@ regfile_data #(.data_width(1),.tag_width(3)) busy_reg (
     .clk(clk),
     .load(ld_busy),
     .in(busy_in),
-	 .sr1(sr1_busy), 
-	 .sr2(sr2_busy), 
+	 .sr1(sr1_ic), 
+	 .sr2(sr2_ic), 
 	 .dest(dest_busy),
 	 .reg_a(sr1_out.busy), 
 	 .reg_b(sr2_out.busy),
