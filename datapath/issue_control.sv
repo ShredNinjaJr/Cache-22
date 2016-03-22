@@ -21,13 +21,19 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// Regfile -> Issue Control
 	input regfile_t sr1_in, sr2_in, dest_in,
 
+	// Issue Control -> Fetch Unit
+	output logic stall,
 	// Issue Control -> Reservation Station
 	output lc3b_opcode res_op_in,
 	output logic [data_width-1:0] res_Vj, res_Vk,
-	output logic [tag_width-1:0] res_Qj, res_Qk, res_dest,
+	output logic [tag_width-1:0] res_Qj, res_Qk, 
+	output lc3b_rob_addr res_dest,
 	output logic issue_ld_busy_dest, issue_ld_Vj, issue_ld_Vk, issue_ld_Qk, issue_ld_Qj, issue_ld_validJ, issue_ld_validK,
 	output logic [2:0] res_station_id,
 	output logic  res_validJ, res_validK, // [valid J, valid K]
+	// Issue Control -> Load Buffer NOTE: res_Vj, res_Qj, and res_dest are all used for load buffer as well
+	output logic load_buf_write_enable,
+	output logic load_buf_offset,
  	// Issue Control -> ROB
 	output logic rob_write_enable,
 	output lc3b_opcode rob_opcode, 
@@ -43,6 +49,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 );
 
 lc3b_word sext5_out;
+lc3b_word adj6_out;
 
 lc3b_reg dest_reg;
 lc3b_opcode opcode;
@@ -62,6 +69,8 @@ assign dest_reg = instr[11:9];
 assign opcode = lc3b_opcode'(instr[15:12]);
 assign sr1 = instr[8:6];
 assign sr2 = instr[2:0];
+
+assign load_buf_offset = adj6_out;
 
 assign sr1_reg_busy = sr1_in.busy;
 assign sr2_reg_busy = sr2_in.busy;
@@ -83,8 +92,15 @@ sext #(.width(5)) sext5
 	.out(sext5_out)
 );
 
+adj #(.width(6)) adj6
+(
+	.in(instr[5:0]),
+	.out(adj6_out)
+);
+
 always_comb
 begin
+	stall = 0;
 	rob_opcode = op_br;
 	rob_dest = 0;
 	res_op_in = op_br;
@@ -92,9 +108,9 @@ begin
 	res_Vk = 0;
 	res_Qj = 0;
 	res_Qk = 0;
-	res_dest = 0;
 	res_validJ = 0;
 	res_validK = 0;
+	load_buf_write_enable = 0;
 	issue_ld_busy_dest = 0;
 	issue_ld_Vj = 0;
 	issue_ld_Vk = 0;
@@ -110,26 +126,28 @@ begin
 	ld_reg_busy_dest = 0;
 	reg_rob_entry = 0;
 	
-	if (rob_full || (alu_res1_busy && alu_res2_busy && alu_res3_busy) || !instr_is_new)
+	if (rob_full || 
+	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
+	(ld_buffer_full && opcode == op_ldr) ||
+	!instr_is_new)
 	begin
 		// STALL
+		stall = 1'b1;
 	end
 	else
-	begin
-		if (!alu_res1_busy)
-			res_station_id = 3'b000;
-		else if (!alu_res2_busy)
-			res_station_id = 3'b001;
-		else
-			res_station_id = 3'b010;
-			
+	begin	
 		case(opcode)
 			// ADD, AND, NOT
 			op_add, op_and, op_not:
 			begin
+				if (!alu_res1_busy)
+					res_station_id = 3'b000;
+				else if (!alu_res2_busy)
+					res_station_id = 3'b001;
+				else
+					res_station_id = 3'b010;
 				/*		RESERVATION STATION OUTPUTS 	*/
 				res_op_in = opcode;
-				res_dest = rob_addr;
 				issue_ld_busy_dest = 1'b1;
 				/* J */
 				if (sr1_reg_busy) // sr1_reg busy
@@ -208,7 +226,7 @@ begin
 				
 				/* ROB OUTPUTS */
 				rob_write_enable = 1'b1;
-				rob_opcode = opcode ;
+				rob_opcode = opcode;
 				rob_dest = dest_reg;
 				
 				/* REGFILE OUTPUTS */
@@ -216,6 +234,35 @@ begin
 				ld_reg_busy_dest = 1'b1;
 				reg_rob_entry = rob_addr;
 			end
+			
+			
+			// LDR
+			op_ldr:
+			begin
+				/* LOAD BUFFER OUTPUTS */
+				load_buf_write_enable = 1'b1;
+				if (sr1_reg_busy)	// J not ready
+				begin
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1)	// CDB has value for J
+						res_Vj = CDB_in.data;
+					else if (sr1_rob_valid) // ROB has value for J
+						res_Vj = sr1_rob_value;
+					else		// Wait for J value
+						res_Qj = sr1_rob_e;
+				end
+				
+				/* ROB OUTPUTS */
+				rob_write_enable = 1'b1;
+				rob_opcode = opcode;
+				rob_dest = dest_reg;
+				
+				/* REGFILE OUTPUTS */
+				reg_dest = dest_reg;
+				ld_reg_busy_dest = 1'b1;
+				reg_rob_entry = rob_addr;
+				
+			end
+			
 			default:;
 		endcase
 	end
