@@ -15,8 +15,7 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	
 	/* Inputs for the opcode, dest, valid, value and predict field */
 	input lc3b_opcode inst_in,	
-	input lc3b_reg dest_in,	
-	input logic valid_in,		
+	input lc3b_reg dest_in,			
 	input logic [data_width-1:0] value_in,	
 	input logic predict_in,		
 	
@@ -57,9 +56,11 @@ lc3b_opcode inst [2**tag_width-1:0];
 logic valid [2**tag_width - 1:0];
 logic predict [2**tag_width - 1:0];
 
+logic [tag_width : 0] cnt;
+
 /* Empty / full logic */
 assign empty = (r_addr == w_addr);
-assign full = (r_addr == w_addr + 3'b1);
+assign full = (cnt == 2**tag_width);
 
 /* Output values of the head of the FIFO */
 assign value_out = value[r_addr];
@@ -88,6 +89,7 @@ begin
 		inst[i] <= op_br;
 		valid[i] <= 0;
 		predict[i] <= 0;
+		cnt <= 0;
 	end
 end
 
@@ -101,6 +103,7 @@ begin: Write_logic
 		for (int i = 0; i < 2**tag_width; i++)
 			begin	
 				valid[i] <= 1'b0;
+				cnt <= 0;
 			end	
 	end
 	else
@@ -115,12 +118,11 @@ begin: Write_logic
 				inst[w_addr] <= inst_in;
 				valid[w_addr] <= 1'b0;
 				predict[w_addr] <= predict_in;
-				w_addr <= w_addr + 3'b1;
+				w_addr <= w_addr + 1'b1;
+				cnt <= cnt + 1'b1;
 			end
 		end		
-		else 
 		/* Write to the given address input  */
-		begin
 			if(ld_value)
 				value[addr_in] <= value_in;
 			if(ld_dest)
@@ -128,14 +130,15 @@ begin: Write_logic
 			if(ld_inst)
 				inst[addr_in] <= inst_in;
 			if(ld_valid)
-				valid[addr_in] <= valid_in;
+				valid[addr_in] <= 1'b1;
 			if(ld_predict)
 				predict[addr_in] <= predict_in;
-		end
+
 		/* If reading from the head of the tail, clear the valid bit */
 		if(RE)
 		begin
 			valid[r_addr] <= 1'b0;
+			cnt <= cnt - 1'b1;
 		end
 	end
 			

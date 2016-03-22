@@ -19,7 +19,7 @@ begin
     for (int i = 0; i < $size(data); i++)
     begin
 		  if(data_width == 16)
-				data[i] = $random() ; 
+				data[i] = (16'h1234 >> i) ; 
 		  else
 				data[i] = 0;
     end

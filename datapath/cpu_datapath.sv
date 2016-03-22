@@ -242,7 +242,8 @@ regfile regfile
 	.sr1_ic(sr1), .sr2_ic(sr2), .dest_ic(reg_dest),
 	.value_in(regfile_value_in),
 	
-	/******************************************************************************/
+	.sr1_rob,
+	.sr2_rob,
 	.dest_rob(rob_regfile_dest_in),
 
 	.sr1_out(sr1_regfile_out), .sr2_out(sr2_regfile_out), .dest_out(dest_regfile_out)

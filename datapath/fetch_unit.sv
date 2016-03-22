@@ -33,7 +33,7 @@ mux4 pcmux
 
 register pc
 (
-	.clk,
+	.clk, .clr(1'b0),
 	.load(load_pc),
 	.in(pcmux_out),
 	.out(pc_out)
@@ -41,7 +41,7 @@ register pc
 
 register ir
 (
-	.clk,
+	.clk, .clr(1'b0),
 	.load(load_ir),
 	.out(ir_out),
 	.in(imem_rdata)

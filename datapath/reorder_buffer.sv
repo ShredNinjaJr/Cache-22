@@ -25,7 +25,7 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	output logic [data_width - 1:0] value_out,
 	output logic predict_out,
 	/* Output if full */
-	output logic empty_out,
+	//output logic empty_out,
 	output logic full_out,
 	/* Non FIFO style read outputs */
 	output logic [data_width-1:0] sr1_value_out,
@@ -37,7 +37,7 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 
 lc3b_opcode inst_in;
 lc3b_reg dest_in; 
-logic valid_in;
+
 logic [data_width - 1: 0] value_in;
 logic predict_in;
 logic ld_value, ld_dest, ld_inst, ld_valid, ld_predict;
@@ -51,7 +51,6 @@ assign ld_dest = WE;
 assign dest_in = dest;
 
 assign ld_valid = (CDB_in.valid) ? 1'b1 : WE;
-assign valid_in = (WE) ? 1'b0 : (CDB_in.valid);
 
 assign ld_value = (CDB_in.valid) ? 1'b1 : WE; 
 assign value_in = (CDB_in.valid) ? CDB_in.data : value;
@@ -61,7 +60,7 @@ assign ld_predict = WE;
 
 assign addr_in = (CDB_in.valid) ? CDB_in.tag : addr;
 
-assign empty_out = empty;
+//assign empty_out = empty;
 assign full_out = full;
 
 reorder_buffer_data ROB (.*);
