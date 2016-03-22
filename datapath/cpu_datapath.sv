@@ -9,6 +9,7 @@ module cpu_datapath
 	input dmem_resp,
 	
 	output lc3b_word imem_address,
+	output lc3b_word dmem_address,
 	output logic imem_read,
 	output logic dmem_read,
 	output logic dmem_write
@@ -30,6 +31,9 @@ fetch_unit fetch_unit
 
 logic alu_RS_busy [0:2];
 
+/* Load Buffer -> Issue Control */
+logic ld_buffer_full;
+
 /* ROB -> Issue control */
 logic rob_full;
 lc3b_rob_addr rob_addr;
@@ -45,6 +49,10 @@ lc3b_word res_Vj, res_Vk;
 lc3b_rob_addr res_Qk, res_Qj, res_dest;
 logic issue_ld_busy_dest, issue_ld_Vj, issue_ld_Vk;
 logic issue_ld_Qk, issue_ld_Qj;
+
+/* Issue Control -> Load Buffer */
+logic load_buf_write_enable;
+lc3b_word load_buf_offset;
 
 /* Issue control -> ROB */
 logic rob_write_enable;
@@ -70,6 +78,7 @@ issue_control issue_control
 	.CDB_in(C_D_B),
 	// Reservation Station -> Issue Control
 	.alu_res1_busy(alu_RS_busy[0]), .alu_res2_busy(alu_RS_busy[1]), .alu_res3_busy(alu_RS_busy[2]),
+	.ld_buffer_full(ld_buffer_full),
 	// ROB -> Issue Control
 	.rob_full,
 	.rob_addr,
@@ -89,6 +98,9 @@ issue_control issue_control
 	.issue_ld_Qk, .issue_ld_Qj, 
 	.res_station_id,
 //	 logic  res_validJ, res_validK, // [valid J, valid K]
+	// Issue Control -> Load Buffer
+	.load_buf_write_enable(load_buf_write_enable),
+	.load_buf_offset(load_buf_offset),
  	// Issue Control -> ROB
 	.rob_write_enable,
 	.rob_opcode(rob_opcode_in), 
@@ -147,6 +159,7 @@ reorder_buffer reorder_buffer
 lc3b_reg rob_regfile_dest_in;
 lc3b_word regfile_value_in;
 logic ld_regfile_value, rob_ld_regfile_busy;
+logic ld_buf_valid_in;
 
 
 write_results_control wr_control
@@ -157,14 +170,23 @@ write_results_control wr_control
 	.dest_in(rob_dest_out),
 	.value_in(rob_value_out),
 
-	.dmem_resp,
-	.dmem_read,
-	.dmem_write,
+	/* From L1 - Cache */
+	.dmem_resp(dmem_resp),
+	.dmem_rdata(dmem_rdata), // To be dealt with later
+	
+	.ld_buf_valid_in(ld_buf_valid_in),
+	
+	
 	/* To regfile */
 	.dest_a(rob_regfile_dest_in),
 	.value_out(regfile_value_in),
 	.ld_regfile_value,
 	.ld_regfile_busy(rob_ld_regfile_busy),
+	
+	/* To L1- CACHE */
+	.dmem_read,
+	.dmem_write,
+	/* TO ROB */
 	.RE_out
 );
 
@@ -186,6 +208,24 @@ alu_RS_unit alu_RS
 	.CDB_out(C_D_B)
 );
 
+
+load_buffer load_buffer
+(
+	.clk,
+	/* From Issue Control */
+	.WE(load_buf_write_enable),
+	.flush(flush),
+	.Q_in(res_Qj),
+	.V(res_Vj),
+	.offset_in(load_buf_offset),
+	.dest_in(res_dest),
+	
+	.CDB_in(C_D_B),
+	.RE(RE_out),
+	.valid_out(ld_buf_valid_in),
+	.dmem_addr(dmem_address),	//?
+	.full(ld_buffer_full)
+);
 
 
 
@@ -210,4 +250,3 @@ regfile regfile
 
 
 endmodule: cpu_datapath
-

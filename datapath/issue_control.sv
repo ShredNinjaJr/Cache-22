@@ -33,7 +33,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output logic  res_validJ, res_validK, // [valid J, valid K]
 	// Issue Control -> Load Buffer NOTE: res_Vj, res_Qj, and res_dest are all used for load buffer as well
 	output logic load_buf_write_enable,
-	output logic load_buf_offset,
+	output lc3b_word load_buf_offset,
  	// Issue Control -> ROB
 	output logic rob_write_enable,
 	output lc3b_opcode rob_opcode, 

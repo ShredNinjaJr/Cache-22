@@ -9,6 +9,7 @@ module mp3
 	input dmem_resp,
 	
 	output lc3b_word imem_address,
+	output lc3b_word dmem_address,
 	output logic imem_read,
 	output logic dmem_read,
 	output logic dmem_write
