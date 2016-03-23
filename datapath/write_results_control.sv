@@ -10,9 +10,6 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	input lc3b_reg dest_in,
 	input [data_width - 1:0] value_in,
 	
-	/* From Load Buffer */
-	input ld_buf_valid_in,
-	
 	/* To Regfile */
 	output lc3b_reg dest_a,
 	output logic[data_width - 1: 0] value_out,
@@ -29,6 +26,9 @@ assign value_out = value_in;
 
 always_comb
 begin
+	ld_regfile_busy = 1'b00;
+	ld_regfile_value = 1'b00;
+	RE_out = 0;
 	if(valid_in)
 		begin
 			ld_regfile_busy = 1'b1;

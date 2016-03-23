@@ -171,12 +171,6 @@ write_results_control wr_control
 	.opcode_in(rob_opcode_out),
 	.dest_in(rob_dest_out),
 	.value_in(rob_value_out),
-
-	/* From L1 - Cache */
-	.dmem_resp(dmem_resp),
-	.dmem_rdata(dmem_rdata), // To be dealt with later
-	
-	.ld_buf_valid_in(ld_buf_valid_in),
 	
 	
 	/* To regfile */
@@ -185,9 +179,6 @@ write_results_control wr_control
 	.ld_regfile_value,
 	.ld_regfile_busy(rob_ld_regfile_busy),
 	
-	/* To L1- CACHE */
-	.dmem_read,
-	.dmem_write,
 	/* TO ROB */
 	.RE_out
 );
@@ -223,10 +214,14 @@ load_buffer load_buffer
 	.offset_in(load_buf_offset),
 	.dest_in(res_dest),
 	
+	.dmem_resp(dmem_resp),
+	.dmem_rdata(dmem_rdata),
+	
 	.CDB_in(C_D_B),
-	.RE(RE_out),
-	.valid_out(ld_buf_valid_in),
-	.dmem_addr(dmem_address),	//?
+	//.CDB_out(C_D_B),
+	
+	.dmem_addr(dmem_address),
+	.dmem_read(dmem_read),
 	.full(ld_buffer_full)
 );
 

@@ -36,7 +36,7 @@ logic RE;
 logic ld_mem_val;
 lc3b_word mem_val_in;
 logic mem_val_valid_out;
-logic mem_val_out;
+lc3b_word mem_val_out;
 
 logic ld_V;
 logic [data_width - 1: 0] V_in;
