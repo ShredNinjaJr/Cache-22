@@ -32,6 +32,7 @@ module load_buffer_data #(parameter data_width = 16, parameter entries_addr = 2)
 	output lc3b_reg Q_out0, Q_out1, Q_out2, Q_out3,
 	output [data_width-1:0] V_out,
 	output [data_width-1:0] offset_out,
+	output lc3b_word mem_val_out,
 	output logic mem_val_valid_out,
 	
 	output lc3b_rob_addr dest_out,
@@ -65,6 +66,7 @@ assign Q_out3 = Q[2'b11];
 assign V_out = V[r_addr];
 assign offset_out = offset[r_addr];
 assign dest_out = dest_out[r_addr];
+assign mem_val_out = mem_val[r_addr];
 assign mem_val_valid_out = mem_val_valid[r_addr];
 
 /* Clear the buffer initially */
