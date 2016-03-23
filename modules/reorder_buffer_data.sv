@@ -59,7 +59,7 @@ logic predict [2**tag_width - 1:0];
 logic [tag_width : 0] cnt;
 
 /* Empty / full logic */
-assign empty = (r_addr == w_addr);
+assign empty = (cnt == 0);
 assign full = (cnt == 2**tag_width);
 
 /* Output values of the head of the FIFO */
@@ -125,14 +125,8 @@ begin: Write_logic
 		/* Write to the given address input  */
 			if(ld_value)
 				value[addr_in] <= value_in;
-			if(ld_dest)
-				dest[addr_in] <= dest_in;
-			if(ld_inst)
-				inst[addr_in] <= inst_in;
 			if(ld_valid)
 				valid[addr_in] <= 1'b1;
-			if(ld_predict)
-				predict[addr_in] <= predict_in;
 
 		/* If reading from the head of the tail, clear the valid bit */
 		if(RE)

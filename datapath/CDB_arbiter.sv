@@ -23,33 +23,37 @@ priority_encoder pri_en
 );
 always_ff@(posedge clk)
 begin
-	
+	CDB_out <= 0;
+
 	if(pri_en_valid)
 	begin
 		case(pri_en_out)
 		3'b0, 3'b1, 3'b10:begin
 		CDB_out <= RS_CDB_in[pri_en_out];
-		RS_flush[pri_en_out] <= 1;
 		end
-		default:begin
-		CDB_out <= 0;
-		for(i = 0; i <= n; i++)
-			RS_flush[i] <= 0;
-		end
+		default:	CDB_out <= 0;
 		endcase
-		
 	end
 	else
 	begin
 		CDB_out <= 0;
-		for(i = 0; i <= n; i++)
-			RS_flush[i] <= 0;
 	end
 end
 
 always_comb
 begin
-	;
+	for(i = 0; i <= n; i++)
+		RS_flush[i] = 0;
+	
+	if(pri_en_valid)
+	begin
+		case(pri_en_out)
+		3'b0, 3'b1, 3'b10:begin
+		RS_flush[pri_en_out] = 1'b1;
+		end
+		default:	;
+		endcase
+	end
 end
 
 
