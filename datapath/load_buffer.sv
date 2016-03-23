@@ -16,6 +16,7 @@ module load_buffer #(parameter data_width = 16, parameter entries_addr = 2)
 	
 	/* CDB */
 	input CDB CDB_in,
+	output CDB CDB_out,
 		
 	/* To Dcache */
 	output lc3b_word dmem_addr,
@@ -70,5 +71,9 @@ assign ld_mem_val = dmem_resp;
 assign mem_val_in = dmem_rdata;
 
 assign RE = mem_val_valid_out;
+
+assign CDB_out.valid = mem_val_valid_out;
+assign CDB_out.tag = dest_out;
+assign CDB_out.data = mem_val_out;
 
 endmodule : load_buffer
