@@ -17,6 +17,7 @@ module cpu_datapath
 
 CDB C_D_B;
 logic flush = 0;
+logic bit5;
 lc3b_word ir_out, pc_out;
 
 /**********************************************CHANGE PCMUX_SEL *****************************/
@@ -97,6 +98,7 @@ issue_control issue_control
 	.issue_ld_busy_dest, .issue_ld_Vj, .issue_ld_Vk, 
 	.issue_ld_Qk, .issue_ld_Qj, 
 	.res_station_id,
+	.bit5,
 //	 logic  res_validJ, res_validK, // [valid J, valid K]
 	// Issue Control -> Load Buffer
 	.load_buf_write_enable(load_buf_write_enable),
@@ -199,6 +201,7 @@ alu_RS_unit alu_RS
 	.flush(flush),
 	.op_in(res_op_in),
 	.CDB_in(C_D_B),
+	.bit5,
 	.res_station_id,
 	.Vj(res_Vj), .Vk(res_Vk),
 	.Qj(res_Qj), .Qk(res_Qk), .dest(res_dest),

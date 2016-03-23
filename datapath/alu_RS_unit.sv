@@ -4,6 +4,7 @@ module alu_RS_unit #(parameter data_width = 16, parameter tag_width = 3, paramet
 (
 	input clk, flush,
 	input lc3b_opcode op_in,
+	input bit5,
 	input CDB CDB_in,
 	//CDBout
 	input [data_width-1:0] Vj, Vk,
@@ -40,6 +41,7 @@ begin: RS_generate
 		.flush(RS_flush[i]),
 		.op_in(op_in),
 		.CDB_in(CDB_in),
+		.bit5,
 		.Vj, .Vk, .Qj, .Qk, .dest,
 		.ld_busy(RS_ld_busy[i]),
 		.issue_ld_Vj(RS_issue_ld_Vj[i]),
