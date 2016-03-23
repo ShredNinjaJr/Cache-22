@@ -17,7 +17,7 @@ logic [2:0] pri_en_out;
 priority_encoder pri_en
 (
   .binary_out(pri_en_out) , //  3 bit binary output
-  .in({5'b0, RS_CDB_in[2].valid, RS_CDB_in[1].valid, RS_CDB_in[0].valid}) , //  8-bit input 
+  .in({4'b0,RS_CDB_in[3].valid, RS_CDB_in[2].valid, RS_CDB_in[1].valid, RS_CDB_in[0].valid}) , //  8-bit input 
   .enable(1'b1),
   .V(pri_en_valid)			/* Valid output */
 );
@@ -28,7 +28,7 @@ begin
 	if(pri_en_valid)
 	begin
 		case(pri_en_out)
-		3'b0, 3'b1, 3'b10:begin
+		3'b0, 3'b1, 3'b10, 3'b11:begin
 		CDB_out <= RS_CDB_in[pri_en_out];
 		end
 		default:	CDB_out <= 0;
@@ -48,7 +48,7 @@ begin
 	if(pri_en_valid)
 	begin
 		case(pri_en_out)
-		3'b0, 3'b1, 3'b10:begin
+		3'b0, 3'b1, 3'b10, 3'b11:begin
 		RS_flush[pri_en_out] = 1'b1;
 		end
 		default:	;

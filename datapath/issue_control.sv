@@ -33,6 +33,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// Issue Control -> Load Buffer NOTE: res_Vj, res_Qj, and res_dest are all used for load buffer as well
 	output logic load_buf_write_enable,
 	output lc3b_word load_buf_offset,
+	output logic load_buf_valid_in,
  	// Issue Control -> ROB
 	output logic rob_write_enable,
 	output lc3b_opcode rob_opcode, 
@@ -122,6 +123,7 @@ begin
 	reg_dest = 0;
 	ld_reg_busy_dest = 0;
 	reg_rob_entry = 0;
+	load_buf_valid_in = 0;
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
@@ -220,6 +222,7 @@ begin
 			begin
 				/* LOAD BUFFER OUTPUTS */
 				load_buf_write_enable = 1'b1;
+				load_buf_valid_in = 1'b1;
 				if (sr1_reg_busy)	// J not ready
 				begin
 					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1)	// CDB has value for J
@@ -227,7 +230,10 @@ begin
 					else if (sr1_rob_valid) // ROB has value for J
 						res_Vj = sr1_rob_value;
 					else		// Wait for J value
+					begin
 						res_Qj = sr1_rob_e;
+						load_buf_valid_in = 1'b0;
+					end
 				end
 				
 				/* ROB OUTPUTS */

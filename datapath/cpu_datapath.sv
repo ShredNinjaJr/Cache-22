@@ -16,9 +16,12 @@ module cpu_datapath
 );
 
 CDB C_D_B;
+CDB load_buffer_CDB_out;
 logic flush = 0;
 logic bit5;
 lc3b_word ir_out, pc_out;
+
+logic ld_buf_valid_in;
 
 /**********************************************CHANGE PCMUX_SEL *****************************/
 fetch_unit fetch_unit
@@ -103,6 +106,7 @@ issue_control issue_control
 	// Issue Control -> Load Buffer
 	.load_buf_write_enable(load_buf_write_enable),
 	.load_buf_offset(load_buf_offset),
+	.load_buf_valid_in(ld_buf_valid_in),
  	// Issue Control -> ROB
 	.rob_write_enable,
 	.rob_opcode(rob_opcode_in), 
@@ -161,7 +165,7 @@ reorder_buffer reorder_buffer
 lc3b_reg rob_regfile_dest_in;
 lc3b_word regfile_value_in;
 logic ld_regfile_value, rob_ld_regfile_busy;
-logic ld_buf_valid_in;
+
 
 
 write_results_control wr_control
@@ -184,7 +188,7 @@ write_results_control wr_control
 );
 
 
-
+logic ld_buffer_flush;
 
 alu_RS_unit alu_RS
 (
@@ -193,6 +197,8 @@ alu_RS_unit alu_RS
 	.op_in(res_op_in),
 	.CDB_in(C_D_B),
 	.bit5,
+	.load_buffer_CDB_out,
+	.ld_buffer_flush,
 	.res_station_id,
 	.Vj(res_Vj), .Vk(res_Vk),
 	.Qj(res_Qj), .Qk(res_Qk), .dest(res_dest),
@@ -209,16 +215,17 @@ load_buffer load_buffer
 	/* From Issue Control */
 	.WE(load_buf_write_enable),
 	.flush(flush),
+	.ld_buffer_read(ld_buffer_flush),
 	.Q_in(res_Qj),
 	.V(res_Vj),
 	.offset_in(load_buf_offset),
 	.dest_in(res_dest),
-	
+	.valid_in(ld_buf_valid_in),
 	.dmem_resp(dmem_resp),
 	.dmem_rdata(dmem_rdata),
 	
 	.CDB_in(C_D_B),
-	//.CDB_out(C_D_B),
+	.CDB_out(load_buffer_CDB_out),
 	
 	.dmem_addr(dmem_address),
 	.dmem_read(dmem_read),

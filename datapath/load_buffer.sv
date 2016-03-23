@@ -10,9 +10,11 @@ module load_buffer #(parameter data_width = 16, parameter entries_addr = 2)
 	input [data_width - 1:0] V,
 	input [data_width - 1:0] offset_in,
 	input lc3b_rob_addr dest_in,
-	
+	input valid_in,
+	input ld_buffer_read,
 	/* From Dcache */
-	input logic dmem_resp, dmem_rdata,
+	input logic dmem_resp, 
+	input lc3b_word dmem_rdata,
 	
 	/* CDB */
 	input CDB CDB_in,
@@ -41,8 +43,7 @@ lc3b_word mem_val_out;
 logic ld_V;
 logic [data_width - 1: 0] V_in;
 
-logic ld_valid;
-logic valid_in;
+
 logic valid_out;
 
 logic [data_width - 1: 0] V_out;
@@ -52,9 +53,6 @@ lc3b_reg Q_out0, Q_out1, Q_out2, Q_out3;
 logic [1:0] addr_in;
 
 /* Handling of Input Signals from CDB and Issue Control*/
-assign ld_valid = (CDB_in.valid) ? 1'b1 : WE;
-assign valid_in = (WE) ? 1'b0 : (CDB_in.valid);
-
 assign ld_V = (CDB_in.valid) ? 1'b1 : WE; 
 assign V_in = (WE) ? V : (CDB_in.data);
 
@@ -71,7 +69,7 @@ assign ld_mem_val = dmem_resp;
 
 assign mem_val_in = dmem_rdata;
 
-assign RE = mem_val_valid_out;
+assign RE = ld_buffer_read;
 
 assign CDB_out.valid = mem_val_valid_out;
 assign CDB_out.tag = dest_out;

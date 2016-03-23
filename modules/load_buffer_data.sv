@@ -17,7 +17,6 @@ module load_buffer_data #(parameter data_width = 16, parameter entries_addr = 2)
 (
 	input clk, WE, RE, flush,
 	
-	input valid_in,
 	input lc3b_reg Q_in,
 	input [data_width - 1:0] V_in,
 	input [data_width - 1:0] offset_in, 
@@ -26,8 +25,8 @@ module load_buffer_data #(parameter data_width = 16, parameter entries_addr = 2)
 
 	input [entries_addr - 1:0] addr_in, //For writing valid and  value  entries
 
-	input logic ld_valid, ld_V, ld_mem_val,
-	
+	input ld_V, ld_mem_val,
+	input valid_in, 
 	output logic valid_out,
 	output lc3b_reg Q_out0, Q_out1, Q_out2, Q_out3,
 	output [data_width-1:0] V_out,
@@ -65,7 +64,7 @@ assign Q_out3 = Q[2'b11];
 
 assign V_out = V[r_addr];
 assign offset_out = offset[r_addr];
-assign dest_out = dest_out[r_addr];
+assign dest_out = dest[r_addr];
 assign mem_val_out = mem_val[r_addr];
 assign mem_val_valid_out = mem_val_valid[r_addr];
 
@@ -104,7 +103,7 @@ begin
 		begin: Write
 			if(~full)
 			begin
-				valid[w_addr] <= 1'b0;
+				valid[w_addr] <= valid_in;
 				Q[w_addr] <= Q_in;
 				V[w_addr] <= V_in;
 				offset[w_addr] <= offset_in;
@@ -117,14 +116,15 @@ begin
 		else 
 		/* Write to the given address input  */
 		begin
-			if(ld_valid)
-				valid[addr_in] <= valid_in;
 			if(ld_V)
+			begin
+				valid[addr_in] <= 1'b1;
 				V[addr_in] <= V_in;
+			end
 			if(ld_mem_val)
 				begin
-				mem_val[r_addr] <= mem_val_in;
-				mem_val_valid[r_addr] <= 1'b1;
+					mem_val[r_addr] <= mem_val_in;
+					mem_val_valid[r_addr] <= 1'b1;
 				end
 		end
 		/* If reading from the head of the tail, clear the valid bit */
