@@ -3,7 +3,7 @@ import lc3b_types::*;
 module alu_res_station #(parameter data_width = 16, parameter tag_width = 3)
 (
 	input clk, flush,
-	input lc3b_word instr,
+	input bit5,
 	input lc3b_opcode op_in,
 	input CDB CDB_in,
 	//CDBout
@@ -58,8 +58,8 @@ always_ff@(posedge clk)
 begin
 	if(ld_op)
 	begin
-		A <= instr[5];
-		D <= instr[4];
+		A <= bit5;
+		D <= Vk[15];
 	end
 end
 

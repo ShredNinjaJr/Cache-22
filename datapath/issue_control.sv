@@ -43,10 +43,12 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output logic ld_reg_busy_dest,
 	output lc3b_rob_addr reg_rob_entry,
 	output [tag_width-1:0] rob_sr1_read_addr,
-	output [tag_width-1:0] rob_sr2_read_addr
+	output [tag_width-1:0] rob_sr2_read_addr,
+	output logic bit5
 
 );
 
+assign bit5 = instr[5];
 lc3b_word sext5_out;
 lc3b_word adj6_out;
 
@@ -133,7 +135,7 @@ begin
 	begin	
 		case(opcode)
 			// ADD, AND, NOT
-			op_add, op_and, op_not:
+			op_add, op_and, op_not, op_shf:
 			begin
 				if (!alu_res1_busy)
 					res_station_id = 3'b000;
@@ -169,7 +171,7 @@ begin
 					issue_ld_Vj = 1'b1;
 				end
 				/* K */
-				if (instr[5])	// Immediate
+				if (instr[5] || ( opcode == op_shf))	// Immediate
 				begin
 					res_Vk = sext5_out;
 					issue_ld_Vk = 1'b1;
