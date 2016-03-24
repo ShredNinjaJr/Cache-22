@@ -52,7 +52,7 @@ logic dmem_resp;
 logic dmem_read;
 logic dmem_write;
 
-mp3 dut
+cpu_datapath dut
 (
 	.*
 );
