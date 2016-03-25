@@ -116,7 +116,12 @@ begin: Write_logic
 				value[w_addr] <= value_in;
 				dest[w_addr] <= dest_in;
 				inst[w_addr] <= inst_in;
-				valid[w_addr] <= 1'b0;
+				/* Based on instr load valid */
+				case(inst_in)
+					op_br, op_lea: valid[w_addr] <= 1'b1;
+					default: valid[w_addr] <= 1'b0;
+				endcase
+				
 				predict[w_addr] <= predict_in;
 				w_addr <= w_addr + 1'b1;
 				cnt <= cnt + 1'b1;

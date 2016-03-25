@@ -1,4 +1,3 @@
-import lc3b_types::*;
 
 module array #(parameter width = 128, parameter index_width)
 (

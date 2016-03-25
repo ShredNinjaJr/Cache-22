@@ -42,7 +42,7 @@ begin: RS_generate
 	alu_res_station RS
 	(
 		.clk,
-		.flush(RS_flush[i]),
+		.flush(RS_flush[i] | flush),
 		.op_in(op_in),
 		.CDB_in(CDB_in),
 		.bit5,

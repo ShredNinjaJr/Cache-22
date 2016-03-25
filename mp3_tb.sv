@@ -51,6 +51,7 @@ logic [15:0] dmem_wdata;
 logic dmem_resp;
 logic dmem_read;
 logic dmem_write;
+logic [1:0] dmem_byte_enable;
 
 cpu_datapath dut
 (
@@ -65,13 +66,16 @@ magic_memory_dp memory
 	.address_a(imem_address),
 	.resp_a(imem_resp),
 	.rdata_a(imem_rdata),
+	.wdata_a(2'bX),
+	.wmask_a(2'bXX),
 	
 	.read_b(dmem_read),
 	.write_b(dmem_write),
 	.address_b(dmem_address),
 	.wdata_b(dmem_wdata),
 	.resp_b(dmem_resp),
-	.rdata_b(dmem_rdata)
+	.rdata_b(dmem_rdata),
+	.wmask_b(dmem_byte_enable)
 	
 );
 

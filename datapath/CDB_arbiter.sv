@@ -13,6 +13,10 @@ byte unsigned i; /* Loop variable */
 logic pri_en_valid;
 logic [2:0] pri_en_out;
 
+initial
+begin
+	CDB_out = 0;
+end
 /* priority encoder to determine who gets the bus */
 priority_encoder pri_en
 (

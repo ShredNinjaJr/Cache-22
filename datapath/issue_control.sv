@@ -21,10 +21,12 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// Regfile -> Issue Control
 	input regfile_t sr1_in, sr2_in, dest_in,
 	// Prediction Unit -> Issue Control
-	input predit_bit,
+	input predict_bit,
 
 	// Issue Control -> Fetch Unit
 	output logic stall,
+	output logic pcmux_sel,
+	output lc3b_word br_pc,
 	// Issue Control -> Reservation Station
 	output lc3b_opcode res_op_in,
 	output logic [data_width-1:0] res_Vj, res_Vk,
@@ -52,9 +54,12 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 );
 
 assign bit5 = instr[5];
+
 lc3b_word sext5_out;
 lc3b_word adj6_out;
 lc3b_word adj9_out;
+
+assign br_pc = curr_pc + adj9_out;
 
 lc3b_reg dest_reg;
 lc3b_opcode opcode;
@@ -133,6 +138,7 @@ begin
 	ld_reg_busy_dest = 0;
 	reg_rob_entry = 0;
 	load_buf_valid_in = 0;
+	pcmux_sel = 0;
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
@@ -263,10 +269,16 @@ begin
 			begin
 				rob_write_enable = 1'b1;
 				rob_opcode = opcode;
-				if (predit_bit)
+				if (predict_bit)
+				begin
 					rob_value_in = curr_pc;
+					pcmux_sel = 1'b1;
+				end
 				else
-					rob_value_in = curr_pc + adj9_out;
+				begin
+					rob_value_in = br_pc;
+				end
+
 			end
 			
 			// LEA Only uses ROB

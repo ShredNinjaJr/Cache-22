@@ -50,9 +50,10 @@ assign inst_in = inst;
 assign ld_dest = WE;
 assign dest_in = dest;
 
-assign ld_valid = (CDB_in.valid) ? 1'b1 : WE;
+assign ld_value = (CDB_in.valid) ? 1'b1 : WE;
 
-assign ld_value = (CDB_in.valid) ? 1'b1 : WE; 
+assign ld_valid = ld_value;
+ 
 assign value_in = (CDB_in.valid) ? CDB_in.data : value;
 
 assign predict_in = predict;

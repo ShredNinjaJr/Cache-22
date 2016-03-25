@@ -12,23 +12,30 @@ module cpu_datapath
 	output lc3b_word dmem_address,
 	output logic imem_read,
 	output logic dmem_read,
-	output logic dmem_write
+	output logic dmem_write,
+	output lc3b_mem_wmask dmem_byte_enable
 );
 
 CDB C_D_B;
 CDB load_buffer_CDB_out;
-logic flush = 0;
+logic flush;
 logic bit5;
 lc3b_word ir_out, pc_out;
 
 logic ld_buf_valid_in;
 
-/**********************************************CHANGE PCMUX_SEL *****************************/
+logic [1:0] pcmux_sel;
+lc3b_word new_pc;
+lc3b_word br_pc;
+logic stall;
+
 fetch_unit fetch_unit
 (
 	.clk,
 	.imem_rdata, .imem_read, .imem_address, .imem_resp,
-	.pcmux_sel(2'b0), .ir_out, .pc_out	
+	.stall,
+	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc
+	
 );
 
 /* Reservation station -> Issue Control */
@@ -71,12 +78,15 @@ lc3b_rob_addr reg_rob_entry;
 lc3b_rob_addr rob_sr1_read_addr, rob_sr2_read_addr;
 logic [2:0] res_station_id;
 
+/* Branch prediction */
+logic br_predict = 1'b1;
+
 issue_control issue_control
 (
 	.clk,
 	// Fetch -> Issue Controlj
 	.instr(ir_out),
-	.instr_is_new(1'b1),
+	.instr_is_new(imem_resp),
 	.curr_pc(pc_out),
 	// CDB -> Issue Control
 	.CDB_in(C_D_B),
@@ -93,6 +103,9 @@ issue_control issue_control
 	// Regfile -> Issue Control
 	.sr1_in(sr1_regfile_out), .sr2_in(sr2_regfile_out),
    	.dest_in(dest_regfile_out),
+	
+	/* prediction unit -> Issue control */
+	.predict_bit(br_predict),
 
 	// Issue Control -> Reservation Station
 	.res_op_in,
@@ -117,7 +130,10 @@ issue_control issue_control
 	.ld_reg_busy_dest,
 	.reg_rob_entry,
 	.rob_sr1_read_addr,
-	.rob_sr2_read_addr
+	.rob_sr2_read_addr,
+	
+	/* Issue Control -> Fetch Unit */
+	.stall, .pcmux_sel(pcmux_sel[0]), .br_pc
 
 );
 
@@ -127,6 +143,7 @@ logic rob_valid_out;
 lc3b_opcode rob_opcode_out;
 lc3b_reg rob_dest_out;
 lc3b_word rob_value_out;
+logic rob_predict_out;
 
 reorder_buffer reorder_buffer
 (
@@ -138,7 +155,7 @@ reorder_buffer reorder_buffer
 	.inst(rob_opcode_in),
 	.dest(rob_dest_in),
 	.value(rob_value_in),
-	.predict(1'b1),
+	.predict(br_predict),
 	//.addr(rob_	
 	.CDB_in(C_D_B),
 
@@ -151,7 +168,7 @@ reorder_buffer reorder_buffer
 	.inst_out(rob_opcode_out),
 	.dest_out(rob_dest_out),
 	.value_out(rob_value_out),
-//	.predict_out)
+	.predict_out(rob_predict_out),
 	
 	.full_out(rob_full),
 
@@ -175,6 +192,7 @@ write_results_control wr_control
 	.opcode_in(rob_opcode_out),
 	.dest_in(rob_dest_out),
 	.value_in(rob_value_out),
+	.predict_in(rob_predict_out),
 	
 	
 	/* To regfile */
@@ -184,7 +202,14 @@ write_results_control wr_control
 	.ld_regfile_busy(rob_ld_regfile_busy),
 	
 	/* TO ROB */
-	.RE_out
+	.RE_out,
+	
+	/* TO DATAPATH */
+	.flush,
+	/* To fetch Unit */
+	.new_pc, .pcmux_sel(pcmux_sel[1])
+	
+	
 );
 
 

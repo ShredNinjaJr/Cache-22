@@ -6,6 +6,9 @@ module fetch_unit
 	input lc3b_word imem_rdata,
 	input imem_resp,
 	input [1:0] pcmux_sel,
+	input lc3b_word new_pc, br_pc,
+	input stall, 
+	
 	output imem_read,
 	output lc3b_word imem_address,
 	output lc3b_word ir_out,
@@ -15,8 +18,8 @@ module fetch_unit
 lc3b_word pc_plus2_out;
 
 logic load_pc, load_ir;
-assign load_pc = imem_resp;
-assign load_ir = imem_resp;
+assign load_pc = imem_resp & ~stall;
+assign load_ir = imem_resp & ~stall;
 assign imem_address = pc_out; 
 assign imem_read = 1;
 lc3b_word pcmux_out;
@@ -27,7 +30,8 @@ mux4 pcmux
 (
 	.sel(pcmux_sel),
 	.a(pc_plus2_out),
-
+	.b(br_pc),
+	.c(new_pc), .d(new_pc),
 	.f(pcmux_out)
 );
 
