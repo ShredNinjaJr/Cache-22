@@ -20,6 +20,8 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input logic rob_sr2_valid_out,
 	// Regfile -> Issue Control
 	input regfile_t sr1_in, sr2_in, dest_in,
+	// Prediction Unit -> Issue Control
+	input predit_bit,
 
 	// Issue Control -> Fetch Unit
 	output logic stall,
@@ -52,6 +54,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 assign bit5 = instr[5];
 lc3b_word sext5_out;
 lc3b_word adj6_out;
+lc3b_word adj9_out;
 
 lc3b_reg dest_reg;
 lc3b_opcode opcode;
@@ -100,6 +103,12 @@ adj #(.width(6)) adj6
 	.out(adj6_out)
 );
 
+adj #(.width(9)) adj9
+(
+	.in(instr[8:0]),
+	.out(adj9_out)
+);
+
 always_comb
 begin
 	stall = 0;
@@ -136,7 +145,7 @@ begin
 	else
 	begin	
 		case(opcode)
-			// ADD, AND, NOT
+			// ADD, AND, NOT, SHF
 			op_add, op_and, op_not, op_shf:
 			begin
 				if (!alu_res1_busy)
@@ -217,8 +226,8 @@ begin
 			end
 			
 			
-			// LDR
-			op_ldr:
+			// LDR, STR
+			op_ldr:  // op_str, op_ldb, op_stb:
 			begin
 				/* LOAD BUFFER OUTPUTS */
 				load_buf_write_enable = 1'b1;
@@ -246,6 +255,32 @@ begin
 				ld_reg_busy_dest = 1'b1;
 				reg_rob_entry = rob_addr;
 				
+			end
+			
+			
+			// BR
+			op_br:
+			begin
+				rob_write_enable = 1'b1;
+				rob_opcode = opcode;
+				if (predit_bit)
+					rob_value_in = curr_pc;
+				else
+					rob_value_in = curr_pc + adj9_out;
+			end
+			
+			// LEA Only uses ROB
+			op_lea:
+			begin
+				rob_write_enable = 1'b1;
+				rob_opcode = opcode;
+				rob_value_in = curr_pc + adj9_out;
+				rob_dest = dest_reg;
+			end
+			
+			// JMP Will stall
+			op_jmp:
+			begin
 			end
 			
 			default:;
