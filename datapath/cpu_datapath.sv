@@ -81,12 +81,19 @@ logic [2:0] res_station_id;
 /* Branch prediction */
 logic br_predict = 1'b1;
 
+logic instr_is_new;
+initial instr_is_new = 0;
+always_ff@ (posedge clk)
+begin
+	instr_is_new <= imem_resp;
+end
+
 issue_control issue_control
 (
-	.clk,
+	.clk, .flush, 
 	// Fetch -> Issue Controlj
 	.instr(ir_out),
-	.instr_is_new(imem_resp),
+	.instr_is_new,
 	.curr_pc(pc_out),
 	// CDB -> Issue Control
 	.CDB_in(C_D_B),
@@ -144,6 +151,7 @@ lc3b_opcode rob_opcode_out;
 lc3b_reg rob_dest_out;
 lc3b_word rob_value_out;
 logic rob_predict_out;
+logic rob_empty;
 
 reorder_buffer reorder_buffer
 (
@@ -171,6 +179,7 @@ reorder_buffer reorder_buffer
 	.predict_out(rob_predict_out),
 	
 	.full_out(rob_full),
+	.empty_out(rob_empty),
 
 	.sr1_value_out(rob_sr1_value_out),
 	.sr2_value_out(rob_sr2_value_out),
@@ -193,7 +202,7 @@ write_results_control wr_control
 	.dest_in(rob_dest_out),
 	.value_in(rob_value_out),
 	.predict_in(rob_predict_out),
-	
+	.rob_empty,
 	
 	/* To regfile */
 	.dest_a(rob_regfile_dest_in),

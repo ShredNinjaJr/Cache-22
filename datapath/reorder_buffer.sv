@@ -25,7 +25,7 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	output logic [data_width - 1:0] value_out,
 	output logic predict_out,
 	/* Output if full */
-	//output logic empty_out,
+	output logic empty_out,
 	output logic full_out,
 	/* Non FIFO style read outputs */
 	output logic [data_width-1:0] sr1_value_out,
@@ -61,7 +61,7 @@ assign ld_predict = WE;
 
 assign addr_in = (CDB_in.valid) ? CDB_in.tag : addr;
 
-//assign empty_out = empty;
+assign empty_out = empty;
 assign full_out = full;
 
 reorder_buffer_data ROB (.*);

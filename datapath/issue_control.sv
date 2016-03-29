@@ -2,7 +2,7 @@ import lc3b_types::*;
 
 module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 (
-	input clk,
+	input clk, flush,
 	// Fetch -> Issue Control
 	input lc3b_word instr,
 	input instr_is_new,
@@ -143,10 +143,11 @@ begin
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
 	(ld_buffer_full && opcode == op_ldr) ||
-	!instr_is_new)
+	!instr_is_new || flush)
 	begin
 		// STALL
-		stall = 1'b1;
+		if(instr_is_new)
+			stall = 1'b1;
 	end
 	else
 	begin	
@@ -269,6 +270,7 @@ begin
 			begin
 				rob_write_enable = 1'b1;
 				rob_opcode = opcode;
+				rob_dest = dest_reg;
 				if (predict_bit)
 				begin
 					rob_value_in = curr_pc;

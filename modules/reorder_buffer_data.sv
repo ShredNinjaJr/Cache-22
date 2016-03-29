@@ -103,7 +103,6 @@ begin: Write_logic
 		for (int i = 0; i < 2**tag_width; i++)
 			begin	
 				valid[i] <= 1'b0;
-				cnt <= 0;
 			end	
 	end
 	else
@@ -124,7 +123,6 @@ begin: Write_logic
 				
 				predict[w_addr] <= predict_in;
 				w_addr <= w_addr + 1'b1;
-				cnt <= cnt + 1'b1;
 			end
 		end		
 		/* Write to the given address input  */
@@ -137,10 +135,24 @@ begin: Write_logic
 		if(RE)
 		begin
 			valid[r_addr] <= 1'b0;
-			cnt <= cnt - 1'b1;
+		end
+	end	
+end
+
+always_ff @( posedge clk)
+begin: count_logic
+	if(flush)
+		cnt <= 0;
+	else
+	begin
+		if(RE & ~WE)
+			cnt <= cnt - 4'b1;
+		else if(WE & ~RE)
+		begin
+			if(~full)
+				cnt <= cnt + 4'b1;
 		end
 	end
-			
 end
 
 always_ff @ ( posedge clk)

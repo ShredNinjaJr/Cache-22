@@ -10,6 +10,7 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	input lc3b_reg dest_in,
 	input [data_width - 1:0] value_in,
 	input predict_in,
+	input rob_empty,
 	
 	/* To Regfile */
 	output lc3b_reg dest_a,
@@ -59,14 +60,15 @@ cccomp cccomp (.cc_in(cc_out), .dest(dest_in), .branch_enable);
 
 
 
+
 always_comb
 begin
 	ld_regfile_busy = 1'b0;
 	ld_regfile_value = 1'b0;
 	ld_cc = 0;
 	RE_out = 0;
-	flush = 0;
 	pcmux_sel = 0;
+	flush = 0;
 	if(valid_in)
 	begin
 		case(opcode_in)
@@ -75,9 +77,10 @@ begin
 			 * the datapath if the branch was mispredicted */
 			 if(branch_enable != predict_in)
 			 begin
-				flush = 1'b1;
 				pcmux_sel = 1'b1;
+				flush = 1'b1;
 			 end
+			 RE_out = 1'b1;
 		end 
 		op_add, op_and, op_not, op_shf, op_lea: begin
 			ld_regfile_busy = 1'b1;
