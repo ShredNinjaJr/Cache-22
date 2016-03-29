@@ -1,5 +1,17 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
+add wave -noupdate /mp3_tb/clk
+add wave -noupdate /mp3_tb/imem_resp
+add wave -noupdate /mp3_tb/imem_read
+add wave -noupdate /mp3_tb/imem_address
+add wave -noupdate /mp3_tb/imem_rdata
+add wave -noupdate /mp3_tb/dmem_address
+add wave -noupdate /mp3_tb/dmem_rdata
+add wave -noupdate /mp3_tb/dmem_wdata
+add wave -noupdate /mp3_tb/dmem_resp
+add wave -noupdate /mp3_tb/dmem_read
+add wave -noupdate /mp3_tb/dmem_write
+add wave -noupdate /mp3_tb/dmem_byte_enable
 add wave -noupdate /mp3_tb/dut/pc_out
 add wave -noupdate -expand /mp3_tb/dut/regfile/value_reg/data
 add wave -noupdate /mp3_tb/dut/ir_out
@@ -75,6 +87,8 @@ add wave -noupdate /mp3_tb/dut/wr_control/ld_cc
 add wave -noupdate /mp3_tb/dut/wr_control/gencc_out
 add wave -noupdate /mp3_tb/dut/wr_control/cc_out
 add wave -noupdate /mp3_tb/dut/wr_control/branch_enable
+add wave -noupdate /mp3_tb/dut/wr_control/cccomp/cc_in
+add wave -noupdate /mp3_tb/dut/wr_control/cccomp/dest
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/inst_out
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/dest_out
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/valid_out
@@ -101,7 +115,7 @@ add wave -noupdate /mp3_tb/dut/wr_control/rob_empty
 add wave -noupdate /mp3_tb/dut/reorder_buffer/flush
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/full
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {23573 ps} 0}
+WaveRestoreCursors {{Cursor 1} {624285 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100

@@ -85,12 +85,15 @@ logic instr_is_new;
 initial instr_is_new = 0;
 always_ff@ (posedge clk)
 begin
-	instr_is_new <= imem_resp;
+	if(~flush)
+		instr_is_new <= imem_resp;
+	else	
+		instr_is_new <= 0;
 end
 
 issue_control issue_control
 (
-	.clk, .flush, 
+	.clk, 
 	// Fetch -> Issue Controlj
 	.instr(ir_out),
 	.instr_is_new,

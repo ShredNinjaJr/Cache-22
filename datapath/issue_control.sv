@@ -2,7 +2,7 @@ import lc3b_types::*;
 
 module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 (
-	input clk, flush,
+	input clk, 
 	// Fetch -> Issue Control
 	input lc3b_word instr,
 	input instr_is_new,
@@ -143,7 +143,7 @@ begin
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
 	(ld_buffer_full && opcode == op_ldr) ||
-	!instr_is_new || flush)
+	!instr_is_new)
 	begin
 		// STALL
 		if(instr_is_new)
@@ -167,7 +167,7 @@ begin
 				/* J */
 				if (sr1_reg_busy) // sr1_reg busy
 				begin
-					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1)	// CDB has value for J
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for J
 					begin
 						res_Vj = CDB_in.data;
 						issue_ld_Vj = 1'b1;
@@ -198,7 +198,7 @@ begin
 				begin
 					if (sr2_reg_busy) // sr2_reg_busy
 					begin
-						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr2)	// CDB has value for K
+						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr2_rob_e)	// CDB has value for K
 						begin
 							res_Vk = CDB_in.data;
 							issue_ld_Vk = 1'b1;
@@ -241,7 +241,7 @@ begin
 				load_buf_valid_in = 1'b1;
 				if (sr1_reg_busy)	// J not ready
 				begin
-					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1)	// CDB has value for J
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for J
 						res_Vj = CDB_in.data;
 					else if (sr1_rob_valid) // ROB has value for J
 						res_Vj = sr1_rob_value;
