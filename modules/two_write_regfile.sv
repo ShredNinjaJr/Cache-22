@@ -1,11 +1,11 @@
 import lc3b_types::*;
 
-module regfile_data # (parameter data_width = 16, parameter tag_width = 3)
+module two_write_regfile # (parameter data_width = 1, parameter tag_width = 3)
 (
     input clk,
-    input load,
-    input [data_width - 1:0] in,
-    input [tag_width - 1:0] sr1, sr2, dest,
+    input load_a, load_b,
+    input [data_width - 1:0] in_a, in_b,
+    input [tag_width - 1:0] sr1, sr2, dest_a, dest_b,
     output logic [data_width - 1:0] reg_a, reg_b, dest_out
 );
 
@@ -24,17 +24,24 @@ end
 
 always_ff @(posedge clk)
 begin
-    if (load == 1)
+    if (load_a == 1)
     begin
-        data[dest] <= in;
+        data[dest_a] <= in_a;
     end
+	 if(load_b == 1)
+	 begin
+		if((dest_a == dest_b) & load_a)
+			data[dest_b] <= in_a;
+		else
+			data[dest_b] <= in_b;
+	 end
 end
 
 always_comb
 begin
     reg_a = data[sr1];
     reg_b = data[sr2];
-	 dest_out = data[dest];
+	 dest_out = data[dest_a];
 end
 
-endmodule : regfile_data
+endmodule : two_write_regfile

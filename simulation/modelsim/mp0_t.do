@@ -1,11 +1,24 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
+add wave -noupdate /mp3_tb/clk
+add wave -noupdate /mp3_tb/imem_resp
+add wave -noupdate /mp3_tb/imem_read
+add wave -noupdate /mp3_tb/imem_address
+add wave -noupdate /mp3_tb/imem_rdata
+add wave -noupdate /mp3_tb/dmem_address
+add wave -noupdate /mp3_tb/dmem_rdata
+add wave -noupdate /mp3_tb/dmem_wdata
+add wave -noupdate /mp3_tb/dmem_resp
+add wave -noupdate /mp3_tb/dmem_read
+add wave -noupdate /mp3_tb/dmem_write
+add wave -noupdate /mp3_tb/dmem_byte_enable
 add wave -noupdate /mp3_tb/dut/pc_out
+add wave -noupdate -expand /mp3_tb/dut/regfile/value_reg/data
 add wave -noupdate /mp3_tb/dut/ir_out
 add wave -noupdate /mp3_tb/dut/issue_control/adj9_out
 add wave -noupdate /mp3_tb/dut/issue_control/curr_pc
 add wave -noupdate /mp3_tb/dut/issue_control/instr_is_new
-add wave -noupdate /mp3_tb/dut/alu_RS/CDB_arbiter/RS_CDB_in
+add wave -noupdate -expand /mp3_tb/dut/alu_RS/CDB_arbiter/RS_CDB_in
 add wave -noupdate /mp3_tb/dut/alu_RS/CDB_arbiter/RS_flush
 add wave -noupdate /mp3_tb/dut/alu_RS/CDB_arbiter/CDB_out
 add wave -noupdate /mp3_tb/dut/alu_RS/CDB_arbiter/i
@@ -22,24 +35,6 @@ add wave -noupdate /mp3_tb/dut/alu_RS/RS_decoder/RS_issue_ld_Vj
 add wave -noupdate /mp3_tb/dut/alu_RS/RS_decoder/RS_issue_ld_Vk
 add wave -noupdate /mp3_tb/dut/alu_RS/RS_decoder/RS_issue_ld_Qk
 add wave -noupdate /mp3_tb/dut/alu_RS/RS_decoder/RS_issue_ld_Qj
-add wave -noupdate /mp3_tb/dut/alu_RS/flush
-add wave -noupdate /mp3_tb/dut/alu_RS/op_in
-add wave -noupdate /mp3_tb/dut/alu_RS/bit5
-add wave -noupdate /mp3_tb/dut/alu_RS/CDB_in
-add wave -noupdate /mp3_tb/dut/alu_RS/Vj
-add wave -noupdate /mp3_tb/dut/alu_RS/Vk
-add wave -noupdate /mp3_tb/dut/alu_RS/Qj
-add wave -noupdate /mp3_tb/dut/alu_RS/Qk
-add wave -noupdate /mp3_tb/dut/alu_RS/dest
-add wave -noupdate /mp3_tb/dut/alu_RS/ld_busy
-add wave -noupdate /mp3_tb/dut/alu_RS/issue_ld_Vj
-add wave -noupdate /mp3_tb/dut/alu_RS/issue_ld_Vk
-add wave -noupdate /mp3_tb/dut/alu_RS/issue_ld_Qk
-add wave -noupdate /mp3_tb/dut/alu_RS/issue_ld_Qj
-add wave -noupdate /mp3_tb/dut/alu_RS/res_station_id
-add wave -noupdate /mp3_tb/dut/alu_RS/load_buffer_CDB_out
-add wave -noupdate /mp3_tb/dut/alu_RS/busy_out
-add wave -noupdate /mp3_tb/dut/alu_RS/CDB_out
 add wave -noupdate /mp3_tb/dut/alu_RS/ld_buffer_flush
 add wave -noupdate /mp3_tb/dut/alu_RS/RS_flush
 add wave -noupdate /mp3_tb/dut/alu_RS/RS_ld_busy
@@ -48,6 +43,30 @@ add wave -noupdate /mp3_tb/dut/alu_RS/RS_issue_ld_Vk
 add wave -noupdate /mp3_tb/dut/alu_RS/RS_issue_ld_Qk
 add wave -noupdate /mp3_tb/dut/alu_RS/RS_issue_ld_Qj
 add wave -noupdate /mp3_tb/dut/alu_RS/RS_CDB_out
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[2]/RS/Vj_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[2]/RS/Vk_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[2]/RS/Qj_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[2]/RS/Qk_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[2]/RS/dest_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[2]/RS/op_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[2]/RS/Vk_valid_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[2]/RS/Vj_valid_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[1]/RS/Vj_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[1]/RS/Vk_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[1]/RS/Qj_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[1]/RS/Qk_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[1]/RS/dest_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[1]/RS/op_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[1]/RS/Vk_valid_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[1]/RS/Vj_valid_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[0]/RS/Vj_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[0]/RS/Vk_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[0]/RS/Qj_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[0]/RS/Qk_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[0]/RS/dest_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[0]/RS/op_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[0]/RS/Vk_valid_out}
+add wave -noupdate {/mp3_tb/dut/alu_RS/RS_generate[0]/RS/Vj_valid_out}
 add wave -noupdate /mp3_tb/dut/wr_control/data_width
 add wave -noupdate /mp3_tb/dut/wr_control/tag_width
 add wave -noupdate /mp3_tb/dut/wr_control/clk
@@ -68,6 +87,8 @@ add wave -noupdate /mp3_tb/dut/wr_control/ld_cc
 add wave -noupdate /mp3_tb/dut/wr_control/gencc_out
 add wave -noupdate /mp3_tb/dut/wr_control/cc_out
 add wave -noupdate /mp3_tb/dut/wr_control/branch_enable
+add wave -noupdate /mp3_tb/dut/wr_control/cccomp/cc_in
+add wave -noupdate /mp3_tb/dut/wr_control/cccomp/dest
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/inst_out
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/dest_out
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/valid_out
@@ -90,9 +111,11 @@ add wave -noupdate -expand /mp3_tb/dut/reorder_buffer/ROB/inst
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/valid
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/predict
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/cnt
+add wave -noupdate /mp3_tb/dut/wr_control/rob_empty
+add wave -noupdate /mp3_tb/dut/reorder_buffer/flush
 add wave -noupdate /mp3_tb/dut/reorder_buffer/ROB/full
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {5388 ps} 0}
+WaveRestoreCursors {{Cursor 1} {624285 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100
@@ -108,4 +131,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {210 ns}
+WaveRestoreZoom {0 ps} {1052694 ps}

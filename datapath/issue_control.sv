@@ -2,7 +2,7 @@ import lc3b_types::*;
 
 module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 (
-	input clk,
+	input clk, 
 	// Fetch -> Issue Control
 	input lc3b_word instr,
 	input instr_is_new,
@@ -146,7 +146,8 @@ begin
 	!instr_is_new)
 	begin
 		// STALL
-		stall = 1'b1;
+		if(instr_is_new)
+			stall = 1'b1;
 	end
 	else
 	begin	
@@ -166,7 +167,7 @@ begin
 				/* J */
 				if (sr1_reg_busy) // sr1_reg busy
 				begin
-					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1)	// CDB has value for J
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for J
 					begin
 						res_Vj = CDB_in.data;
 						issue_ld_Vj = 1'b1;
@@ -197,7 +198,7 @@ begin
 				begin
 					if (sr2_reg_busy) // sr2_reg_busy
 					begin
-						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr2)	// CDB has value for K
+						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr2_rob_e)	// CDB has value for K
 						begin
 							res_Vk = CDB_in.data;
 							issue_ld_Vk = 1'b1;
@@ -240,7 +241,7 @@ begin
 				load_buf_valid_in = 1'b1;
 				if (sr1_reg_busy)	// J not ready
 				begin
-					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1)	// CDB has value for J
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for J
 						res_Vj = CDB_in.data;
 					else if (sr1_rob_valid) // ROB has value for J
 						res_Vj = sr1_rob_value;
@@ -269,6 +270,7 @@ begin
 			begin
 				rob_write_enable = 1'b1;
 				rob_opcode = opcode;
+				rob_dest = dest_reg;
 				if (predict_bit)
 				begin
 					rob_value_in = curr_pc;

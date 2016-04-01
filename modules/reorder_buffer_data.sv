@@ -16,7 +16,7 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	/* Inputs for the opcode, dest, valid, value and predict field */
 	input lc3b_opcode inst_in,	
 	input lc3b_reg dest_in,			
-	input logic [data_width-1:0] value_in,	
+	input logic [data_width-1:0] value_in_fifo, value_in_addr,	
 	input logic predict_in,		
 	
 	/* load signals */
@@ -103,7 +103,6 @@ begin: Write_logic
 		for (int i = 0; i < 2**tag_width; i++)
 			begin	
 				valid[i] <= 1'b0;
-				cnt <= 0;
 			end	
 	end
 	else
@@ -113,7 +112,7 @@ begin: Write_logic
 		begin: Write
 			if(~full)
 			begin
-				value[w_addr] <= value_in;
+				value[w_addr] <= value_in_fifo;
 				dest[w_addr] <= dest_in;
 				inst[w_addr] <= inst_in;
 				/* Based on instr load valid */
@@ -124,12 +123,11 @@ begin: Write_logic
 				
 				predict[w_addr] <= predict_in;
 				w_addr <= w_addr + 1'b1;
-				cnt <= cnt + 1'b1;
 			end
 		end		
 		/* Write to the given address input  */
 			if(ld_value)
-				value[addr_in] <= value_in;
+				value[addr_in] <= value_in_addr;
 			if(ld_valid)
 				valid[addr_in] <= 1'b1;
 
@@ -137,10 +135,24 @@ begin: Write_logic
 		if(RE)
 		begin
 			valid[r_addr] <= 1'b0;
-			cnt <= cnt - 1'b1;
+		end
+	end	
+end
+
+always_ff @( posedge clk)
+begin: count_logic
+	if(flush)
+		cnt <= 0;
+	else
+	begin
+		if(RE & ~WE)
+			cnt <= cnt - 4'b1;
+		else if(WE & ~RE)
+		begin
+			if(~full)
+				cnt <= cnt + 4'b1;
 		end
 	end
-			
 end
 
 always_ff @ ( posedge clk)

@@ -8,9 +8,7 @@ module cccomp
 	output logic branch_enable
 );
 
-always_comb
-begin
-	branch_enable = (cc_in[2]&dest[2])|(cc_in[1]&dest[1])|(cc_in[0]&dest[0]);
-end
+
+assign branch_enable = (cc_in[2]&dest[2])|(cc_in[1]&dest[1])|(cc_in[0]&dest[0]);
 
 endmodule:cccomp

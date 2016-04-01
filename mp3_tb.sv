@@ -66,7 +66,7 @@ magic_memory_dp memory
 	.address_a(imem_address),
 	.resp_a(imem_resp),
 	.rdata_a(imem_rdata),
-	.wdata_a(2'bX),
+	.wdata_a(16'hXXXX),
 	.wmask_a(2'bXX),
 	
 	.read_b(dmem_read),

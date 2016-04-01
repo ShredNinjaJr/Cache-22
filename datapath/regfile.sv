@@ -22,31 +22,34 @@ module regfile #(parameter data_width = 16, parameter tag_width = 3)
 	 output regfile_t sr1_out, sr2_out, dest_out
 );
 
-logic ld_busy;
-logic busy_in;
+//logic ld_busy;
+//logic busy_in;
 //logic [tag_width - 1: 0] sr1_busy;
 //logic [tag_width - 1: 0] sr2_busy;
-logic [tag_width - 1: 0] dest_busy;
+//logic [tag_width - 1: 0] dest_busy;
 
 /* Muxing ld of busy reg  with  ic and rob */
-assign ld_busy = (ld_busy_ic) ? 1'b1 : ld_busy_rob;
+//assign ld_busy = (ld_busy_ic) ? 1'b1 : ld_busy_rob;
 
 /* busy bit is automatically set  based off of who loaded it */
-assign busy_in = (ld_busy_ic) ? 1'b1 : 1'b0;
+//assign busy_in = (ld_busy_ic) ? 1'b1 : 1'b0;
 
 /* Muxing inputs */
 //assign sr1_busy = (ld_busy_ic) ? sr1_ic : sr1_rob;
 //assign sr2_busy = (ld_busy_ic) ? sr2_ic : sr2_rob;
-assign dest_busy = (ld_busy_ic) ? dest_ic : dest_rob;
+//assign dest_busy = (ld_busy_ic) ? dest_ic : dest_rob;
 
-
-regfile_data #(.data_width(1),.tag_width(3)) busy_reg (
+/* A has priority over B if writing to same address */
+two_write_regfile #(.data_width(1),.tag_width(3)) busy_reg (
     .clk(clk),
-    .load(ld_busy),
-    .in(busy_in),
+    .load_a(ld_busy_ic),
+	 .load_b(ld_busy_rob),
+    .in_a(1'b1),
+	 .in_b(1'b0),
 	 .sr1(sr1_ic), 
 	 .sr2(sr2_ic), 
-	 .dest(dest_busy),
+	 .dest_a(dest_ic),
+	 .dest_b(dest_rob),
 	 .reg_a(sr1_out.busy), 
 	 .reg_b(sr2_out.busy),
 	 .dest_out(dest_out.busy)
