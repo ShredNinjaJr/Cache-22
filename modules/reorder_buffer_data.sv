@@ -16,7 +16,7 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	/* Inputs for the opcode, dest, valid, value and predict field */
 	input lc3b_opcode inst_in,	
 	input lc3b_reg dest_in,			
-	input logic [data_width-1:0] value_in,	
+	input logic [data_width-1:0] value_in_fifo, value_in_addr,	
 	input logic predict_in,		
 	
 	/* load signals */
@@ -112,7 +112,7 @@ begin: Write_logic
 		begin: Write
 			if(~full)
 			begin
-				value[w_addr] <= value_in;
+				value[w_addr] <= value_in_fifo;
 				dest[w_addr] <= dest_in;
 				inst[w_addr] <= inst_in;
 				/* Based on instr load valid */
@@ -127,7 +127,7 @@ begin: Write_logic
 		end		
 		/* Write to the given address input  */
 			if(ld_value)
-				value[addr_in] <= value_in;
+				value[addr_in] <= value_in_addr;
 			if(ld_valid)
 				valid[addr_in] <= 1'b1;
 
