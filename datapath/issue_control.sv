@@ -104,6 +104,19 @@ assign sr2_rob_valid = rob_sr2_valid_out;
 assign rob_sr1_read_addr = sr1_in.rob_entry;
 assign rob_sr2_read_addr = (opcode == op_str) ? dest_in.rob_entry : sr2_in.rob_entry;
 
+logic branch_stall;
+initial branch_stall = 0;
+always_ff @( posedge clk)
+begin
+	case(opcode)
+	op_br: begin
+		if(predict_bit & ~branch_stall & instr_is_new)
+			branch_stall <= 1'b1;
+	end
+	default: branch_stall <= 0;
+	endcase
+end
+
 sext #(.width(5)) sext5
 (
 	.in(instr[4:0]),
@@ -158,11 +171,11 @@ begin
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
-	(ldstr_full && opcode == op_ldr) ||
+	(ldstr_full && opcode == op_ldr) || branch_stall || 
 	!instr_is_new)
 	begin
 		// STALL
-		if(instr_is_new)
+		if(instr_is_new & ~branch_stall)
 			stall = 1'b1;
 	end
 	else

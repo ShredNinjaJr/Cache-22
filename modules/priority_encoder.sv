@@ -9,11 +9,11 @@ module priority_encoder
  
 /* If not enabled or all inputs 0, V is not valid */
   assign V = (!enable) ? 1'b0 : (in[0] | in[1] | in[2] | in[3] | in[4] | in[5] | in[6] | in[7]);
-  assign  binary_out  = (!enable) ? 3'h0 :((in[0]) ? 3'h0 : 
-      (in[1]) ? 3'h1 : 
-      (in[2]) ? 3'h2 : 
-      (in[3]) ? 3'h3 : 
-      (in[4]) ? 3'h4 : 
+  assign  binary_out  = (!enable) ? 3'h0 :((in[7]) ? 3'h7 : 
+      (in[6]) ? 3'h6 : 
       (in[5]) ? 3'h5 : 
-      (in[6]) ? 3'h6 : 3'h7); 
+      (in[4]) ? 3'h4 : 
+      (in[3]) ? 3'h3 : 
+      (in[2]) ? 3'h2 : 
+      (in[1]) ? 3'h1 : 3'h0); 
  endmodule: priority_encoder
