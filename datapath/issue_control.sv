@@ -68,10 +68,13 @@ lc3b_opcode opcode;
 
 logic sr1_reg_busy;
 logic sr2_reg_busy;
+logic dest_reg_busy;
 lc3b_word sr1_value;
 lc3b_word sr2_value;
+lc3b_word dest_value;
 lc3b_rob_addr sr1_rob_e;
 lc3b_rob_addr sr2_rob_e;
+lc3b_rob_addr dest_rob_e;
 lc3b_word sr1_rob_value;
 lc3b_word sr2_rob_value;
 logic sr1_rob_valid;
@@ -86,17 +89,20 @@ assign ldstr_offset = adj6_out;
 
 assign sr1_reg_busy = sr1_in.busy;
 assign sr2_reg_busy = sr2_in.busy;
+assign dest_reg_busy = dest_in.busy;
 assign sr1_value = sr1_in.data;
 assign sr2_value = sr2_in.data;
+assign dest_value = dest_in.data;
 assign sr1_rob_e = sr1_in.rob_entry;
 assign sr2_rob_e = sr2_in.rob_entry;
+assign dest_rob_e = dest_in.rob_entry;
 assign sr1_rob_value = rob_sr1_value_out;
 assign sr2_rob_value = rob_sr2_value_out;
 assign sr1_rob_valid = rob_sr1_valid_out;
 assign sr2_rob_valid = rob_sr2_valid_out;
 
 assign rob_sr1_read_addr = sr1_in.rob_entry;
-assign rob_sr2_read_addr = sr2_in.rob_entry;
+assign rob_sr2_read_addr = (opcode == op_str) ? dest_in.rob_entry : sr2_in.rob_entry;
 
 sext #(.width(5)) sext5
 (
@@ -278,6 +284,34 @@ begin
 			// STR
 			op_str:
 			begin
+				ldstr_write_enable = 1'b1;
+				res_op_in = opcode;
+				ldstr_dest = 0;
+				if (sr1_reg_busy)	// Base not ready
+				begin
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
+						ldstr_Vbase = CDB_in.data;
+					else if (sr1_rob_valid) // ROB has value for Base
+						ldstr_Vbase = sr1_rob_value;
+					else		// Wait for Base value
+					begin
+						ldstr_Qbase = sr1_rob_e;
+						ldstr_Vbase_valid_in = 1'b0;
+					end
+				end
+				
+				if (dest_reg_busy)	// Source is busy
+				begin
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == dest_rob_e)	// CDB has value for Source
+						ldstr_Vsrc = CDB_in.data;
+					else if (sr2_rob_valid) // ROB has value for Source
+						ldstr_Vsrc = sr2_rob_value;
+					else		// Wait for Source value
+					begin
+						ldstr_Qsrc = dest_rob_e;
+						ldstr_Vsrc_valid_in = 1'b0;
+					end
+				end
 				
 			end
 			

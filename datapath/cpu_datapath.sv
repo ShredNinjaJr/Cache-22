@@ -260,30 +260,7 @@ alu_RS_unit alu_RS
 	.CDB_out(C_D_B)
 );
 
-/*
-load_buffer load_buffer
-(
-	.clk,
-	From Issue Control
-	.WE(load_buf_write_enable),
-	.flush(flush),
-	.ld_buffer_read(ld_buffer_flush),
-	.Q_in(res_Qj),
-	.V(res_Vj),
-	.offset_in(load_buf_offset),
-	.dest_in(res_dest),
-	.valid_in(ld_buf_valid_in),
-	.dmem_resp(dmem_resp),
-	.dmem_rdata(dmem_rdata),
-	
-	.CDB_in(C_D_B),
-	.CDB_out(load_buffer_CDB_out),
-	
-	.dmem_addr(dmem_address),
-	.dmem_read(dmem_read),
-	.full(ld_buffer_full)
-);
-*/
+
 
 ldstr_buffer LDSTR_buffer
 (
