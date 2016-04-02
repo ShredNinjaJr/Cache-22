@@ -3,10 +3,11 @@ import lc3b_types::*;
 module ld_str_res_station #(parameter data_width = 16, parameter tag_width = 3)
 (
 	input clk, flush,
-	input ld_opcode, ld_Qsrc, ld_Vsrc, ld_Qbase, ld_Vbase, ld_offset, ld_dest, ld_mem_val,
+	input ld_opcode, ld_Qsrc, ld_Vsrc, ld_Qbase, ld_Vbase, ld_offset, ld_dest, ld_mem_val, ld_busy,
 	input [data_width - 1: 0] Vsrc_in, Vbase_in, mem_val_in, offset_in,
 	input [tag_width - 1: 0] Qsrc_in, Qbase_in, dest_in,
 	input lc3b_opcode opcode_in,
+	input busy_in,
 	input Vsrc_valid_in,
 	input Vbase_valid_in,
 	input mem_val_valid_in,
@@ -14,12 +15,15 @@ module ld_str_res_station #(parameter data_width = 16, parameter tag_width = 3)
 	output logic [data_width - 1: 0] Vsrc_out, Vbase_out, mem_val_out, offset_out,
 	output logic [tag_width - 1: 0] Qsrc_out, Qbase_out, dest_out,
 	output lc3b_opcode opcode_out,
+	output logic busy_out,
 	output logic Vsrc_valid_out,
 	output logic Vbase_valid_out,
 	output logic mem_val_valid_out
 );
 
 /* All the data fields in this kind of ld/str res station
+
+logic							busy
 
 lc3b_opcode					opcode			
 
@@ -38,6 +42,13 @@ lc3b_rob_addr 			 	dest
 logic 						mem_val_valid	
 lc3b_word 					mem_val 			
 */
+
+register #(.width(1)) busy
+(
+    .clk, .load(ld_busy), .clr(flush),
+    .in(busy_in),
+    .out({busy_out})
+);
 
 register #(.width(4)) opcode
 (

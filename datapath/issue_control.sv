@@ -10,7 +10,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// CDB -> Issue Control
 	input CDB CDB_in,
 	// Reservation Station -> Issue Control
-	input alu_res1_busy, alu_res2_busy, alu_res3_busy, ld_buffer_full, st_buffer_full,
+	input alu_res1_busy, alu_res2_busy, alu_res3_busy, ldstr_full,
 	// ROB -> Issue Control
 	input rob_full,
 	input lc3b_rob_addr rob_addr,
@@ -34,10 +34,12 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output lc3b_rob_addr res_dest,
 	output logic issue_ld_busy_dest, issue_ld_Vj, issue_ld_Vk, issue_ld_Qk, issue_ld_Qj,
 	output logic [2:0] res_station_id,
-	// Issue Control -> Load Buffer NOTE: res_Vj, res_Qj, and res_dest are all used for load buffer as well
-	output logic load_buf_write_enable,
-	output lc3b_word load_buf_offset,
-	output logic load_buf_valid_in,
+	// Issue Control -> Load Buffer NOTE and res_dest are all used for load buffer as well
+	output logic ldstr_write_enable,
+	output lc3b_word ldstr_offset,
+	output logic [tag_width-1:0] ldstr_Qsrc, ldstr_Qbase, ldstr_dest,
+	output logic ldstr_Vsrc_valid_in, ldstr_Vbase_valid_in,
+	output lc3b_word ldstr_Vsrc, ldstr_Vbase, 
  	// Issue Control -> ROB
 	output logic rob_write_enable,
 	output lc3b_opcode rob_opcode, 
@@ -80,7 +82,7 @@ assign opcode = lc3b_opcode'(instr[15:12]);
 assign sr1 = instr[8:6];
 assign sr2 = instr[2:0];
 
-assign load_buf_offset = adj6_out;
+assign ldstr_offset = adj6_out;
 
 assign sr1_reg_busy = sr1_in.busy;
 assign sr2_reg_busy = sr2_in.busy;
@@ -124,25 +126,33 @@ begin
 	res_Vk = 0;
 	res_Qj = 0;
 	res_Qk = 0;
-	load_buf_write_enable = 0;
+	ldstr_write_enable = 0;
 	issue_ld_busy_dest = 0;
 	issue_ld_Vj = 0;
 	issue_ld_Vk = 0;
 	issue_ld_Qj = 0;
 	issue_ld_Qk = 0;
 	res_station_id = 0;
+	
+	ldstr_Qsrc = 0;
+	ldstr_Qbase = 0;
+	ldstr_dest = rob_addr;
+	ldstr_Vsrc_valid_in = 1;
+	ldstr_Vbase_valid_in = 1;
+	ldstr_Vsrc = 0;
+	ldstr_Vbase = 0;
+	
 	res_dest = rob_addr;
 	rob_write_enable = 0;
 	rob_value_in = 0;
 	reg_dest = 0;
 	ld_reg_busy_dest = 0;
 	reg_rob_entry = 0;
-	load_buf_valid_in = 0;
 	pcmux_sel = 0;
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
-	(ld_buffer_full && opcode == op_ldr) ||
+	(ldstr_full && opcode == op_ldr) ||
 	!instr_is_new)
 	begin
 		// STALL
@@ -233,22 +243,23 @@ begin
 			end
 			
 			
-			// LDR, STR
-			op_ldr:  // op_str, op_ldb, op_stb:
+			// LDR,
+			op_ldr:
 			begin
 				/* LOAD BUFFER OUTPUTS */
-				load_buf_write_enable = 1'b1;
-				load_buf_valid_in = 1'b1;
-				if (sr1_reg_busy)	// J not ready
+				ldstr_write_enable = 1'b1;
+				res_op_in = opcode;
+				ldstr_Vsrc_valid_in = 1'b0;
+				if (sr1_reg_busy)	// Base not ready
 				begin
-					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for J
-						res_Vj = CDB_in.data;
-					else if (sr1_rob_valid) // ROB has value for J
-						res_Vj = sr1_rob_value;
-					else		// Wait for J value
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
+						ldstr_Vbase = CDB_in.data;
+					else if (sr1_rob_valid) // ROB has value for Base
+						ldstr_Vbase = sr1_rob_value;
+					else		// Wait for Base value
 					begin
-						res_Qj = sr1_rob_e;
-						load_buf_valid_in = 1'b0;
+						ldstr_Qbase = sr1_rob_e;
+						ldstr_Vbase_valid_in = 1'b0;
 					end
 				end
 				
@@ -261,6 +272,12 @@ begin
 				reg_dest = dest_reg;
 				ld_reg_busy_dest = 1'b1;
 				reg_rob_entry = rob_addr;
+				
+			end
+			
+			// STR
+			op_str:
+			begin
 				
 			end
 			

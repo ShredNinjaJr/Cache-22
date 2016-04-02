@@ -10,6 +10,7 @@ module cpu_datapath
 	
 	output lc3b_word imem_address,
 	output lc3b_word dmem_address,
+	output lc3b_word dmem_wdata,
 	output logic imem_read,
 	output logic dmem_read,
 	output logic dmem_write,
@@ -43,7 +44,7 @@ fetch_unit fetch_unit
 logic alu_RS_busy [0:2];
 
 /* Load Buffer -> Issue Control */
-logic ld_buffer_full;
+logic ldstr_full;
 
 /* ROB -> Issue control */
 logic rob_full;
@@ -62,8 +63,15 @@ logic issue_ld_busy_dest, issue_ld_Vj, issue_ld_Vk;
 logic issue_ld_Qk, issue_ld_Qj;
 
 /* Issue Control -> Load Buffer */
-logic load_buf_write_enable;
-lc3b_word load_buf_offset;
+logic ldstr_write_enable;
+lc3b_word ldstr_offset;
+lc3b_rob_addr ldstr_Qsrc;
+lc3b_rob_addr ldstr_Qbase;
+lc3b_rob_addr ldstr_dest;
+logic ldstr_Vsrc_valid_in;
+logic ldstr_Vbase_valid_in;
+lc3b_word ldstr_Vsrc;
+lc3b_word ldstr_Vbase;
 
 /* Issue control -> ROB */
 logic rob_write_enable;
@@ -102,7 +110,7 @@ issue_control issue_control
 	.CDB_in(C_D_B),
 	// Reservation Station -> Issue Control
 	.alu_res1_busy(alu_RS_busy[0]), .alu_res2_busy(alu_RS_busy[1]), .alu_res3_busy(alu_RS_busy[2]),
-	.ld_buffer_full(ld_buffer_full),
+	.ldstr_full(ldstr_full),
 	// ROB -> Issue Control
 	.rob_full,
 	.rob_addr,
@@ -125,11 +133,18 @@ issue_control issue_control
 	.issue_ld_Qk, .issue_ld_Qj, 
 	.res_station_id,
 	.bit5,
-//	 logic  res_validJ, res_validK, // [valid J, valid K]
+	
 	// Issue Control -> Load Buffer
-	.load_buf_write_enable(load_buf_write_enable),
-	.load_buf_offset(load_buf_offset),
-	.load_buf_valid_in(ld_buf_valid_in),
+	.ldstr_write_enable(ldstr_write_enable),
+	.ldstr_offset(ldstr_offset),
+	.ldstr_Qsrc(ldstr_Qsrc),
+	.ldstr_Qbase(ldstr_Qbase),
+	.ldstr_dest(ldstr_dest),
+	.ldstr_Vsrc_valid_in(ldstr_Vsrc_valid_in),
+	.ldstr_Vbase_valid_in(ldstr_Vbase_valid_in),
+	.ldstr_Vsrc(ldstr_Vsrc),
+	.ldstr_Vbase(ldstr_Vbase),
+
  	// Issue Control -> ROB
 	.rob_write_enable,
 	.rob_opcode(rob_opcode_in), 
@@ -245,11 +260,11 @@ alu_RS_unit alu_RS
 	.CDB_out(C_D_B)
 );
 
-
+/*
 load_buffer load_buffer
 (
 	.clk,
-	/* From Issue Control */
+	From Issue Control
 	.WE(load_buf_write_enable),
 	.flush(flush),
 	.ld_buffer_read(ld_buffer_flush),
@@ -268,8 +283,41 @@ load_buffer load_buffer
 	.dmem_read(dmem_read),
 	.full(ld_buffer_full)
 );
+*/
 
-
+ldstr_buffer LDSTR_buffer
+(
+	.clk, 
+	.flush(flush), 
+	.WE(ldstr_write_enable),
+	.ld_buffer_read(ld_buffer_flush),
+	
+	
+	.dmem_resp(dmem_resp), 
+	.dmem_rdata(dmem_rdata),
+	
+	//TBD
+	.opcode_in(res_op_in),
+	
+	.Qsrc(ldstr_Qsrc), 
+	.Vsrc_valid_in(ldstr_Vsrc_valid_in),
+	.Vsrc(ldstr_Vsrc),
+	
+	.Qbase(ldstr_Qbase), 	
+	.Vbase_valid_in(ldstr_Vbase_valid_in),
+	.Vbase(ldstr_Vbase),
+	
+	.offset_in(ldstr_offset),
+	.dest(ldstr_dest),
+	
+	.CDB_in(C_D_B),
+	
+	.dmem_read(dmem_read), .dmem_write(dmem_write),
+	.dmem_wdata(dmem_wdata), .dmem_addr(dmem_address),
+	
+	.full(ldstr_full),
+	.CDB_out(load_buffer_CDB_out)
+);
 
 regfile regfile
 (

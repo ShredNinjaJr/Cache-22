@@ -82,7 +82,7 @@ begin
 			 end
 			 RE_out = 1'b1;
 		end 
-		op_add, op_and, op_not, op_shf, op_lea: begin
+		op_add, op_and, op_not, op_shf, op_lea, op_ldr: begin
 			ld_regfile_busy = 1'b1;
 			ld_regfile_value = 1'b1;
 			ld_cc = 1'b1;

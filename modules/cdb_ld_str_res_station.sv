@@ -6,7 +6,7 @@ module cdb_ld_str_res_station #(parameter data_width = 16, parameter tag_width =
 	input lc3b_opcode opcode_in,
 	input CDB CDB_in,
 	input Vsrc_valid_in, Vbase_valid_in,
-	input [data_width-1:0] Vbase, Vsrc, mem_val_in,
+	input [data_width-1:0] Vbase, Vsrc, mem_val_in, offset_in,
 	input [tag_width-1:0] Qbase, Qsrc, dest,
 	
 	output Vsrc_valid_out, Vbase_valid_out,
@@ -17,32 +17,36 @@ module cdb_ld_str_res_station #(parameter data_width = 16, parameter tag_width =
 	
 );
 
-logic [data_width - 1: 0] Vsrc_in, Vbase_in, mem_val_in, offset_in;
+logic [data_width - 1: 0] Vsrc_in, Vbase_in;
 logic [tag_width - 1: 0] Qsrc_in, Qbase_in, dest_in;
-logic ld_opcode, ld_Qsrc, ld_Vsrc, ld_Qbase, ld_Vbase, ld_offset, ld_dest, ld_mem_val;
+logic ld_opcode, ld_Qsrc, ld_Vsrc, ld_Qbase, ld_Vbase, ld_offset, ld_dest, ld_busy;
 
 logic [data_width - 1: 0] Vsrc_out, Vbase_out, mem_val_out, offset_out;
 logic [tag_width - 1: 0] Qsrc_out, Qbase_out, dest_out;
+logic busy_in, busy_out;
 lc3b_opcode opcode_out;
-logic Vsrc_valid_out;
-logic Vbase_valid_out;
 
+logic mem_val_valid_in;
 logic mem_val_valid_out;
 
 assign Qbase_in = Qbase;
 assign Qsrc_in = Qsrc;
 assign dest_in = dest;
+assign busy_in = 1'b1;
 	
 assign Vbase_in = (WE) ? Vbase : CDB_in.data;
 assign Vsrc_in = (WE) ? Vsrc : CDB_in.data;
 
+assign ld_busy = WE;
 assign ld_opcode = WE;
 assign ld_Qsrc = WE;
-assign ld_Vsrc = (WE) ? 1'b1 : ((Qsrc_out == CDB_in.tag) & CDB_in.valid & ~Vsrc_valid_out);
+assign ld_Vsrc = (WE) ? 1'b1 : ((Qsrc_out == CDB_in.tag) & (opcode_out == op_str) & CDB_in.valid & busy_out & ~Vsrc_valid_out);
 assign ld_Qbase = WE;
-assign ld_Vbase = (WE) ?  1'b1 : ((Qbase_out == CDB_in.tag) & CDB_in.valid & ~Vbase_valid_out);
+assign ld_Vbase = (WE) ?  1'b1 : ((Qbase_out == CDB_in.tag) & (opcode_out == op_str) & CDB_in.valid & busy_out &  ~Vbase_valid_out);
 assign ld_offset = WE;
 assign ld_dest = WE;
+assign mem_val_valid_in = 1'b1;
+
 
 ld_str_res_station ld_str_res_station_reg (.*);
 
