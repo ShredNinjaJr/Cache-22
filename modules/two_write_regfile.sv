@@ -2,7 +2,7 @@ import lc3b_types::*;
 
 module two_write_regfile # (parameter data_width = 1, parameter tag_width = 3)
 (
-    input clk,
+    input clk, flush,
     input load_a, load_b,
     input [data_width - 1:0] in_a, in_b,
     input [tag_width - 1:0] sr1, sr2, dest_a, dest_b,
@@ -24,7 +24,14 @@ end
 
 always_ff @(posedge clk)
 begin
-    if (load_a == 1)
+	 if(flush)
+	 begin
+		for (int i = 0; i < $size(data); i++)
+		 begin
+					data[i] <= 0;
+		 end
+	 end
+    else if (load_a == 1)
     begin
         data[dest_a] <= in_a;
     end

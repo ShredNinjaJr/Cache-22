@@ -299,7 +299,7 @@ ldstr_buffer LDSTR_buffer
 
 regfile regfile
 (
-	.clk,
+	.clk, .flush,
 
 	.ld_busy_ic(ld_reg_busy_dest),
 	.ld_busy_rob(rob_ld_regfile_busy),

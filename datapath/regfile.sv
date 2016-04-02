@@ -2,7 +2,7 @@ import lc3b_types::*;
 
 module regfile #(parameter data_width = 16, parameter tag_width = 3)
 (
-    input clk,
+    input clk, flush, 
 	 
 	/* Load signals for each register */
 	 input ld_busy_ic,
@@ -41,7 +41,7 @@ module regfile #(parameter data_width = 16, parameter tag_width = 3)
 
 /* A has priority over B if writing to same address */
 two_write_regfile #(.data_width(1),.tag_width(3)) busy_reg (
-    .clk(clk),
+    .clk(clk), .flush, 
     .load_a(ld_busy_ic),
 	 .load_b(ld_busy_rob),
     .in_a(1'b1),

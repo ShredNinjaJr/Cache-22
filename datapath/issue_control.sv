@@ -1,4 +1,4 @@
-import lc3b_types::*;
+	import lc3b_types::*;
 
 module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 (
@@ -112,6 +112,8 @@ begin
 	op_br: begin
 		if(predict_bit & ~branch_stall & instr_is_new)
 			branch_stall <= 1'b1;
+		else
+			branch_stall <= 0;
 	end
 	default: branch_stall <= 0;
 	endcase
