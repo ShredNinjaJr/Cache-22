@@ -6,6 +6,7 @@ module ldstr_decoder #(parameter n = 7)
 	
 	/* RS wires */
 	output logic issue_WE[0:n],
+	output logic issue_flush[0:n],
 	output logic issue_ld_mem_val[0:n],
 	output [2:0] r_addr_out,
 	output logic full
@@ -63,8 +64,12 @@ begin
 	for(j = 0; j <= n; j++)
 	begin
 		issue_WE[j] = 0;
+		issue_flush[j] = 0;
 		issue_ld_mem_val[j] = 0;
 	end
+	
+	if(RE)
+		issue_flush[r_addr] = 1'b1;
 	
 	issue_WE[w_addr] = WE;
 	issue_ld_mem_val[r_addr] = dmem_resp & dmem_read;

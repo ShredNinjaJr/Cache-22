@@ -15,6 +15,7 @@ module ldstr_buffer #(parameter data_width = 16, parameter tag_width = 3, parame
 	
 	output dmem_read, dmem_write,
 	output lc3b_word dmem_wdata, dmem_addr,
+	output lc3b_mem_wmask dmem_byte_enable,
 	
 	output logic full,
 	output CDB CDB_out
@@ -29,6 +30,7 @@ ldstr_decoder LD_STR_decoder (.*);
 
 /* RS wires */
 logic issue_WE[0:n];
+logic issue_flush[0:n];
 logic issue_ld_mem_val[0:n];
 logic RE;
 logic [tag_width-1:0] r_addr_out;
@@ -50,7 +52,7 @@ begin: RS_generate
 	cdb_ld_str_res_station RS
 	(
 		.clk,
-		.flush(flush),
+		.flush(issue_flush[i] | flush),
 		.WE(issue_WE[i]),
 		.ld_mem_val(issue_ld_mem_val[i]),
 		.opcode_in,
@@ -71,8 +73,9 @@ begin: RS_generate
 end
 endgenerate
 
+assign dmem_byte_enable = 2'b11;
 assign mem_val_in = dmem_rdata;
-assign RE = ld_buffer_read;
+assign RE = (dmem_write) ? dmem_resp : ld_buffer_read;
 
 assign dmem_write = (r_addr_out == 0) ? datamem_write[0] : (r_addr_out == 1) ? datamem_write[1] : (r_addr_out == 2) ? datamem_write[2] : (r_addr_out == 3) ? datamem_write[3] :
 								(r_addr_out == 4) ? datamem_write[4] : (r_addr_out == 5) ? datamem_write[5] : (r_addr_out == 6) ? datamem_write[6] : datamem_write[7];
@@ -82,7 +85,7 @@ assign dmem_read = (r_addr_out == 0) ? datamem_read[0] : (r_addr_out == 1) ? dat
 								
 always_comb
 	begin
-		dmem_wdata = datamem_write[r_addr_out];
+		dmem_wdata = datamem_wdata[r_addr_out];
 		dmem_addr = datamem_addr[r_addr_out];
 	
 		CDB_out = LD_STR_CDB_out[r_addr_out];

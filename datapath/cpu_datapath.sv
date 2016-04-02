@@ -291,6 +291,7 @@ ldstr_buffer LDSTR_buffer
 	
 	.dmem_read(dmem_read), .dmem_write(dmem_write),
 	.dmem_wdata(dmem_wdata), .dmem_addr(dmem_address),
+	.dmem_byte_enable(dmem_byte_enable),
 	
 	.full(ldstr_full),
 	.CDB_out(load_buffer_CDB_out)
