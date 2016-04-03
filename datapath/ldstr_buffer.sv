@@ -2,7 +2,7 @@ import lc3b_types::*;
 
 module ldstr_buffer #(parameter data_width = 16, parameter tag_width = 3, parameter n = 7)
 (
-	input clk, flush, WE, ld_buffer_read,
+	input clk, flush, WE, ld_buffer_read, wr_RE_out,
 	input lc3b_opcode opcode_in,
 	
 	input dmem_resp, 
@@ -13,7 +13,7 @@ module ldstr_buffer #(parameter data_width = 16, parameter tag_width = 3, parame
 	input [tag_width-1:0] Qbase, Qsrc, dest,
 	input CDB CDB_in,
 	
-	output dmem_read, dmem_write,
+	output dmem_read,
 	output lc3b_word dmem_wdata, dmem_addr,
 	output lc3b_mem_wmask dmem_byte_enable,
 	
@@ -75,13 +75,11 @@ endgenerate
 
 assign dmem_byte_enable = 2'b11;
 assign mem_val_in = dmem_rdata;
-assign RE = (dmem_write) ? dmem_resp : ld_buffer_read;
+assign RE = ld_buffer_read | wr_RE_out;
+		
 
-assign dmem_write = (r_addr_out == 0) ? datamem_write[0] : (r_addr_out == 1) ? datamem_write[1] : (r_addr_out == 2) ? datamem_write[2] : (r_addr_out == 3) ? datamem_write[3] :
-								(r_addr_out == 4) ? datamem_write[4] : (r_addr_out == 5) ? datamem_write[5] : (r_addr_out == 6) ? datamem_write[6] : datamem_write[7];
-								
-assign dmem_read = (r_addr_out == 0) ? datamem_read[0] : (r_addr_out == 1) ? datamem_read[1] : (r_addr_out == 2) ? datamem_read[2] : (r_addr_out == 3) ? datamem_read[3] :
-								(r_addr_out == 4) ? datamem_read[4] : (r_addr_out == 5) ? datamem_read[5] : (r_addr_out == 6) ? datamem_read[6] : datamem_read[7];
+assign dmem_read = datamem_read[r_addr_out];		
+
 								
 always_comb
 	begin

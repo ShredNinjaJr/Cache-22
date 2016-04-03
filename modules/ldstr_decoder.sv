@@ -30,19 +30,35 @@ begin
 end
 
 
+always_ff @( posedge clk)
+begin: count_logic
+	if(flush)
+		counter <= 0;
+	else
+	begin
+		if(RE & ~WE)
+			counter <= counter - 4'b1;
+		else if(WE & ~RE)
+		begin
+			if(~full)
+				counter <= counter + 4'b1;
+		end
+	end
+end
+
+
+
 always_ff @ ( posedge clk)
 begin
 	if(flush)
 	begin
 		r_addr <= 0;
 		w_addr <= 0;
-		counter <= 0;
 	end
 	if(WE)
 	begin: Write
 		if(~full)
 		begin
-			counter <= counter + 1;
 			w_addr <= w_addr + 3'b1;
 		end
 	end: Write
@@ -51,7 +67,6 @@ begin
 	begin: Read
 		if(~empty)
 		begin
-			counter <= counter - 1;
 			r_addr <= r_addr + 3'b1;
 		end
 	end: Read

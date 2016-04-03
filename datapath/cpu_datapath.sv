@@ -164,6 +164,7 @@ issue_control issue_control
 
 
 logic RE_out;
+logic ldstr_RE_out;
 logic rob_valid_out;
 lc3b_opcode rob_opcode_out;
 lc3b_reg rob_dest_out;
@@ -236,7 +237,9 @@ write_results_control wr_control
 	/* To fetch Unit */
 	.new_pc, .pcmux_sel(pcmux_sel[1]),
 	/* TO MEMORY */
-	.dmem_write
+	.dmem_write,
+	
+	.ldstr_RE_out
 	
 	
 );
@@ -270,6 +273,7 @@ ldstr_buffer LDSTR_buffer
 	.flush(flush), 
 	.WE(ldstr_write_enable),
 	.ld_buffer_read(ld_buffer_flush),
+	.wr_RE_out(ldstr_RE_out),
 	
 	
 	.dmem_resp(dmem_resp), 

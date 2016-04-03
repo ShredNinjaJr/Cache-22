@@ -8,8 +8,8 @@ module ld_str_res_station #(parameter data_width = 16, parameter tag_width = 3)
 	input [tag_width - 1: 0] Qsrc_in, Qbase_in, dest_in,
 	input lc3b_opcode opcode_in,
 	input busy_in,
-	input Vsrc_valid_in,
-	input Vbase_valid_in,
+	input Vsrc_valid_input,
+	input Vbase_valid_input,
 	input mem_val_valid_in,
 	
 	output logic [data_width - 1: 0] Vsrc_out, Vbase_out, mem_val_out, offset_out,
@@ -67,7 +67,7 @@ register #(.width(tag_width)) Qsrc
 register #(.width(1)) Vsrc_valid
 (
     .clk, .load(ld_Vsrc), .clr(flush),
-    .in(Vsrc_valid_in),
+    .in(Vsrc_valid_input),
     .out(Vsrc_valid_out)
 );
 
@@ -88,7 +88,7 @@ register #(.width(tag_width)) Qbase
 register #(.width(1)) Vbase_valid
 (
     .clk, .load(ld_Vbase), .clr(flush),
-    .in(Vbase_valid_in),
+    .in(Vbase_valid_input),
     .out(Vbase_valid_out)
 );
 

@@ -29,7 +29,10 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	output lc3b_word new_pc,
 	
 	/* To memory */
-	output logic dmem_write
+	output logic dmem_write,
+	
+	/* To ld/str buffer */
+	output logic ldstr_RE_out
 		
 );
 
@@ -74,6 +77,7 @@ begin
 	pcmux_sel = 0;
 	flush = 0;
 	dmem_write = 0;
+	ldstr_RE_out = 0;
 	if(valid_in || opcode_in == op_str)
 	begin
 		case(opcode_in)
@@ -96,6 +100,7 @@ begin
 		op_str: begin
 			dmem_write = 1'b1;
 			RE_out = 1'b1;
+			ldstr_RE_out = 1'b1;
 		end
 		default: ;
 		endcase

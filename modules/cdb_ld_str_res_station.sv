@@ -37,12 +37,15 @@ assign busy_in = 1'b1;
 assign Vbase_in = (WE) ? Vbase : CDB_in.data;
 assign Vsrc_in = (WE) ? Vsrc : CDB_in.data;
 
+assign Vbase_valid_input = (WE) ? Vbase_valid_in : 1'b1;
+assign Vsrc_valid_input = (WE) ? Vsrc_valid_in : 1'b1;
+
 assign ld_busy = WE;
 assign ld_opcode = WE;
 assign ld_Qsrc = WE;
 assign ld_Vsrc = (WE) ? 1'b1 : ((Qsrc_out == CDB_in.tag) & (opcode_out == op_str) & CDB_in.valid & busy_out & ~Vsrc_valid_out);
 assign ld_Qbase = WE;
-assign ld_Vbase = (WE) ?  1'b1 : ((Qbase_out == CDB_in.tag) & (opcode_out == op_str) & CDB_in.valid & busy_out &  ~Vbase_valid_out);
+assign ld_Vbase = (WE) ?  1'b1 : ((Qbase_out == CDB_in.tag) & (opcode_out == op_str || op_ldr) & CDB_in.valid & busy_out &  ~Vbase_valid_out);
 assign ld_offset = WE;
 assign ld_dest = WE;
 assign mem_val_valid_in = 1'b1;
