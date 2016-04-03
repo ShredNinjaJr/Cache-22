@@ -3,7 +3,7 @@
 # Settings
 DEFAULT_TARGET=../simulation/modelsim/memory.lst
 ASSEMBLER=./LC3bAssembler
-ADDRESSABILITY=1
+ADDRESSABILITY=16
 
 # Command line parameters
 ASM_FILE=$1
