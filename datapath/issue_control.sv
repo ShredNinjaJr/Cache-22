@@ -402,27 +402,26 @@ begin
 			// JMP Will stall until register is ready
 			op_jmp:
 			begin
+				pcmux_sel = 1'b1;
+				if (sr1_reg_busy)	// Base not ready
 				begin
-					if (sr1_reg_busy)	// Base not ready
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
 					begin
-						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
-						begin
-							br_pc = CDB_in.data;
-						end
-						else if (sr1_rob_valid) // ROB has value for Base
-						begin
-							br_pc = sr1_rob_value;
-						end
-						else		// Wait for Base value
-						begin
-							stall = 1'b1;
-							rob_write_enable = 1'b0;
-						end
+						br_pc = CDB_in.data;
 					end
-					else
+					else if (sr1_rob_valid) // ROB has value for Base
 					begin
-						br_pc = sr1_value;
+						br_pc = sr1_rob_value;
 					end
+					else		// Wait for Base value
+					begin
+						stall = 1'b1;
+						rob_write_enable = 1'b0;
+					end
+				end
+				else
+				begin
+					br_pc = sr1_value;
 				end
 			end
 			
@@ -431,7 +430,7 @@ begin
 				rob_write_enable = 1'b1;
 				rob_value_in = curr_pc;
 				rob_dest = 3'b111;
-				pcmux_sel = 1'b1;
+
 				if(instr[11]) //JSR
 				begin
 					br_pc = curr_pc + adj11_out;
