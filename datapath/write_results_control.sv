@@ -97,6 +97,11 @@ begin
 			ld_cc = 1'b1;
 			RE_out = 1'b1;
 		end
+		op_jsr: begin
+			ld_regfile_busy = 1'b1;
+			ld_regfile_value = 1'b1;
+			RE_out = 1'b1;
+		end
 		op_str: begin
 			dmem_write = 1'b1;
 			RE_out = 1'b1;

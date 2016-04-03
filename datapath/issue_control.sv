@@ -60,8 +60,9 @@ assign bit5 = instr[5];
 lc3b_word sext5_out;
 lc3b_word adj6_out;
 lc3b_word adj9_out;
+lc3b_word adj11_out;
 
-assign br_pc = curr_pc + adj9_out;
+
 
 lc3b_reg dest_reg;
 lc3b_opcode opcode;
@@ -82,6 +83,7 @@ logic sr2_rob_valid;
 
 assign dest_reg = instr[11:9];
 assign opcode = lc3b_opcode'(instr[15:12]);
+assign rob_opcode = opcode;
 assign sr1 = instr[8:6];
 assign sr2 = instr[2:0];
 
@@ -137,10 +139,16 @@ adj #(.width(9)) adj9
 	.out(adj9_out)
 );
 
+adj #(.width(11)) adj11
+(
+	.in(instr[10:0]),
+	.out(adj11_out)
+);
+
+
 always_comb
 begin
 	stall = 0;
-	rob_opcode = op_br;
 	rob_dest = 0;
 	res_op_in = op_br;
 	res_Vj = 0;
@@ -170,6 +178,7 @@ begin
 	ld_reg_busy_dest = 0;
 	reg_rob_entry = 0;
 	pcmux_sel = 0;
+	br_pc = 0;
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
@@ -257,7 +266,6 @@ begin
 				
 				/* ROB OUTPUTS */
 				rob_write_enable = 1'b1;
-				rob_opcode = opcode;
 				rob_dest = dest_reg;
 				
 				/* REGFILE OUTPUTS */
@@ -297,7 +305,6 @@ begin
 				
 				/* ROB OUTPUTS */
 				rob_write_enable = 1'b1;
-				rob_opcode = opcode;
 				rob_dest = dest_reg;
 				
 				/* REGFILE OUTPUTS */
@@ -357,7 +364,6 @@ begin
 				
 				/* ROB OUTPUTS */
 				rob_write_enable = 1'b1;
-				rob_opcode = opcode;
 				rob_dest = 0;
 				
 				/* REGFILE OUTPUT */
@@ -370,8 +376,8 @@ begin
 			op_br:
 			begin
 				rob_write_enable = 1'b1;
-				rob_opcode = opcode;
 				rob_dest = dest_reg;
+				br_pc = curr_pc + adj9_out;
 				if (predict_bit)
 				begin
 					rob_value_in = curr_pc;
@@ -379,6 +385,7 @@ begin
 				end
 				else
 				begin
+					
 					rob_value_in = br_pc;
 				end
 
@@ -388,15 +395,73 @@ begin
 			op_lea:
 			begin
 				rob_write_enable = 1'b1;
-				rob_opcode = opcode;
 				rob_value_in = curr_pc + adj9_out;
 				rob_dest = dest_reg;
 			end
 			
-			// JMP Will stall
+			// JMP Will stall until register is ready
 			op_jmp:
 			begin
+				begin
+					if (sr1_reg_busy)	// Base not ready
+					begin
+						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
+						begin
+							br_pc = CDB_in.data;
+						end
+						else if (sr1_rob_valid) // ROB has value for Base
+						begin
+							br_pc = sr1_rob_value;
+						end
+						else		// Wait for Base value
+						begin
+							stall = 1'b1;
+							rob_write_enable = 1'b0;
+						end
+					end
+					else
+					begin
+						br_pc = sr1_value;
+					end
+				end
 			end
+			
+			op_jsr:
+			begin
+				rob_write_enable = 1'b1;
+				rob_value_in = curr_pc;
+				rob_dest = 3'b111;
+				pcmux_sel = 1'b1;
+				if(instr[11]) //JSR
+				begin
+					br_pc = curr_pc + adj11_out;
+					rob_write_enable = 1'b0;
+				end
+				else 	//JSRR
+				begin
+					if (sr1_reg_busy)	// Base not ready
+					begin
+						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
+						begin
+							br_pc = CDB_in.data;
+						end
+						else if (sr1_rob_valid) // ROB has value for Base
+						begin
+							br_pc = sr1_rob_value;
+						end
+						else		// Wait for Base value
+						begin
+							stall = 1'b1;
+							rob_write_enable = 1'b0;
+						end
+					end
+					else
+					begin
+						br_pc = sr1_value;
+					end
+				end
+			end
+			
 			
 			default:;
 		endcase
