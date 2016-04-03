@@ -331,7 +331,7 @@ begin
 				else	// Base is ready
 				begin
 					ldstr_Vbase = sr1_value;
-					ldstr_Vbase = 1'b1;
+					ldstr_Vbase_valid_in = 1'b1;
 				end
 				
 				if (dest_reg_busy)	// Source is busy

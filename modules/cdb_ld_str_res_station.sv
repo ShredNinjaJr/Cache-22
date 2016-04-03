@@ -59,7 +59,13 @@ assign dmem_write = Vbase_valid_out & Vsrc_valid_out;
 
 assign dmem_wdata = Vsrc_out;
 
-assign dmem_read = Vbase_valid_out & !Vsrc_valid_out;
+always_comb
+begin
+	case(opcode_out)
+   op_ldr: dmem_read = Vbase_valid_out & !Vsrc_valid_out;
+	default: dmem_read = 0;
+	endcase
+end
 
 assign CDB_out.valid  = mem_val_valid_out;
 assign CDB_out.tag = dest_out;
