@@ -418,7 +418,6 @@ begin
 					else		// Wait for Base value
 					begin
 						stall = 1'b1;
-						rob_write_enable = 1'b0;
 					end
 				end
 				else
@@ -432,11 +431,12 @@ begin
 				rob_write_enable = 1'b1;
 				rob_value_in = curr_pc;
 				rob_dest = 3'b111;
+				ld_reg_busy_dest = 1'b1;
+				reg_rob_entry = rob_addr;
 
 				if(instr[11]) //JSR
 				begin
 					br_pc = curr_pc + adj11_out;
-					rob_write_enable = 1'b0;
 				end
 				else 	//JSRR
 				begin
