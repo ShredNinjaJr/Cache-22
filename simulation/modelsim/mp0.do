@@ -1,5 +1,12 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
+add wave -noupdate /mp3_tb/clk
+add wave -noupdate /mp3_tb/pmem_resp
+add wave -noupdate /mp3_tb/pmem_read
+add wave -noupdate /mp3_tb/pmem_write
+add wave -noupdate /mp3_tb/pmem_address
+add wave -noupdate /mp3_tb/pmem_rdata
+add wave -noupdate /mp3_tb/pmem_wdata
 add wave -noupdate /mp3_tb/dut/cpu_datapath/pc_out
 add wave -noupdate /mp3_tb/dut/imem_resp
 add wave -noupdate /mp3_tb/dut/imem_read
@@ -16,9 +23,21 @@ add wave -noupdate /mp3_tb/dut/dmem_address
 add wave -noupdate /mp3_tb/dut/L1_cache/arbiter/state
 add wave -noupdate -expand /mp3_tb/dut/cpu_datapath/regfile/value_reg/data
 add wave -noupdate /mp3_tb/dut/cpu_datapath/ir_out
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/opcode
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/adj9_out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/curr_pc
+add wave -noupdate /mp3_tb/dut/cpu_datapath/regfile/busy_reg/data
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/sr1
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/sr1_reg_busy
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/sr1_value
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/instr_is_new
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/stall
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/adj11_out
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/instr
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/pcmux_sel
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/new_pc
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/br_pc
+add wave -noupdate /mp3_tb/dut/cpu_datapath/alu_RS/busy_out
 add wave -noupdate -expand /mp3_tb/dut/cpu_datapath/alu_RS/CDB_arbiter/RS_CDB_in
 add wave -noupdate /mp3_tb/dut/cpu_datapath/alu_RS/CDB_arbiter/RS_flush
 add wave -noupdate /mp3_tb/dut/cpu_datapath/alu_RS/CDB_arbiter/CDB_out
@@ -115,7 +134,7 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/rob_empty
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/flush
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/full
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {113655 ps} 0}
+WaveRestoreCursors {{Cursor 1} {1433310 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100
@@ -131,4 +150,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {656250 ps}
+WaveRestoreZoom {778323 ps} {2090823 ps}

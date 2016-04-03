@@ -78,7 +78,7 @@ begin
 	flush = 0;
 	dmem_write = 0;
 	ldstr_RE_out = 0;
-	if(valid_in || opcode_in == op_str)
+	if(valid_in)
 	begin
 		case(opcode_in)
 		op_br: begin

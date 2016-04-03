@@ -399,6 +399,7 @@ begin
 				rob_dest = dest_reg;
 				ld_reg_busy_dest = 1'b1;
 				reg_rob_entry = rob_addr;
+				reg_dest = dest_reg;
 			end
 			
 			// JMP Will stall until register is ready
@@ -433,6 +434,7 @@ begin
 				rob_dest = 3'b111;
 				ld_reg_busy_dest = 1'b1;
 				reg_rob_entry = rob_addr;
+				reg_dest = dest_reg;
 
 				if(instr[11]) //JSR
 				begin
