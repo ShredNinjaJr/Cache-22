@@ -397,6 +397,8 @@ begin
 				rob_write_enable = 1'b1;
 				rob_value_in = curr_pc + adj9_out;
 				rob_dest = dest_reg;
+				ld_reg_busy_dest = 1'b1;
+				reg_rob_entry = rob_addr;
 			end
 			
 			// JMP Will stall until register is ready
