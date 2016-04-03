@@ -234,7 +234,9 @@ write_results_control wr_control
 	/* TO DATAPATH */
 	.flush,
 	/* To fetch Unit */
-	.new_pc, .pcmux_sel(pcmux_sel[1])
+	.new_pc, .pcmux_sel(pcmux_sel[1]),
+	/* TO MEMORY */
+	.dmem_write
 	
 	
 );
@@ -289,7 +291,7 @@ ldstr_buffer LDSTR_buffer
 	
 	.CDB_in(C_D_B),
 	
-	.dmem_read(dmem_read), .dmem_write(dmem_write),
+	.dmem_read(dmem_read), //.dmem_write(dmem_write),
 	.dmem_wdata(dmem_wdata), .dmem_addr(dmem_address),
 	.dmem_byte_enable(dmem_byte_enable),
 	

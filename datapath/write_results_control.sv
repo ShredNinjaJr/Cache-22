@@ -26,13 +26,17 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	
 	/* To fetch unit */
 	output logic  pcmux_sel,
-	output lc3b_word new_pc
+	output lc3b_word new_pc,
+	
+	/* To memory */
+	output logic dmem_write
 		
 );
 
 assign dest_a = dest_in;
 assign value_out = value_in;
 assign new_pc = value_in;
+
 
 
 logic ld_cc;
@@ -69,7 +73,8 @@ begin
 	RE_out = 0;
 	pcmux_sel = 0;
 	flush = 0;
-	if(valid_in)
+	dmem_write = 0;
+	if(valid_in || opcode_in == op_str)
 	begin
 		case(opcode_in)
 		op_br: begin
@@ -86,6 +91,10 @@ begin
 			ld_regfile_busy = 1'b1;
 			ld_regfile_value = 1'b1;
 			ld_cc = 1'b1;
+			RE_out = 1'b1;
+		end
+		op_str: begin
+			dmem_write = 1'b1;
 			RE_out = 1'b1;
 		end
 		default: ;

@@ -158,8 +158,8 @@ begin
 	ldstr_Qsrc = 0;
 	ldstr_Qbase = 0;
 	ldstr_dest = rob_addr;
-	ldstr_Vsrc_valid_in = 1;
-	ldstr_Vbase_valid_in = 1;
+	ldstr_Vsrc_valid_in = 0;
+	ldstr_Vbase_valid_in = 0;
 	ldstr_Vsrc = 0;
 	ldstr_Vbase = 0;
 	
@@ -273,19 +273,27 @@ begin
 				/* LOAD BUFFER OUTPUTS */
 				ldstr_write_enable = 1'b1;
 				res_op_in = opcode;
-				ldstr_Vsrc_valid_in = 1'b0;
 				if (sr1_reg_busy)	// Base not ready
 				begin
 					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
-						ldstr_Vbase = CDB_in.data;
-					else if (sr1_rob_valid) // ROB has value for Base
-						ldstr_Vbase = sr1_rob_value;
-					else		// Wait for Base value
 					begin
-						ldstr_Qbase = sr1_rob_e;
-						ldstr_Vbase_valid_in = 1'b0;
+						ldstr_Vbase = CDB_in.data;
+						ldstr_Vbase_valid_in = 1'b1;
 					end
+					else if (sr1_rob_valid) // ROB has value for Base
+					begin
+						ldstr_Vbase = sr1_rob_value;
+						ldstr_Vbase_valid_in = 1'b1;
+					end
+					else		// Wait for Base value
+						ldstr_Qbase = sr1_rob_e;
 				end
+				else	// Base is ready
+				begin
+					ldstr_Vbase = sr1_value;
+					ldstr_Vbase_valid_in = 1'b1;
+				end
+				
 				
 				/* ROB OUTPUTS */
 				rob_write_enable = 1'b1;
@@ -308,28 +316,52 @@ begin
 				if (sr1_reg_busy)	// Base not ready
 				begin
 					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
-						ldstr_Vbase = CDB_in.data;
-					else if (sr1_rob_valid) // ROB has value for Base
-						ldstr_Vbase = sr1_rob_value;
-					else		// Wait for Base value
 					begin
-						ldstr_Qbase = sr1_rob_e;
-						ldstr_Vbase_valid_in = 1'b0;
+						ldstr_Vbase = CDB_in.data;
+						ldstr_Vbase_valid_in = 1'b1;
 					end
+					else if (sr1_rob_valid) // ROB has value for Base
+					begin
+						ldstr_Vbase = sr1_rob_value;
+						ldstr_Vbase_valid_in = 1'b1;
+					end
+					else		// Wait for Base value
+						ldstr_Qbase = sr1_rob_e;
+				end
+				else	// Base is ready
+				begin
+					ldstr_Vbase = sr1_value;
+					ldstr_Vbase = 1'b1;
 				end
 				
 				if (dest_reg_busy)	// Source is busy
 				begin
 					if (CDB_in.valid == 1'b1 && CDB_in.tag == dest_rob_e)	// CDB has value for Source
-						ldstr_Vsrc = CDB_in.data;
-					else if (sr2_rob_valid) // ROB has value for Source
-						ldstr_Vsrc = sr2_rob_value;
-					else		// Wait for Source value
 					begin
-						ldstr_Qsrc = dest_rob_e;
-						ldstr_Vsrc_valid_in = 1'b0;
+						ldstr_Vsrc = CDB_in.data;
+						ldstr_Vsrc_valid_in = 1'b1;
 					end
+					else if (sr2_rob_valid) // ROB has value for Source
+					begin
+						ldstr_Vsrc = sr2_rob_value;
+						ldstr_Vsrc_valid_in = 1'b1;
+					end
+					else		// Wait for Source value
+						ldstr_Qsrc = dest_rob_e;
 				end
+				else	// Source is ready
+				begin
+					ldstr_Vsrc = dest_value;
+					ldstr_Vsrc = 1'b1;
+				end
+				
+				/* ROB OUTPUTS */
+				rob_write_enable = 1'b1;
+				rob_opcode = opcode;
+				rob_dest = 0;
+				
+				/* REGFILE OUTPUT */
+				reg_dest = dest_reg;
 				
 			end
 			
