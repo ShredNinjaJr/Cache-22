@@ -20,6 +20,7 @@ module cdb_ld_str_res_station #(parameter data_width = 16, parameter tag_width =
 logic [data_width - 1: 0] Vsrc_in, Vbase_in;
 logic [tag_width - 1: 0] Qsrc_in, Qbase_in, dest_in;
 logic ld_opcode, ld_Qsrc, ld_Vsrc, ld_Qbase, ld_Vbase, ld_offset, ld_dest, ld_busy;
+logic Vbase_valid_input, Vsrc_valid_input;
 
 logic [data_width - 1: 0] Vsrc_out, Vbase_out, mem_val_out, offset_out;
 logic [tag_width - 1: 0] Qsrc_out, Qbase_out, dest_out;

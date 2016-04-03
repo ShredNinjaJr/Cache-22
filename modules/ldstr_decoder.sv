@@ -8,14 +8,14 @@ module ldstr_decoder #(parameter n = 7)
 	output logic issue_WE[0:n],
 	output logic issue_flush[0:n],
 	output logic issue_ld_mem_val[0:n],
-	output [2:0] r_addr_out,
+	output [1:0] r_addr_out,
 	output logic full
 );
 
 byte unsigned j;
-logic [2:0] r_addr;
-logic [2:0] w_addr; 
-logic [3:0] counter;
+logic [1:0] r_addr;
+logic [1:0] w_addr; 
+logic [2:0] counter;
 logic empty;
 
 assign empty = (counter == 0);
@@ -37,11 +37,11 @@ begin: count_logic
 	else
 	begin
 		if(RE & ~WE)
-			counter <= counter - 4'b1;
+			counter <= counter - 3'b1;
 		else if(WE & ~RE)
 		begin
 			if(~full)
-				counter <= counter + 4'b1;
+				counter <= counter + 3'b1;
 		end
 	end
 end
@@ -59,7 +59,7 @@ begin
 	begin: Write
 		if(~full)
 		begin
-			w_addr <= w_addr + 3'b1;
+			w_addr <= w_addr + 2'b1;
 		end
 	end: Write
 	
@@ -67,7 +67,7 @@ begin
 	begin: Read
 		if(~empty)
 		begin
-			r_addr <= r_addr + 3'b1;
+			r_addr <= r_addr + 2'b1;
 		end
 	end: Read
 end

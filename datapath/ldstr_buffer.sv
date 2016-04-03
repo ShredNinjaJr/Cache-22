@@ -1,6 +1,6 @@
 import lc3b_types::*;
 
-module ldstr_buffer #(parameter data_width = 16, parameter tag_width = 3, parameter n = 7)
+module ldstr_buffer #(parameter data_width = 16, parameter tag_width = 3, parameter n = 3)
 (
 	input clk, flush, WE, ld_buffer_read, wr_RE_out,
 	input lc3b_opcode opcode_in,
@@ -26,14 +26,14 @@ lc3b_word mem_val_in;
 
 
 /* Decoder unit */
-ldstr_decoder LD_STR_decoder (.*);
+ldstr_decoder #(.n(n)) LD_STR_decoder (.*);
 
 /* RS wires */
 logic issue_WE[0:n];
 logic issue_flush[0:n];
 logic issue_ld_mem_val[0:n];
 logic RE;
-logic [tag_width-1:0] r_addr_out;
+logic [1:0] r_addr_out;
 
 logic Vsrc_valid_output[0:n];
 logic Vbase_valid_output[0:n];
