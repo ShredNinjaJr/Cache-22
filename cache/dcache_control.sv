@@ -18,6 +18,8 @@ enum logic[1:0] {
 	 HIT, EVICT, ALLOCATE
 } state, next_state;
 
+initial state = HIT;
+
 always_comb
 begin: state_actions
 
