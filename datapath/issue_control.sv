@@ -177,7 +177,10 @@ begin
 	!instr_is_new)
 	begin
 		// STALL
-		if(instr_is_new & ~branch_stall)
+		if(rob_full ||
+			(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
+			(ldstr_full && opcode == op_ldr) || 
+			(instr_is_new & ~branch_stall))
 			stall = 1'b1;
 	end
 	else
