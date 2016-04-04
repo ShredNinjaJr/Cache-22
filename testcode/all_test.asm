@@ -24,7 +24,7 @@ NEXT3:
 	BRnzp HALT
 NEXT4:
 	AND R4,R2,-7
-	BRn NEXT8
+	BRn LDB_TEST_1
 	LDR R6,R0,Bad4 ; Immediate AND with a neg. value does not work
 	BRnzp HALT
 LDB_TEST_1:
@@ -47,7 +47,7 @@ NEXT5:
 	;Check if STB Worked
 	LDR R5, R0, LowSByte
 	ADD R2, R5, R6
-	BRz FINISH
+	BRz NEXT8
 	LDR R6, R0, Bad6
 	BRnzp HALT
 
