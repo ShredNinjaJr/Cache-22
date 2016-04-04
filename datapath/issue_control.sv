@@ -444,7 +444,8 @@ begin
 				rob_dest = 3'b111;
 				ld_reg_busy_dest = 1'b1;
 				reg_rob_entry = rob_addr;
-				reg_dest = dest_reg;
+				reg_dest = 3'b111;
+				pcmux_sel = 1'b1;
 
 				if(instr[11]) //JSR
 				begin
