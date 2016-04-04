@@ -21,7 +21,7 @@ logic load_pc, load_ir;
 assign load_pc = imem_resp & ~stall;
 assign load_ir = imem_resp & ~stall;
 assign imem_address = pc_out; 
-assign imem_read = 1;
+assign imem_read = ~stall;
 lc3b_word pcmux_out;
 
 plus2 plus2 (.in(pc_out), .out(pc_plus2_out));

@@ -117,6 +117,9 @@ begin
 		else
 			branch_stall <= 0;
 	end
+	op_jsr, op_jmp: begin
+		branch_stall <= 1'b1;
+	end
 	default: branch_stall <= 0;
 	endcase
 end
