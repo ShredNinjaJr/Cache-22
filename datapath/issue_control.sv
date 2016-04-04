@@ -79,6 +79,7 @@ lc3b_word sr1_rob_value;
 lc3b_word sr2_rob_value;
 logic sr1_rob_valid;
 logic sr2_rob_valid;
+logic branch_stall_in;
 
 assign dest_reg = instr[11:9];
 assign opcode = lc3b_opcode'(instr[15:12]);
@@ -117,7 +118,7 @@ begin
 			branch_stall <= 0;
 	end
 	op_jsr, op_jmp: begin
-		branch_stall <= 1'b1;
+		branch_stall <= branch_stall_in;
 	end
 	default: branch_stall <= 0;
 	endcase
@@ -170,7 +171,7 @@ begin
 	issue_ld_Qj = 0;
 	issue_ld_Qk = 0;
 	res_station_id = 0;
-	
+	branch_stall_in = 0;
 	ldstr_Qsrc = 0;
 	ldstr_Qbase = 0;
 	ldstr_dest = rob_addr;
@@ -412,6 +413,7 @@ begin
 			// JMP Will stall until register is ready
 			op_jmp:
 			begin
+				branch_stall_in = 1;
 				pcmux_sel = 1'b1;
 				if (sr1_reg_busy)	// Base not ready
 				begin
@@ -436,6 +438,7 @@ begin
 			
 			op_jsr:
 			begin
+				branch_stall_in = 1;
 				rob_write_enable = 1'b1;
 				rob_value_in = curr_pc;
 				rob_dest = 3'b111;
