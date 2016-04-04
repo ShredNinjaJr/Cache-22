@@ -106,7 +106,7 @@ begin
 			ld_regfile_value = 1'b1;
 			RE_out = 1'b1;
 		end
-		op_str: begin
+		op_str, op_stb: begin
 			dmem_write = 1'b1;
 			RE_out = dmem_resp;
 			ldstr_RE_out = dmem_resp;
