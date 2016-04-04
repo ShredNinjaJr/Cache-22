@@ -18,8 +18,8 @@ module fetch_unit
 lc3b_word pc_plus2_out;
 
 logic load_pc, load_ir;
-assign load_pc = imem_resp & ~stall;
-assign load_ir = imem_resp & ~stall;
+assign load_pc = (pcmux_sel == 2'b0) ? (imem_resp & ~stall) : 1'b1;
+assign load_ir = load_pc;
 assign imem_address = pc_out; 
 assign imem_read = ~stall;
 lc3b_word pcmux_out;
