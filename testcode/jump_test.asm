@@ -19,11 +19,12 @@ CODE:
     LDR R3, R0, SVAL3
     LDR R4, R0, SVAL4
 
-    LEA R5, THERE
-    JMP R5
+    AND R4, R4, 0
     JSR HERE
     LEA R5, HERE
     JSRR R5 
+    LEA R5, THERE
+    JMP R5
 GOODEND:
     BRnzp GOODEND
 
@@ -35,7 +36,7 @@ THERE:
     BRnzp BADEND
 
 HERE:
-	AND R4, R0, 3
+	ADD R4, R4, 3
 	RET
 
 BADEND:
