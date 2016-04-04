@@ -24,7 +24,7 @@ NEXT3:
 	BRnzp HALT
 NEXT4:
 	AND R4,R2,-7
-	BRn LDB_TEST_1
+	BRn NEXT8
 	LDR R6,R0,Bad4 ; Immediate AND with a neg. value does not work
 	BRnzp HALT
 LDB_TEST_1:
@@ -78,7 +78,7 @@ NEXT8:
 	LEA R3, SUBR
 	JSRR R3
 	LDR R6, R0, BadB
-	TRAP delta
+;	TRAP delta
 	BRnzp HALT
 SUBR:
 	LDR R6, R0, Good
