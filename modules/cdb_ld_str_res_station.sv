@@ -13,7 +13,8 @@ module cdb_ld_str_res_station #(parameter data_width = 16, parameter tag_width =
 	output CDB CDB_out,
 	output lc3b_word dmem_addr,
 	output logic dmem_write, dmem_read,
-	output lc3b_word dmem_wdata
+	output lc3b_word dmem_wdata,
+	output lc3b_mem_wmask dmem_byte_enable
 	
 );
 
@@ -22,7 +23,7 @@ logic [tag_width - 1: 0] Qsrc_in, Qbase_in, dest_in;
 logic ld_opcode, ld_Qsrc, ld_Vsrc, ld_Qbase, ld_Vbase, ld_offset, ld_dest, ld_busy;
 logic Vbase_valid_input, Vsrc_valid_input;
 
-logic [data_width - 1: 0] Vsrc_out, Vbase_out, mem_val_out, offset_out;
+logic [data_width - 1: 0] Vsrc_out, Vbase_out, mem_val_out, offset_out, offset_b_out;
 logic [tag_width - 1: 0] Qsrc_out, Qbase_out, dest_out;
 logic busy_in, busy_out;
 lc3b_opcode opcode_out;
@@ -54,22 +55,24 @@ assign mem_val_valid_in = 1'b1;
 
 ld_str_res_station ld_str_res_station_reg (.*);
 
-assign dmem_addr = (Vbase_out + offset_out);
+assign dmem_addr = (opcode_out == op_ldr || opcode_out == op_str) ? (Vbase_out + offset_out) : (Vbase_out + {offset_out[15:1], 1'b0});
 
 assign dmem_write = Vbase_valid_out & Vsrc_valid_out;
 
 assign dmem_wdata = Vsrc_out;
 
+assign dmem_byte_enable = (opcode_out == op_stb) ? (offset_out[0] ? 2'b10 : 2'b01) : 2'b11;
+
 always_comb
 begin
 	case(opcode_out)
-   op_ldr: dmem_read = Vbase_valid_out & !Vsrc_valid_out;
+   op_ldr, op_ldb: dmem_read = Vbase_valid_out & !Vsrc_valid_out;
 	default: dmem_read = 0;
 	endcase
 end
 
 assign CDB_out.valid  = mem_val_valid_out;
 assign CDB_out.tag = dest_out;
-assign CDB_out.data = mem_val_out;
+assign CDB_out.data = (opcode_out == op_ldb) ? (offset_out[0] == 1'b1 ? ({mem_val_out[15:8],8'b0}) : ({8'b0,mem_val_out[7:0]})) : mem_val_out;
 
 endmodule: cdb_ld_str_res_station
