@@ -15,13 +15,86 @@ add wave -noupdate /mp3_tb/dut/dmem_byte_enable
 add wave -noupdate /mp3_tb/dut/dmem_address
 add wave -noupdate /mp3_tb/dut/L1_cache/arbiter/state
 add wave -noupdate -expand /mp3_tb/dut/cpu_datapath/regfile/value_reg/data
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/opcode
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_write_enable
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_offset
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_full
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_dest
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Vsrc_valid_in
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Vsrc
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Vbase_valid_in
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Vbase
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Qsrc
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Qbase
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_write_enable
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Vsrc_valid_in
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/dest_reg_busy
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Qsrc
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Vsrc
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_Vbase
 add wave -noupdate /mp3_tb/dut/cpu_datapath/LDSTR_buffer/dmem_wdata
 add wave -noupdate -expand /mp3_tb/dut/cpu_datapath/LDSTR_buffer/datamem_write
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Vsrc}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/opcode_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/opcode_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/offset_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/offset_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/mem_val_valid_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/mem_val_valid_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/mem_val_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/mem_val_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/ld_opcode}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/ld_offset}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/ld_mem_val}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/ld_dest}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/ld_busy}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/ld_Vsrc}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/ld_Vbase}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/ld_Qsrc}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/ld_Qbase}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/flush}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/dmem_write}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/dmem_wdata}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/dmem_read}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/dmem_byte_enable}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/dmem_addr}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/dest_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/dest_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/dest}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/data_width}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/clk}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/busy_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/busy_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/WE}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vsrc_valid_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vsrc_valid_input}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vsrc_valid_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vsrc_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vsrc_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vsrc}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vbase_valid_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vbase_valid_input}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vbase_valid_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vbase_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vbase_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Vbase}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Qsrc_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Qsrc_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Qsrc}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Qbase_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Qbase_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/Qbase}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/CDB_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[2]/RS/CDB_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/ld_str_res_station_reg/ld_opcode}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Vsrc_valid_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Vsrc_valid_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Qsrc_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Qsrc_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Qsrc}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Vsrc_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Vsrc_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Vsrc}
 add wave -noupdate -expand /mp3_tb/dut/cpu_datapath/LDSTR_buffer/datamem_wdata
 add wave -noupdate /mp3_tb/dut/cpu_datapath/LDSTR_buffer/datamem_read
 add wave -noupdate -expand /mp3_tb/dut/cpu_datapath/LDSTR_buffer/datamem_addr
@@ -83,6 +156,9 @@ add wave -noupdate {/mp3_tb/dut/cpu_datapath/alu_RS/RS_generate[1]/RS/dest_out}
 add wave -noupdate {/mp3_tb/dut/cpu_datapath/alu_RS/RS_generate[1]/RS/op_out}
 add wave -noupdate {/mp3_tb/dut/cpu_datapath/alu_RS/RS_generate[1]/RS/Vk_valid_out}
 add wave -noupdate {/mp3_tb/dut/cpu_datapath/alu_RS/RS_generate[1]/RS/Vj_valid_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Vsrc_out}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Vsrc_in}
+add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[0]/RS/Vsrc}
 add wave -noupdate {/mp3_tb/dut/cpu_datapath/alu_RS/RS_generate[0]/RS/Vj_out}
 add wave -noupdate {/mp3_tb/dut/cpu_datapath/alu_RS/RS_generate[0]/RS/Vk_out}
 add wave -noupdate {/mp3_tb/dut/cpu_datapath/alu_RS/RS_generate[0]/RS/Qj_out}
@@ -120,7 +196,6 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/dest_out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/valid_out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/value_out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/predict_out
-add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/addr_out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/r_addr
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/w_addr
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/inst
@@ -140,7 +215,7 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/rob_empty
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/flush
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/full
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {655000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {1450183 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100
@@ -156,4 +231,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {2100 ns}
+WaveRestoreZoom {881560 ps} {2044140 ps}
