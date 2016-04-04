@@ -17,6 +17,9 @@ module regfile #(parameter data_width = 16, parameter tag_width = 3)
 	
 	 input lc3b_reg sr1_ic, sr2_ic, dest_ic,
 	 input lc3b_reg dest_rob,
+	 input lc3b_reg dest_wr,
+	 
+	 output lc3b_rob_addr dest_wr_out,
 
 	 /* Dest output needed for Issue Control */
 	 output regfile_t sr1_out, sr2_out, dest_out
@@ -76,7 +79,9 @@ regfile_data #(.data_width(3),.tag_width(3)) rob_entry_reg (
 	 .dest(dest_ic),
 	 .reg_a(sr1_out.rob_entry), 
 	 .reg_b(sr2_out.rob_entry),
-	 .dest_out(dest_out.rob_entry)
+	 .dest_out(dest_out.rob_entry),
+	 .dest_b(dest_wr),
+	 .dest_b_out(dest_wr_out)
 );
 
 endmodule :regfile

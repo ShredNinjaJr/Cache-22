@@ -11,12 +11,16 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	input [data_width - 1:0] value_in,
 	input predict_in,
 	input rob_empty,
+	input lc3b_rob_addr dest_wr_data,
+	input lc3b_rob_addr rob_addr,
+	input dmem_resp,
 	
 	/* To Regfile */
 	output lc3b_reg dest_a,
 	output logic[data_width - 1: 0] value_out,
 	output logic ld_regfile_value,
 	output logic ld_regfile_busy,
+	output lc3b_reg dest_wr,
 	
 	/* TO ROB */
 	output logic RE_out,
@@ -40,7 +44,7 @@ assign dest_a = dest_in;
 assign value_out = value_in;
 assign new_pc = value_in;
 
-
+assign dest_wr = dest_in;
 
 logic ld_cc;
 lc3b_nzp gencc_out;
@@ -92,20 +96,20 @@ begin
 			 RE_out = 1'b1;
 		end 
 		op_add, op_and, op_not, op_shf, op_lea, op_ldr: begin
-			ld_regfile_busy = 1'b1;
+			ld_regfile_busy = (dest_wr_data == rob_addr);
 			ld_regfile_value = 1'b1;
 			ld_cc = 1'b1;
 			RE_out = 1'b1;
 		end
 		op_jsr: begin
-			ld_regfile_busy = 1'b1;
+			ld_regfile_busy = (dest_wr_data == rob_addr);
 			ld_regfile_value = 1'b1;
 			RE_out = 1'b1;
 		end
 		op_str: begin
 			dmem_write = 1'b1;
-			RE_out = 1'b1;
-			ldstr_RE_out = 1'b1;
+			RE_out = dmem_resp;
+			ldstr_RE_out = dmem_resp;
 		end
 		default: ;
 		endcase

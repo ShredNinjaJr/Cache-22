@@ -5,8 +5,8 @@ module regfile_data # (parameter data_width = 16, parameter tag_width = 3)
     input clk,
     input load,
     input [data_width - 1:0] in,
-    input [tag_width - 1:0] sr1, sr2, dest,
-    output logic [data_width - 1:0] reg_a, reg_b, dest_out
+    input [tag_width - 1:0] sr1, sr2, dest, dest_b,
+    output logic [data_width - 1:0] reg_a, reg_b, dest_out, dest_b_out
 );
 
 logic [data_width - 1:0] data [7:0] /* synthesis ramstyle = "logic" */;
@@ -35,6 +35,7 @@ begin
     reg_a = data[sr1];
     reg_b = data[sr2];
 	 dest_out = data[dest];
+	 dest_b_out = data[dest_b];
 end
 
 endmodule : regfile_data

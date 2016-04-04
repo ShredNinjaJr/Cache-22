@@ -362,7 +362,7 @@ begin
 				else	// Source is ready
 				begin
 					ldstr_Vsrc = dest_value;
-					ldstr_Vsrc = 1'b1;
+					ldstr_Vsrc_valid_in = 1'b1;
 				end
 				
 				/* ROB OUTPUTS */
