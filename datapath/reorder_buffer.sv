@@ -17,7 +17,7 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	input [tag_width - 1: 0] sr2_read_addr, 
 
 	/* Tail address */
-	output logic [tag_width-1:0] addr_out,
+	output logic [tag_width-1:0] w_addr_out, r_addr_out,
 	/* Output of the 5 data fields at the head of the FIFO */
 	output logic valid_out,
 	output lc3b_opcode inst_out,

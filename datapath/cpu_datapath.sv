@@ -171,7 +171,7 @@ lc3b_reg rob_dest_out;
 lc3b_word rob_value_out;
 logic rob_predict_out;
 logic rob_empty;
-
+lc3b_rob_addr r_rob_addr;
 reorder_buffer reorder_buffer
 (
 	.clk, .flush,
@@ -189,7 +189,8 @@ reorder_buffer reorder_buffer
 	.sr1_read_addr(rob_sr1_read_addr),
 	.sr2_read_addr(rob_sr2_read_addr),
 	
-	.addr_out(rob_addr),
+	.w_addr_out(rob_addr),
+	.r_addr_out(r_rob_addr),
 	
 	.valid_out(rob_valid_out),
 	.inst_out(rob_opcode_out),
@@ -211,7 +212,8 @@ lc3b_reg rob_regfile_dest_in;
 lc3b_word regfile_value_in;
 logic ld_regfile_value, rob_ld_regfile_busy;
 
-
+lc3b_reg dest_wr;
+lc3b_rob_addr dest_wr_data;
 
 write_results_control wr_control
 (
@@ -222,13 +224,15 @@ write_results_control wr_control
 	.value_in(rob_value_out),
 	.predict_in(rob_predict_out),
 	.rob_empty,
+	.rob_addr(r_rob_addr),
+	.dmem_resp,
 	
 	/* To regfile */
 	.dest_a(rob_regfile_dest_in),
 	.value_out(regfile_value_in),
 	.ld_regfile_value,
 	.ld_regfile_busy(rob_ld_regfile_busy),
-	
+	.dest_wr,
 	/* TO ROB */
 	.RE_out,
 	
@@ -239,8 +243,10 @@ write_results_control wr_control
 	/* TO MEMORY */
 	.dmem_write,
 	
-	.ldstr_RE_out
+	.ldstr_RE_out,
 	
+	/* FROM REGFILE */
+	.dest_wr_data
 	
 );
 
@@ -317,6 +323,7 @@ regfile regfile
 	.value_in(regfile_value_in),
 
 	.dest_rob(rob_regfile_dest_in),
+	.dest_wr, .dest_wr_out(dest_wr_data),
 
 	.sr1_out(sr1_regfile_out), .sr2_out(sr2_regfile_out), .dest_out(dest_regfile_out)
 );

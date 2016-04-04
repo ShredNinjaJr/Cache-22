@@ -36,7 +36,7 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	output logic predict_out,
 
 	/* The current tail address of the FIFO*/
-	output [tag_width-1:0] addr_out,
+	output [tag_width-1:0] w_addr_out, r_addr_out,
 	
 	/* Signals if the Buffer is empty/full */
 	output logic empty, full,
@@ -69,7 +69,8 @@ assign dest_out = dest[r_addr];
 assign valid_out = valid[r_addr];
 assign predict_out = predict[r_addr];
 
-assign addr_out = w_addr;
+assign w_addr_out = w_addr;
+assign r_addr_out = r_addr;
 
 /* Assign non FIFO style outputs */
 assign sr1_value_out = value[sr1_read_addr];
