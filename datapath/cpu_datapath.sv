@@ -62,7 +62,7 @@ lc3b_rob_addr res_Qk, res_Qj, res_dest;
 logic issue_ld_busy_dest, issue_ld_Vj, issue_ld_Vk;
 logic issue_ld_Qk, issue_ld_Qj;
 
-/* Issue Control -> Load Buffer */
+/* Issue Control -> Load Store Buffer */
 logic ldstr_write_enable;
 lc3b_word ldstr_offset;
 lc3b_rob_addr ldstr_Qsrc;

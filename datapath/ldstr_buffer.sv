@@ -42,6 +42,7 @@ lc3b_word datamem_addr[0:n];
 logic datamem_write[0:n]; 
 logic datamem_read[0:n];
 lc3b_word datamem_wdata[0:n];
+lc3b_mem_wmask datamem_byte_enable[0:n];
 
 CDB LD_STR_CDB_out[0:n];
 
@@ -67,26 +68,20 @@ begin: RS_generate
 		.dmem_addr(datamem_addr[i]),
 		.dmem_write(datamem_write[i]), 
 		.dmem_read(datamem_read[i]),
-		.dmem_wdata(datamem_wdata[i])
-			
+		.dmem_wdata(datamem_wdata[i]),
+		.dmem_byte_enable(datamem_byte_enable[i])
 	);
 end
 endgenerate
 
-assign dmem_byte_enable = 2'b11;
 assign mem_val_in = dmem_rdata;
 assign RE = ld_buffer_read | wr_RE_out;
 		
 
 assign dmem_read = datamem_read[r_addr_out];		
-
-								
-always_comb
-	begin
-		dmem_wdata = datamem_wdata[r_addr_out];
-		dmem_addr = datamem_addr[r_addr_out];
-	
-		CDB_out = LD_STR_CDB_out[r_addr_out];
-	end
+assign dmem_wdata = datamem_wdata[r_addr_out];
+assign dmem_addr = datamem_addr[r_addr_out];
+assign dmem_byte_enable = datamem_byte_enable[r_addr_out];
+assign CDB_out = LD_STR_CDB_out[r_addr_out];
 
 endmodule: ldstr_buffer

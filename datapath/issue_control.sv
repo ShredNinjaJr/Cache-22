@@ -58,11 +58,10 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 assign bit5 = instr[5];
 
 lc3b_word sext5_out;
+lc3b_word sext6_out;
 lc3b_word adj6_out;
 lc3b_word adj9_out;
 lc3b_word adj11_out;
-
-
 
 lc3b_reg dest_reg;
 lc3b_opcode opcode;
@@ -87,7 +86,7 @@ assign rob_opcode = opcode;
 assign sr1 = instr[8:6];
 assign sr2 = instr[2:0];
 
-assign ldstr_offset = adj6_out;
+assign ldstr_offset = (opcode == op_stb || opcode == op_ldb) ? sext6_out : adj6_out;
 
 assign sr1_reg_busy = sr1_in.busy;
 assign sr2_reg_busy = sr2_in.busy;
@@ -128,6 +127,12 @@ sext #(.width(5)) sext5
 (
 	.in(instr[4:0]),
 	.out(sext5_out)
+);
+
+sext #(.width(6)) sext6
+(
+	.in(instr[5:0]),
+	.out(sext6_out)
 );
 
 adj #(.width(6)) adj6
@@ -185,7 +190,7 @@ begin
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
-	(ldstr_full && opcode == op_ldr) || branch_stall || 
+	(ldstr_full && (opcode == op_ldr || opcode == op_str)) || branch_stall || 
 	!instr_is_new)
 	begin
 		// STALL
@@ -278,8 +283,8 @@ begin
 			end
 			
 			
-			// LDR,
-			op_ldr:
+			// LDR, LDB
+			op_ldr, op_ldb:
 			begin
 				/* LOAD BUFFER OUTPUTS */
 				ldstr_write_enable = 1'b1;
@@ -317,8 +322,8 @@ begin
 				
 			end
 			
-			// STR
-			op_str:
+			// STR, STB
+			op_str, op_stb:
 			begin
 				ldstr_write_enable = 1'b1;
 				res_op_in = opcode;
@@ -388,7 +393,6 @@ begin
 				end
 				else
 				begin
-					
 					rob_value_in = br_pc;
 				end
 
