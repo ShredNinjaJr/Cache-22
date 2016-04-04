@@ -93,9 +93,9 @@ logic instr_is_new;
 initial instr_is_new = 0;
 always_ff@ (posedge clk)
 begin
-	if(~flush)
+	if(~flush & ~stall)
 		instr_is_new <= imem_resp;
-	else	
+	else if(~stall)
 		instr_is_new <= 0;
 end
 

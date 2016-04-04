@@ -16,7 +16,7 @@ ASSEMBLER=$HOME/Cache-22/bin/LC3bAssembler
 ADDRESSABILITY=16
 
 #Testcode directory;Not required but can be used to avoid entering path everytime
-TESTCODE_DIR=$HOME/ece411/testcode/
+TESTCODE_DIR=$HOME/Cache-22/testcode/
 
 ####
 ####Change according to your design
