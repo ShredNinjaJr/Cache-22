@@ -65,9 +65,11 @@ regfile_data #(.data_width(16),.tag_width(3)) value_reg (
 	 .sr1(sr1_ic), 
 	 .sr2(sr2_ic), 
 	 .dest(dest_rob),
+	 .dest_b(dest_ic),
 	 .reg_a(sr1_out.data), 
 	 .reg_b(sr2_out.data),
-	 .dest_out(dest_out.data)
+	 //.dest_out(dest_out.data),
+	 .dest_b_out(dest_out.data)
 );
 
 regfile_data #(.data_width(3),.tag_width(3)) rob_entry_reg (
