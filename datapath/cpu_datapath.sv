@@ -99,6 +99,7 @@ begin
 		instr_is_new <= 0;
 end
 
+lc3b_word trap_reg;
 issue_control issue_control
 (
 	.clk, 
@@ -133,6 +134,7 @@ issue_control issue_control
 	.issue_ld_Qk, .issue_ld_Qj, 
 	.res_station_id,
 	.bit5,
+	.trap_reg,
 	
 	// Issue Control -> Load Buffer
 	.ldstr_write_enable(ldstr_write_enable),
@@ -226,6 +228,7 @@ write_results_control wr_control
 	.rob_empty,
 	.rob_addr(r_rob_addr),
 	.dmem_resp,
+	.trap_reg, 
 	
 	/* To regfile */
 	.dest_a(rob_regfile_dest_in),

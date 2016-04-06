@@ -14,7 +14,7 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	input lc3b_rob_addr dest_wr_data,
 	input lc3b_rob_addr rob_addr,
 	input dmem_resp,
-	
+	input lc3b_word trap_reg,
 	/* To Regfile */
 	output lc3b_reg dest_a,
 	output logic[data_width - 1: 0] value_out,
@@ -41,7 +41,7 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 );
 
 assign dest_a = dest_in;
-assign value_out = value_in;
+assign value_out = (opcode_in == op_trap) ? trap_reg : value_in;
 assign new_pc = value_in;
 
 assign dest_wr = dest_in;

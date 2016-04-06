@@ -51,7 +51,8 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output lc3b_rob_addr reg_rob_entry,
 	output [tag_width-1:0] rob_sr1_read_addr,
 	output [tag_width-1:0] rob_sr2_read_addr,
-	output logic bit5
+	output logic bit5,
+	output lc3b_word trap_reg		// Holds the value of PC so that ROB can hold the jump address
 
 );
 
@@ -130,6 +131,12 @@ begin
 	end
 	default: branch_stall <= 0;
 	endcase
+end
+
+always_ff @ (posedge clk)
+begin
+	if(opcode == op_trap)
+		trap_reg <= curr_pc;
 end
 
 sext #(.width(5)) sext5
