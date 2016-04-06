@@ -288,7 +288,6 @@ ldstr_buffer LDSTR_buffer
 	.dmem_resp(dmem_resp), 
 	.dmem_rdata(dmem_rdata),
 	
-	//TBD
 	.opcode_in(res_op_in),
 	
 	.Qsrc(ldstr_Qsrc), 

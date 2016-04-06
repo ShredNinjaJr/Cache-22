@@ -92,7 +92,13 @@ always_comb
 begin:offset_logic
 	case(opcode)
 		op_stb, op_ldb: ldstr_offset = sext6_out;
-		op_ldr, op_str: ldstr_offset = adj6_out;
+		op_ldr, op_str, op_ldi, op_str: 
+			begin
+				if(firstIssueLDI == 1'b1 || firstIssueSTI == 1'b1)
+					ldstr_offset = 0;
+				else
+					ldstr_offset = adj6_out;
+			end
 		op_trap: ldstr_offset = 0;
 		default: ldstr_offset = 16'hXXXX;
 	endcase
@@ -130,8 +136,71 @@ begin
 		branch_stall <= branch_stall_in;
 	end
 	default: branch_stall <= 0;
+				
 	endcase
 end
+
+logic firstIssueLDI;
+lc3b_rob_addr ldi_rob_e;
+initial 
+begin
+	firstIssueLDI = 0;
+	ldi_rob_e = 0;
+end
+always_ff @( posedge clk)
+begin
+	case(opcode)
+	op_ldi: begin
+		if(firstIssueLDI == 0)
+		begin
+			firstIssueLDI <= 1;
+			ldi_rob_e <= rob_addr;
+		end
+		else
+		begin
+			firstIssueLDI <= 0;
+			ldi_rob_e = 0;
+		end
+	end
+	default: 
+	begin
+		firstIssueLDI <= 0;
+		ldi_rob_e = 0;
+	end
+	endcase
+end
+
+logic firstIssueSTI;
+lc3b_rob_addr sti_rob_e;
+initial 
+begin
+	firstIssueSTI = 0;
+	sti_rob_e = 0;
+end
+always_ff @( posedge clk)
+begin
+	case(opcode)
+	op_ldi: begin
+		if(firstIssueSTI == 0)
+		begin
+			firstIssueSTI <= 1;
+			sti_rob_e <= rob_addr;
+		end
+		else
+		begin
+			firstIssueSTI <= 0;
+			sti_rob_e = 0;
+		end
+	end
+	default: 
+	begin
+		firstIssueSTI <= 0;
+		sti_rob_e = 0;
+	end
+	endcase
+end
+
+
 
 always_ff @ (posedge clk)
 begin
@@ -189,6 +258,7 @@ begin
 	issue_ld_Qk = 0;
 	res_station_id = 0;
 	branch_stall_in = 0;
+	
 	ldstr_Qsrc = 0;
 	ldstr_Qbase = 0;
 	ldstr_dest = rob_addr;
@@ -512,6 +582,166 @@ begin
 				reg_rob_entry = rob_addr;
 				reg_dest = 3'b111;
 			end
+			
+			
+			// LDI
+			op_ldi:
+			begin
+				if (firstIssueLDI == 1'b0)
+					begin
+					/* First Issue */
+					ldstr_write_enable = 1'b1;
+					res_op_in = op_ldr;
+					if (sr1_reg_busy)	// Base not ready
+					begin
+						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
+						begin
+							ldstr_Vbase = CDB_in.data;
+							ldstr_Vbase_valid_in = 1'b1;
+						end
+						else if (sr1_rob_valid) // ROB has value for Base
+						begin
+							ldstr_Vbase = sr1_rob_value;
+							ldstr_Vbase_valid_in = 1'b1;
+						end
+						else		// Wait for Base value
+							ldstr_Qbase = sr1_rob_e;
+					end
+					else	// Base is ready
+					begin
+						ldstr_Vbase = sr1_value;
+						ldstr_Vbase_valid_in = 1'b1;
+					end
+			
+					/* ROB OUTPUTS */
+					rob_write_enable = 1'b1;
+					rob_dest = dest_reg;
+					
+					stall = 1'b1;
+				end
+				else 
+				begin
+				
+					/* Second Issue */
+					ldstr_write_enable = 1'b1;
+					res_op_in = op_ldr;
+					
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == ldi_rob_e)	// CDB has value for Base
+					begin
+						ldstr_Vbase = CDB_in.data;
+						ldstr_Vbase_valid_in = 1'b1;
+					end
+					else if (sr1_rob_valid) // ROB has value for Base
+					begin
+						ldstr_Vbase = sr1_rob_value;
+						ldstr_Vbase_valid_in = 1'b1;
+					end
+					else		// Wait for Base value
+						ldstr_Qbase = ldi_rob_e;
+					
+					/* ROB OUTPUTS */
+					rob_write_enable = 1'b1;
+					rob_dest = dest_reg;
+					
+					/* REGFILE OUTPUTS */
+					reg_dest = dest_reg;
+					ld_reg_busy_dest = 1'b1;
+					reg_rob_entry = rob_addr;
+					
+				end
+			end
+			
+			// STI
+			op_sti:
+			begin
+				if (firstIssueSTI == 1'b0)
+					begin
+					/* First Issue */
+					ldstr_write_enable = 1'b1;
+					res_op_in = op_ldr;
+					
+					/* Setting Base Register */
+					if (sr1_reg_busy)	// Base not ready
+					begin
+						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
+						begin
+							ldstr_Vbase = CDB_in.data;
+							ldstr_Vbase_valid_in = 1'b1;
+						end
+						else if (sr1_rob_valid) // ROB has value for Base
+						begin
+							ldstr_Vbase = sr1_rob_value;
+							ldstr_Vbase_valid_in = 1'b1;
+						end
+						else		// Wait for Base value
+							ldstr_Qbase = sr1_rob_e;
+					end
+					else	// Base is ready
+					begin
+						ldstr_Vbase = sr1_value;
+						ldstr_Vbase_valid_in = 1'b1;
+					end
+			
+					/* ROB OUTPUTS */
+					rob_write_enable = 1'b1;
+					rob_dest = dest_reg;
+					
+					stall = 1'b1;
+				end
+				else 
+				begin
+				
+					/* Second Issue */
+					ldstr_write_enable = 1'b1;
+					res_op_in = op_str;
+					ldstr_dest = 0;
+					
+					/* Setting Base Registers in ldstr buffer */
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sti_rob_e)	// CDB has value for Base
+						begin
+							ldstr_Vbase = CDB_in.data;
+							ldstr_Vbase_valid_in = 1'b1;
+						end
+						else if (sr1_rob_valid) // ROB has value for Base
+						begin
+							ldstr_Vbase = sr1_rob_value;
+							ldstr_Vbase_valid_in = 1'b1;
+						end
+						else		// Wait for Base value
+							ldstr_Qbase = sti_rob_e;
+					
+					/* Setting Source Registers in ldstr buffer */
+					if (dest_reg_busy)	// Source is busy
+					begin
+						if (CDB_in.valid == 1'b1 && CDB_in.tag == dest_rob_e)	// CDB has value for Source
+						begin
+							ldstr_Vsrc = CDB_in.data;
+							ldstr_Vsrc_valid_in = 1'b1;
+						end
+						else if (sr2_rob_valid) // ROB has value for Source
+						begin
+							ldstr_Vsrc = sr2_rob_value;
+							ldstr_Vsrc_valid_in = 1'b1;
+						end
+						else		// Wait for Source value
+							ldstr_Qsrc = dest_rob_e;
+					end
+					else	// Source is ready
+					begin
+						ldstr_Vsrc = dest_value;
+						ldstr_Vsrc_valid_in = 1'b1;
+					end
+					
+					/* ROB OUTPUTS */
+					rob_write_enable = 1'b1;
+					rob_dest = 0;
+					
+					/* REGFILE OUTPUT */
+					reg_dest = dest_reg;
+					
+				end
+			end
+			
 			
 			default:;
 		endcase
