@@ -78,13 +78,11 @@ NEXT8:
 	LEA R3, SUBR
 	JSRR R3
 	LDR R6, R0, BadB
-;	TRAP delta
+	TRAP delta
 	BRnzp HALT
 SUBR:
 	LDR R6, R0, Good
 	RET
-FINISH:
-	LDR R6, R0, Good
 HALT:
 	BRnzp HALT
 
@@ -108,5 +106,4 @@ SEGMENT DataSegment:
 	HighSByte: DATA1 ? ;
 	Pass: DATA2 4x1234 ;
 	MyPointer: DATA2 Pass
-	trap_test: DATA2 FINISH 
 	

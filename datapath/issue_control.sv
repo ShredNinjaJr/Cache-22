@@ -483,7 +483,7 @@ begin
 				ldstr_write_enable = 1'b1;
 				res_op_in = op_ldr;
 				
-				ldstr_Vbase = ;
+				ldstr_Vbase = {8'b0,instr[7:0]};
 				ldstr_Vbase_valid_in = 1'b1;
 				
 				
