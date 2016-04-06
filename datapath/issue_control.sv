@@ -2,7 +2,7 @@
 
 module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 (
-	input clk, 
+	input clk, flush,
 	// Fetch -> Issue Control
 	input lc3b_word instr,
 	input instr_is_new,
@@ -135,7 +135,9 @@ end
 
 always_ff @ (posedge clk)
 begin
-	if(opcode == op_trap)
+	if (flush)
+		trap_reg <= 0;
+	else if((opcode == op_trap) & trap_reg != 0)
 		trap_reg <= curr_pc;
 end
 

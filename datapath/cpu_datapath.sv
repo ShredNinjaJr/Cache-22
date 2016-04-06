@@ -102,7 +102,7 @@ end
 lc3b_word trap_reg;
 issue_control issue_control
 (
-	.clk, 
+	.clk, .flush,
 	// Fetch -> Issue Controlj
 	.instr(ir_out),
 	.instr_is_new,
