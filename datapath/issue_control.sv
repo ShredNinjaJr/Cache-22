@@ -436,6 +436,7 @@ begin
 				end
 			end
 			
+			/* Similar to Jmp, but writes PC into R7 through ROB */
 			op_jsr:
 			begin
 				branch_stall_in = 1;
@@ -476,6 +477,20 @@ begin
 				end
 			end
 			
+			op_trap: begin
+				
+				/* LOAD BUFFER OUTPUTS */
+				ldstr_write_enable = 1'b1;
+				res_op_in = op_ldr;
+				
+				ldstr_Vbase = ;
+				ldstr_Vbase_valid_in = 1'b1;
+				
+				
+				/* ROB OUTPUTS */
+				rob_write_enable = 1'b1;
+				rob_dest = dest_reg;
+			end
 			
 			default:;
 		endcase

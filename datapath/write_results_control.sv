@@ -111,6 +111,11 @@ begin
 			RE_out = dmem_resp;
 			ldstr_RE_out = dmem_resp;
 		end
+		op_trap: begin
+			pcmux_sel = 1'b1;
+			flush = 1'b1;
+			RE_out = 1'b1;
+		end
 		default: ;
 		endcase
 	end
