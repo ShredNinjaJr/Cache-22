@@ -50,7 +50,7 @@ assign inst_in = inst;
 assign ld_dest = WE;
 assign dest_in = dest;
 
-assign ld_value = (CDB_in.valid);
+assign ld_value = (inst_out == op_trap)? 1'b0 :(CDB_in.valid);
 
 assign ld_valid = ld_value;
  

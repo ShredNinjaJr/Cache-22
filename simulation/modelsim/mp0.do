@@ -14,6 +14,14 @@ add wave -noupdate /mp3_tb/dut/dmem_rdata
 add wave -noupdate /mp3_tb/dut/dmem_byte_enable
 add wave -noupdate /mp3_tb/dut/dmem_address
 add wave -noupdate /mp3_tb/dut/L1_cache/arbiter/state
+add wave -noupdate /mp3_tb/dut/cpu_datapath/regfile/value_reg/load
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/opcode_in
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/new_pc
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/ld_regfile_value
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/flush
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/ld_regfile_value
+add wave -noupdate /mp3_tb/dut/cpu_datapath/regfile/value_reg/in
+add wave -noupdate /mp3_tb/dut/cpu_datapath/regfile/value_reg/dest
 add wave -noupdate -expand /mp3_tb/dut/cpu_datapath/regfile/value_reg/data
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/opcode
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_write_enable
@@ -215,7 +223,7 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/rob_empty
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/flush
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/full
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {1450183 ps} 0}
+WaveRestoreCursors {{Cursor 1} {2947193 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100
@@ -231,4 +239,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {881560 ps} {2044140 ps}
+WaveRestoreZoom {2414118 ps} {3464166 ps}
