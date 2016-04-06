@@ -87,7 +87,15 @@ assign rob_opcode = opcode;
 assign sr1 = instr[8:6];
 assign sr2 = instr[2:0];
 
-assign ldstr_offset = (opcode == op_stb || opcode == op_ldb) ? sext6_out : adj6_out;
+always_comb
+begin:offset_logic
+	case(opcode)
+		op_stb, op_ldb: ldstr_offset = sext6_out;
+		op_ldr, op_str: ldstr_offset = adj6_out;
+		op_trap: ldstr_offset = 0;
+		default: ldstr_offset = 16'hXXXX;
+	endcase
+end
 
 assign sr1_reg_busy = sr1_in.busy;
 assign sr2_reg_busy = sr2_in.busy;
@@ -483,13 +491,17 @@ begin
 				ldstr_write_enable = 1'b1;
 				res_op_in = op_ldr;
 				
-				ldstr_Vbase = {8'b0,instr[7:0]};
+				ldstr_Vbase = {7'b0,instr[7:0], 1'b0};
 				ldstr_Vbase_valid_in = 1'b1;
 				
 				
 				/* ROB OUTPUTS */
 				rob_write_enable = 1'b1;
-				rob_dest = dest_reg;
+				rob_value_in = curr_pc;
+				rob_dest = 3'b111;
+				ld_reg_busy_dest = 1'b1;
+				reg_rob_entry = rob_addr;
+				reg_dest = 3'b111;
 			end
 			
 			default:;

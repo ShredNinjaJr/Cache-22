@@ -114,7 +114,9 @@ begin
 		op_trap: begin
 			pcmux_sel = 1'b1;
 			flush = 1'b1;
+			ld_regfile_value = 1'b1;
 			RE_out = 1'b1;
+			ld_regfile_busy = (dest_wr_data == rob_addr);
 		end
 		default: ;
 		endcase
