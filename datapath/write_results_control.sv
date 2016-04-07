@@ -71,7 +71,7 @@ begin
 		op_sti: begin
 			if(sti_count == 0 && valid_in == 1'b1)
 				sti_count <= 1;
-			else if(ldi_count == 1)
+			else if(sti_count == 1)
 				sti_count <= 0;
 		end
 		default: ;
@@ -145,12 +145,6 @@ begin
 			begin
 				RE_out = 1'b1;
 			end
-			else
-			begin
-				dmem_write = 1'b1;
-				RE_out = dmem_resp;
-				ldstr_RE_out = dmem_resp;
-			end
 		end
 		op_jsr: begin
 			ld_regfile_busy = (dest_wr_data == rob_addr);
@@ -171,6 +165,12 @@ begin
 		end
 		default: ;
 		endcase
+	end
+	else if((opcode_in == op_sti) & sti_count == 1) 
+	begin
+				dmem_write = 1'b1;
+				RE_out = dmem_resp;
+				ldstr_RE_out = dmem_resp;
 	end
 end
 
