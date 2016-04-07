@@ -124,7 +124,7 @@ assign sr1_rob_valid = rob_sr1_valid_out;
 assign sr2_rob_valid = rob_sr2_valid_out;
 
 assign rob_sr1_read_addr = sr1_in.rob_entry;
-assign rob_sr2_read_addr = (opcode == op_str) ? dest_in.rob_entry : sr2_in.rob_entry;
+assign rob_sr2_read_addr = (opcode == op_str || opcode == op_stb) ? dest_in.rob_entry : sr2_in.rob_entry;
 
 logic branch_stall;
 initial branch_stall = 0;
