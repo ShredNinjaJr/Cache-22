@@ -203,13 +203,12 @@ begin
 	endcase
 end
 
-
-
+initial trap_reg = 0;
 always_ff @ (posedge clk)
 begin
 	if (flush)
 		trap_reg <= 0;
-	else if((opcode == op_trap) & trap_reg != 0)
+	else if((opcode == op_trap) & (trap_reg == 0))
 		trap_reg <= curr_pc;
 end
 

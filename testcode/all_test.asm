@@ -47,7 +47,7 @@ NEXT5:
 	;Check if STB Worked
 	LDR R5, R0, LowSByte
 	ADD R2, R5, R6
-	BRz NEXT8
+	BRz NEXT6
 	LDR R6, R0, Bad6
 	BRnzp HALT
 
