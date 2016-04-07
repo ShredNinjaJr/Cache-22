@@ -55,13 +55,13 @@ assign mem_val_valid_in = 1'b1;
 
 ld_str_res_station ld_str_res_station_reg (.*);
 
-assign dmem_addr = (opcode_out == op_ldr || opcode_out == op_str) ? (Vbase_out + offset_out) : (Vbase_out + {offset_out[15:1], 1'b0});
+assign dmem_addr = Vbase_out + offset_out;
 
 assign dmem_write = Vbase_valid_out & Vsrc_valid_out;
 
-assign dmem_wdata = (opcode_out == op_stb) ? (offset_out[0] ? {Vsrc_out[7:0], 8'b0} : {8'b0, Vsrc_out[7:0]}): Vsrc_out;
+assign dmem_wdata = (opcode_out == op_stb) ? (dmem_addr[0] ? {Vsrc_out[7:0], 8'b0} : {8'b0, Vsrc_out[7:0]}): Vsrc_out;
 
-assign dmem_byte_enable = (opcode_out == op_stb) ? (offset_out[0] ? 2'b10 : 2'b01) : 2'b11;
+assign dmem_byte_enable = (opcode_out == op_stb) ? (dmem_addr[0] ? 2'b10 : 2'b01) : 2'b11;
 
 always_comb
 begin
@@ -73,6 +73,6 @@ end
 
 assign CDB_out.valid  = mem_val_valid_out;
 assign CDB_out.tag = dest_out;
-assign CDB_out.data = (opcode_out == op_ldb) ? (offset_out[0] ? ({8'b0,mem_val_out[15:8]}) : ({8'b0,mem_val_out[7:0]})) : mem_val_out;
+assign CDB_out.data = (opcode_out == op_ldb) ? (dmem_addr[0] ? ({8'b0,mem_val_out[15:8]}) : ({8'b0,mem_val_out[7:0]})) : mem_val_out;
 
 endmodule: cdb_ld_str_res_station
