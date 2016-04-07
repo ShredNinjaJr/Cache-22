@@ -1,12 +1,12 @@
 import lc3b_types::*;
-import L1_cache_types::*;
+
 
 module data_write
 (
 	input logic [1:0] mem_byte_enable,
 	input lc3b_word mem_wdata,
 	input pmem_bus pmem_wdata,
-	input cache_offset offset,
+	input dcache_offset offset,
 	output pmem_bus data_writeout
 );
 

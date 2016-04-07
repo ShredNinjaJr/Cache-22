@@ -1,4 +1,3 @@
-import L1_cache_types::*;
 import lc3b_types::*;
 
 module dcache_datapath
@@ -22,18 +21,18 @@ module dcache_datapath
 
 
 /* wires */
-cache_tag tag;
-cache_index index;
-cache_offset offset;
+dcache_tag tag;
+dcache_index index;
+dcache_offset offset;
 
 pmem_bus datain_mux_out;
 pmem_bus data0_out, data1_out;
-cache_tag tag0_out, tag1_out;
+dcache_tag tag0_out, tag1_out;
 logic valid0_out, valid1_out;
 lc3b_word write_d0_out, write_d1_out;
 
 logic way_match;
-cache_tag tag_mux_out;
+dcache_tag tag_mux_out;
 
 /* Write decoder */
 logic write_decoder_out0, write_decoder_out1;
@@ -54,14 +53,15 @@ mux2 #(.width($size(lc3b_word))) pmem_addr_mux
 	.f(pmem_address)
 );
 
-mux2 #(.width($size(cache_tag))) tag_mux
+mux2 #(.width($size(dcache_tag))) tag_mux
 (
 	.sel(lru_dataout),
 	.a(tag0_out), .b(tag1_out),
 	.f(tag_mux_out)
 );
 /* Decode address */
-cache_address_decoder address_decoder(.*);
+L1_cache_address_decoder #(.tag_size($size(dcache_tag)),.index_size($size(dcache_index)), 
+						.offset_size($size(dcache_offset)))address_decoder(.*);
 
 
 pmem_bus data_writeout;
@@ -73,14 +73,14 @@ data_write data_write_module
 
 mux2 #(.width($size(pmem_bus))) datain_mux (.sel(datain_mux_sel), .a(pmem_rdata), .b(data_writeout), .f(datain_mux_out));
 
-array  #(.width($size(pmem_bus)), .index_width($size(cache_index))) data_array0
+array  #(.width($size(pmem_bus)), .index_width($size(dcache_index))) data_array0
 (
   .clk, .index, 
   .datain(datain_mux_out), .dataout(data0_out),
   .write(write_decoder_out0)
  );
  
- array #(.width($size(pmem_bus)), .index_width($size(cache_index))) data_array1
+ array #(.width($size(pmem_bus)), .index_width($size(dcache_index))) data_array1
 (
   .clk, .index, 
   .datain(datain_mux_out), .dataout(data1_out),
@@ -88,20 +88,20 @@ array  #(.width($size(pmem_bus)), .index_width($size(cache_index))) data_array0
 );
 
 
-word_decoder wd0(.offset, .datain(data0_out), .dataout(write_d0_out));
-word_decoder wd1(.offset, .datain(data1_out), .dataout(write_d1_out));
+word_decoder #(.offset_size($size(dcache_offset))) wd0(.offset, .datain(data0_out), .dataout(write_d0_out));
+word_decoder #(.offset_size($size(dcache_offset))) wd1(.offset, .datain(data1_out), .dataout(write_d1_out));
 
 mux2 mem_rdatamux (.sel (way_match),.b(write_d1_out), .a(write_d0_out), .f(mem_rdata));
 
 /* Tag array */
-array #(.width($size(tag)), .index_width($size(cache_index))) tag_array0
+array #(.width($size(tag)), .index_width($size(dcache_index))) tag_array0
 (
   .clk, .index, 
   .datain(tag), .dataout(tag0_out),
   .write(write_decoder_out0)
 );
 
-array #(.width($size(tag)), .index_width($size(cache_index))) tag_array1
+array #(.width($size(tag)), .index_width($size(dcache_index))) tag_array1
 (
   .clk, .index, 
   .datain(tag), .dataout(tag1_out),
@@ -110,14 +110,14 @@ array #(.width($size(tag)), .index_width($size(cache_index))) tag_array1
 
 
 /* Valid array */
-array #(.width(1), .index_width($size(cache_index))) valid_array0
+array #(.width(1), .index_width($size(dcache_index))) valid_array0
 (
   .clk, .index, 
   .datain(valid_in), .dataout(valid0_out),
   .write(write_decoder_out0)
 );
 
-array #(.width(1), .index_width($size(cache_index))) valid_array1
+array #(.width(1), .index_width($size(dcache_index))) valid_array1
 (
   .clk, .index, 
   .datain(valid_in), .dataout(valid1_out),
@@ -138,7 +138,7 @@ assign d_lru_write = cache_hit & (mem_read | mem_write);
 
 /* LRU replacement */
 /* lru of 1 indicates 1 is LRU*/
-array #(.width(1), .index_width($size(cache_index))) lru_array
+array #(.width(1), .index_width($size(dcache_index))) lru_array
 (
   .clk, .index, 
   .datain(~way_match), .dataout(lru_dataout),
@@ -148,13 +148,13 @@ array #(.width(1), .index_width($size(cache_index))) lru_array
 logic dirty1_out, dirty0_out;
 
 /* Dirty Arrays */
-array #(.width(1), .index_width($size(cache_index))) dirty_array0
+array #(.width(1), .index_width($size(dcache_index))) dirty_array0
 (
 	.clk, .index,
 	.datain(dirty_datain), .dataout(dirty0_out),
 	.write(write_decoder_out0)
 );
-array #(.width(1), .index_width($size(cache_index))) dirty_array1
+array #(.width(1), .index_width($size(dcache_index))) dirty_array1
 (
 	.clk, .index,
 	.datain(dirty_datain), .dataout(dirty1_out),

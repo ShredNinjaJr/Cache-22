@@ -1,13 +1,11 @@
 import lc3b_types::*;
-import L1_cache_types::*;
 
-
-module cache_address_decoder
+module L1_cache_address_decoder #(parameter tag_size, parameter index_size, parameter offset_size)
 ( 
 	input lc3b_word mem_address,
-	output cache_tag tag,
-	output cache_index index,
-	output cache_offset offset
+	output logic [tag_size-1:0] tag,
+	output logic [index_size-1:0] index,
+	output logic [offset_size-1:0] offset
 );
 
 
@@ -16,4 +14,4 @@ assign index = mem_address [6:4];
 assign offset = mem_address [3:1];
 
 
-endmodule : cache_address_decoder
+endmodule : L1_cache_address_decoder
