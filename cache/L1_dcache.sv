@@ -18,10 +18,10 @@ module L1_dcache
 	 /* cache to pmem*/
 	 output lc3b_word pmem_address,
 	 output logic pmem_read, pmem_write,
-	 output pmem_bus pmem_wdata,
+	 output pmem_L1_bus pmem_wdata,
 	 
 	 /* pmem to cache */
-	 input pmem_bus pmem_rdata,
+	 input pmem_L1_bus pmem_rdata,
 	 input pmem_resp	 
 );
 

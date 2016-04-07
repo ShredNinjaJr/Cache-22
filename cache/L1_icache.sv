@@ -17,7 +17,7 @@ module L1_icache
 	 output logic pmem_read,
 	 
 	 /* pmem to cache */
-	 input pmem_bus pmem_rdata,
+	 input pmem_L1_bus pmem_rdata,
 	 input pmem_resp	 
 );
 

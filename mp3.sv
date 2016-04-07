@@ -19,6 +19,6 @@ lc3b_word dmem_wdata;
 
 cpu_datapath cpu_datapath(.*);
 
-L1_cache L1_cache(.*);
+cache cache(.*);
 
 endmodule: mp3

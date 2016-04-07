@@ -4,7 +4,7 @@ import lc3b_types::*;
 module word_decoder #(parameter offset_size)
 (
 	input [offset_size-1:0] offset,
-	input pmem_bus datain,
+	input pmem_L1_bus datain,
 	output lc3b_word dataout
 );
 
