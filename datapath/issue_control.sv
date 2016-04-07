@@ -97,7 +97,7 @@ always_comb
 begin:offset_logic
 	case(opcode)
 		op_stb, op_ldb: ldstr_offset = sext6_out;
-		op_ldr, op_str, op_ldi, op_str: 
+		op_ldr, op_str, op_ldi, op_sti, op_str: 
 			begin
 				if(firstIssueLDI == 1'b1 || firstIssueSTI == 1'b1)
 					ldstr_offset = 0;
@@ -163,13 +163,13 @@ begin
 		else
 		begin
 			firstIssueLDI <= 0;
-			ldi_rob_e = 0;
+			ldi_rob_e <= 0;
 		end
 	end
 	default: 
 	begin
 		firstIssueLDI <= 0;
-		ldi_rob_e = 0;
+		ldi_rob_e <= 0;
 	end
 	endcase
 end
@@ -183,22 +183,22 @@ end
 always_ff @( posedge clk)
 begin
 	case(opcode)
-	op_ldi: begin
+	op_sti: begin
 		if(firstIssueSTI == 0)
 		begin
 			firstIssueSTI <= 1;
 			sti_rob_e <= rob_addr;
 		end
-		else
+		else if(firstIssueSTI == 1 && stall == 1'b0)
 		begin
 			firstIssueSTI <= 0;
-			sti_rob_e = 0;
+			sti_rob_e <= 0;
 		end
 	end
 	default: 
 	begin
 		firstIssueSTI <= 0;
-		sti_rob_e = 0;
+		sti_rob_e <= 0;
 	end
 	endcase
 end
@@ -281,13 +281,13 @@ begin
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
-	(ldstr_full && (opcode == op_ldr || opcode == op_str)) || branch_stall || 
+	(ldstr_full && (opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode == op_sti)) || branch_stall || 
 	!instr_is_new)
 	begin
 		// STALL
 		if(rob_full ||
 			(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not)) ||
-			(ldstr_full && opcode == op_ldr) || 
+			(ldstr_full && (opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode === op_sti)) || 
 			(instr_is_new & ~branch_stall))
 			stall = 1'b1;
 	end
@@ -634,11 +634,11 @@ begin
 						ldstr_Vbase = CDB_in.data;
 						ldstr_Vbase_valid_in = 1'b1;
 					end
-			//		else if (sr1_rob_valid) // ROB has value for Base
-			//		begin
-				//		ldstr_Vbase = sr1_rob_value;
-				//		ldstr_Vbase_valid_in = 1'b1;
-				//	end
+			//		else if (sr1_rob_valid) // We don't need to check register file
+			//			begin
+			//			ldstr_Vbase = sr1_rob_value;
+			//			ldstr_Vbase_valid_in = 1'b1;
+			//		end
 					else		// Wait for Base value
 						ldstr_Qbase = ldi_rob_e;
 					
@@ -659,37 +659,35 @@ begin
 			begin
 				if (firstIssueSTI == 1'b0)
 					begin
-					/* First Issue */
-					ldstr_write_enable = 1'b1;
-					res_op_in = op_ldr;
-					
-					/* Setting Base Register */
-					if (sr1_reg_busy)	// Base not ready
-					begin
-						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
+						/* First Issue */
+						ldstr_write_enable = 1'b1;
+						res_op_in = op_ldr;
+						if (sr1_reg_busy)	// Base not ready
 						begin
-							ldstr_Vbase = CDB_in.data;
+							if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
+							begin
+								ldstr_Vbase = CDB_in.data;
+								ldstr_Vbase_valid_in = 1'b1;
+							end
+							else if (sr1_rob_valid) // ROB has value for Base
+							begin
+								ldstr_Vbase = sr1_rob_value;
+								ldstr_Vbase_valid_in = 1'b1;
+							end
+							else		// Wait for Base value
+								ldstr_Qbase = sr1_rob_e;
+							end
+						else	// Base is ready
+						begin
+							ldstr_Vbase = sr1_value;
 							ldstr_Vbase_valid_in = 1'b1;
 						end
-						else if (sr1_rob_valid) // ROB has value for Base
-						begin
-							ldstr_Vbase = sr1_rob_value;
-							ldstr_Vbase_valid_in = 1'b1;
-						end
-						else		// Wait for Base value
-							ldstr_Qbase = sr1_rob_e;
-					end
-					else	// Base is ready
-					begin
-						ldstr_Vbase = sr1_value;
-						ldstr_Vbase_valid_in = 1'b1;
-					end
-			
-					/* ROB OUTPUTS */
-					rob_write_enable = 1'b1;
-					rob_dest = dest_reg;
-					
-					stall = 1'b1;
+				
+						/* ROB OUTPUTS */
+						rob_write_enable = 1'b1;
+						rob_dest = dest_reg;
+						
+						stall = 1'b1;
 				end
 				else 
 				begin
@@ -705,11 +703,11 @@ begin
 							ldstr_Vbase = CDB_in.data;
 							ldstr_Vbase_valid_in = 1'b1;
 						end
-						else if (sr1_rob_valid) // ROB has value for Base
-						begin
-							ldstr_Vbase = sr1_rob_value;
-							ldstr_Vbase_valid_in = 1'b1;
-						end
+						//else if (sr1_rob_valid) // ROB has value for Base
+						//begin
+							//ldstr_Vbase = sr1_rob_value;
+							//ldstr_Vbase_valid_in = 1'b1;
+						//end
 						else		// Wait for Base value
 							ldstr_Qbase = sti_rob_e;
 					

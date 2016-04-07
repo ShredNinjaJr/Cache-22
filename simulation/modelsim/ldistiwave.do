@@ -1,12 +1,5 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate /mp3_tb/clk
-add wave -noupdate /mp3_tb/pmem_resp
-add wave -noupdate /mp3_tb/pmem_read
-add wave -noupdate /mp3_tb/pmem_write
-add wave -noupdate /mp3_tb/pmem_address
-add wave -noupdate /mp3_tb/pmem_rdata
-add wave -noupdate /mp3_tb/pmem_wdata
 add wave -noupdate /mp3_tb/dut/cpu_datapath/pc_out
 add wave -noupdate -expand /mp3_tb/dut/cpu_datapath/regfile/value_reg/data
 add wave -noupdate /mp3_tb/dut/cpu_datapath/ir_out
@@ -132,8 +125,25 @@ add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[1]/RS/ld_s
 add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[1]/RS/ld_str_res_station_reg/dest/data}
 add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[1]/RS/ld_str_res_station_reg/mem_val_valid/data}
 add wave -noupdate {/mp3_tb/dut/cpu_datapath/LDSTR_buffer/RS_generate[1]/RS/ld_str_res_station_reg/mem_val/data}
+add wave -noupdate /mp3_tb/dut/cpu_datapath/LDSTR_buffer/dmem_addr
+add wave -noupdate /mp3_tb/dut/cpu_datapath/LDSTR_buffer/dmem_wdata
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/dmem_write
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/opcode_in
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/count
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/sti_count
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/dmem_resp
+add wave -noupdate /mp3_tb/dut/cpu_datapath/dmem_wdata
+add wave -noupdate /mp3_tb/dut/cpu_datapath/dmem_address
+add wave -noupdate /mp3_tb/dut/cpu_datapath/wr_control/rob_addr
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/stall
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_full
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/rob_full
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/curr_pc
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/ldstr_write_enable
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/res_op_in
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/firstIssueSTI
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {825000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {644296 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100
@@ -149,4 +159,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {4210776 ps}
+WaveRestoreZoom {313930 ps} {1366634 ps}

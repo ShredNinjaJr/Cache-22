@@ -118,7 +118,7 @@ begin: Write_logic
 				inst[w_addr] <= inst_in;
 				/* Based on instr load valid */
 				case(inst_in)
-					op_br, op_lea, op_jsr, op_str, op_stb: valid[w_addr] <= 1'b1;
+					op_br, op_lea, op_jsr, op_str, op_stb, op_sti: valid[w_addr] <= 1'b1;
 					default: valid[w_addr] <= 1'b0;
 				endcase
 				

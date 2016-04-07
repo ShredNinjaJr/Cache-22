@@ -50,21 +50,34 @@ logic ld_cc;
 lc3b_nzp gencc_out;
 lc3b_nzp cc_out;
 logic branch_enable;
-logic count;
+logic ldi_count;
+logic sti_count;
 
 initial
 begin
-	count <= 0;
+	ldi_count <= 0;
+	sti_count <= 0;
 end
 
 always_ff @( posedge clk)
-begin: count_logic
-	if(opcode_in == op_ldi && count == 0)
-		count <= 1;
-	else
-		count <= 0;
-end
+begin
+	case(opcode_in)
+		op_ldi: begin
+			if(ldi_count == 0 && valid_in == 1'b1)
+				ldi_count <= 1;
+			else if(ldi_count == 1 && valid_in == 1'b1)
+				ldi_count <= 0;
+		end
+		op_sti: begin
+			if(sti_count == 0 && valid_in == 1'b1)
+				sti_count <= 1;
+			else if(ldi_count == 1)
+				sti_count <= 0;
+		end
+		default: ;
+	endcase
 
+end
 
 
 /* Branch logic */
@@ -115,7 +128,7 @@ begin
 			RE_out = 1'b1;
 		end
 		op_ldi: begin
-			if(count == 1)
+			if(ldi_count == 0)
 			begin
 				RE_out = 1'b1;
 			end
@@ -125,6 +138,18 @@ begin
 				ld_regfile_value = 1'b1;
 				ld_cc = 1'b1;
 				RE_out = 1'b1;
+			end
+		end
+		op_sti: begin
+			if(sti_count == 0)
+			begin
+				RE_out = 1'b1;
+			end
+			else
+			begin
+				dmem_write = 1'b1;
+				RE_out = dmem_resp;
+				ldstr_RE_out = dmem_resp;
 			end
 		end
 		op_jsr: begin
