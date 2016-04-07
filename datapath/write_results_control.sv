@@ -50,6 +50,22 @@ logic ld_cc;
 lc3b_nzp gencc_out;
 lc3b_nzp cc_out;
 logic branch_enable;
+logic count;
+
+initial
+begin
+	count <= 0;
+end
+
+always_ff @( posedge clk)
+begin: count_logic
+	if(opcode_in == op_ldi && count == 0)
+		count <= 1;
+	else
+		count <= 0;
+end
+
+
 
 /* Branch logic */
 gencc gencc
@@ -68,9 +84,6 @@ register #(3) cc
 );
 
 cccomp cccomp (.cc_in(cc_out), .dest(dest_in), .branch_enable);
-
-
-
 
 always_comb
 begin
@@ -100,6 +113,19 @@ begin
 			ld_regfile_value = 1'b1;
 			ld_cc = 1'b1;
 			RE_out = 1'b1;
+		end
+		op_ldi: begin
+			if(count == 1)
+			begin
+				RE_out = 1'b1;
+			end
+			else
+			begin
+				ld_regfile_busy = (dest_wr_data == rob_addr);
+				ld_regfile_value = 1'b1;
+				ld_cc = 1'b1;
+				RE_out = 1'b1;
+			end
 		end
 		op_jsr: begin
 			ld_regfile_busy = (dest_wr_data == rob_addr);

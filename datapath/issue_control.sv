@@ -82,6 +82,11 @@ logic sr1_rob_valid;
 logic sr2_rob_valid;
 logic branch_stall_in;
 
+logic firstIssueLDI;
+lc3b_rob_addr ldi_rob_e;
+logic firstIssueSTI;
+lc3b_rob_addr sti_rob_e;
+
 assign dest_reg = instr[11:9];
 assign opcode = lc3b_opcode'(instr[15:12]);
 assign rob_opcode = opcode;
@@ -140,8 +145,7 @@ begin
 	endcase
 end
 
-logic firstIssueLDI;
-lc3b_rob_addr ldi_rob_e;
+
 initial 
 begin
 	firstIssueLDI = 0;
@@ -170,8 +174,7 @@ begin
 	endcase
 end
 
-logic firstIssueSTI;
-lc3b_rob_addr sti_rob_e;
+
 initial 
 begin
 	firstIssueSTI = 0;
@@ -631,11 +634,11 @@ begin
 						ldstr_Vbase = CDB_in.data;
 						ldstr_Vbase_valid_in = 1'b1;
 					end
-					else if (sr1_rob_valid) // ROB has value for Base
-					begin
-						ldstr_Vbase = sr1_rob_value;
-						ldstr_Vbase_valid_in = 1'b1;
-					end
+			//		else if (sr1_rob_valid) // ROB has value for Base
+			//		begin
+				//		ldstr_Vbase = sr1_rob_value;
+				//		ldstr_Vbase_valid_in = 1'b1;
+				//	end
 					else		// Wait for Base value
 						ldstr_Qbase = ldi_rob_e;
 					
