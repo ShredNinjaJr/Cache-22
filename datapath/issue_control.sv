@@ -208,7 +208,7 @@ always_ff @ (posedge clk)
 begin
 	if (flush)
 		trap_reg <= 0;
-	else if((opcode == op_trap) & (trap_reg == 0))
+	else if((opcode == op_trap) & (trap_reg == 0) & rob_write_enable)
 		trap_reg <= curr_pc;
 end
 
