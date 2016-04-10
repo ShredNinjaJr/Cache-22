@@ -33,7 +33,7 @@ logic way_match;
 L2cache_tag tag_mux_out;
 
 assign tag = mem_address[15 -: $size(tag)];
-assign index = mem_address[(15 - $size(tag) - 1) -: $size(index)];
+assign index = mem_address[(15 - $size(tag)) -: $size(index)];
 
 
 /* Write decoder */
