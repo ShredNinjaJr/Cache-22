@@ -89,7 +89,7 @@ lc3b_rob_addr sti_rob_e;
 
 assign dest_reg = instr[11:9];
 assign opcode = lc3b_opcode'(instr[15:12]);
-assign rob_opcode = opcode;
+
 assign sr1 = instr[8:6];
 assign sr2 = instr[2:0];
 
@@ -155,12 +155,12 @@ always_ff @( posedge clk)
 begin
 	case(opcode)
 	op_ldi: begin
-		if(firstIssueLDI == 0)
+		if((firstIssueLDI == 0) & rob_write_enable)
 		begin
 			firstIssueLDI <= 1;
 			ldi_rob_e <= rob_addr;
 		end
-		else
+		else if (rob_write_enable)
 		begin
 			firstIssueLDI <= 0;
 			ldi_rob_e <= 0;
@@ -184,7 +184,7 @@ always_ff @( posedge clk)
 begin
 	case(opcode)
 	op_sti: begin
-		if(firstIssueSTI == 0)
+		if((firstIssueSTI == 0) & rob_write_enable)
 		begin
 			firstIssueSTI <= 1;
 			sti_rob_e <= rob_addr;
@@ -277,16 +277,17 @@ begin
 	reg_rob_entry = 0;
 	pcmux_sel = 0;
 	br_pc = 0;
+	rob_opcode = opcode;
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
-	(ldstr_full && (opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode == op_sti)) || branch_stall || 
+	(ldstr_full && (opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode == op_sti 	|| opcode == op_stb || opcode == op_ldb)) || branch_stall || 
 	!instr_is_new)
 	begin
 		// STALL
 		if(rob_full ||
 			(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
-			(ldstr_full && (opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode === op_sti)) || 
+			(ldstr_full && (opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode === op_sti || opcode == op_stb || opcode == op_ldb)) || 
 			(instr_is_new & ~branch_stall))
 			stall = 1'b1;
 	end
@@ -695,6 +696,7 @@ begin
 					ldstr_write_enable = 1'b1;
 					res_op_in = op_str;
 					ldstr_dest = 0;
+					rob_opcode = op_str;
 					
 					/* Setting Base Registers in ldstr buffer */
 					if (CDB_in.valid == 1'b1 && CDB_in.tag == sti_rob_e)	// CDB has value for Base

@@ -68,12 +68,12 @@ begin
 			else if(ldi_count == 1 && valid_in == 1'b1)
 				ldi_count <= 0;
 		end
-		op_sti: begin
+		/*op_sti: begin
 			if(sti_count == 0 && valid_in == 1'b1)
 				sti_count <= 1;
 			else if(sti_count == 1)
 				sti_count <= 0;
-		end
+		end*/
 		default: ;
 	endcase
 
