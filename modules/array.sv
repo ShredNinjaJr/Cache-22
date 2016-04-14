@@ -1,5 +1,5 @@
 
-module array #(parameter width = 128, parameter index_width)
+module array #(parameter width, parameter index_width)
 (
     input clk,
     input write,
@@ -7,7 +7,7 @@ module array #(parameter width = 128, parameter index_width)
     input [width-1:0] datain,
     output logic [width-1:0] dataout
 );
-logic [width-1:0] data [7:0];
+logic [width-1:0] data [(2**(index_width) - 1):0];
 /* Initialize array */
 initial
 begin

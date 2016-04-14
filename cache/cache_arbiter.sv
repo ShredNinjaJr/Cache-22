@@ -5,20 +5,20 @@ module cache_arbiter
 	input clk,
 	/* Pmem to Arbiter */
 	input pmem_resp,
-	input pmem_bus pmem_rdata,
+	input pmem_L1_bus pmem_rdata,
 	
 	/* Cache to Arbiter */
 	input lc3b_word imem_address, dmem_address,
 	input dmem_write, dmem_read, imem_read,
-	input pmem_bus dmem_wdata,
+	input pmem_L1_bus dmem_wdata,
 	
 	/* Arbiter to Cache */
 	output logic imem_resp, dmem_resp,
-	output pmem_bus imem_rdata, dmem_rdata,
+	output pmem_L1_bus imem_rdata, dmem_rdata,
 	
 	
 	/* Arbiter to pmem */
-	output pmem_bus pmem_wdata,
+	output pmem_L1_bus pmem_wdata,
 	output logic pmem_read, pmem_write,
 	output lc3b_word pmem_address
 );

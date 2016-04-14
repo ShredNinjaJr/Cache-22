@@ -76,3 +76,7 @@ $RECYCLE.BIN/
 *.tar.xz
 
 *~
+
+#Project files and csv
+*.aprj
+*.csv

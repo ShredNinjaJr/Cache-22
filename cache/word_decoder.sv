@@ -1,11 +1,10 @@
 import lc3b_types::*;
-import L1_cache_types::*;
 
 /* A giant mux */
-module word_decoder 
+module word_decoder #(parameter offset_size)
 (
-	input cache_offset offset,
-	input pmem_bus datain,
+	input [offset_size-1:0] offset,
+	input pmem_L1_bus datain,
 	output lc3b_word dataout
 );
 

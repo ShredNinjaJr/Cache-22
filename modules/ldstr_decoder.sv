@@ -55,23 +55,25 @@ begin
 		r_addr <= 0;
 		w_addr <= 0;
 	end
-	if(WE)
-	begin: Write
-		if(~full)
-		begin
-			w_addr <= w_addr + 2'b1;
-		end
-	end: Write
-	
-	if(RE)
-	begin: Read
-		if(~empty)
-		begin
-			r_addr <= r_addr + 2'b1;
-		end
-	end: Read
+	else
+	begin
+		if(WE)
+		begin: Write
+			if(~full)
+			begin
+				w_addr <= w_addr + 2'b1;
+			end
+		end: Write
+		
+		if(RE)
+		begin: Read
+			if(~empty)
+			begin
+				r_addr <= r_addr + 2'b1;
+			end
+		end: Read
+	end
 end
-
 
 always_comb
 begin
