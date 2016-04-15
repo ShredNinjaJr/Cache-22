@@ -2,7 +2,7 @@ import lc3b_types::*;
 
 module CDB_arbiter #(parameter n = 2)
 (
-	input clk,
+	input clk, flush,
 	input CDB RS_CDB_in[0:n],
 	
 	output logic RS_flush[0:n],
@@ -27,9 +27,9 @@ priority_encoder pri_en
 );
 always_ff@(posedge clk)
 begin
-	CDB_out <= 0;
-
-	if(pri_en_valid)
+	if(flush)
+		CDB_out <= 0;
+	else if(pri_en_valid)
 	begin
 		case(pri_en_out)
 		3'b0, 3'b1, 3'b10, 3'b11:begin
