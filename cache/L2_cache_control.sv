@@ -10,7 +10,8 @@ module L2_cache_control
  input cache_hit, dirtyout,
  output logic cache_allocate,
  output logic dirty_datain,
- output logic pmem_address_sel
+ output logic pmem_address_sel,
+ output logic addr_reg_load
 );
 
 enum logic[1:0] {
@@ -82,7 +83,7 @@ always_comb
 begin: next_state_logic
 	
 	next_state = state;
-
+	addr_reg_load = 0;
 	case(state)
 	HIT: begin
 	if(mem_resp == 0)
@@ -93,6 +94,7 @@ begin: next_state_logic
 					next_state = EVICT;
 				else
 					next_state = ALLOCATE;
+				addr_reg_load = 1;
 			 end
 			
 		end

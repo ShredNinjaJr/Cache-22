@@ -9,6 +9,7 @@ module icache_datapath
  output lc3b_word mem_rdata,
  output lc3b_word pmem_address, 
  input pmem_L1_bus pmem_rdata,
+ input addr_reg_load,
  
  output logic cache_hit,
  input write_enable 
@@ -24,7 +25,11 @@ pmem_L1_bus data_out;
 icache_tag tag_out;
 logic valid_out;
 
-assign pmem_address = mem_address;
+always_ff @ (posedge clk)
+begin
+	if(addr_reg_load)
+		pmem_address <= mem_address;
+end
 /* Decode address */
 L1_cache_address_decoder #(.tag_size($size(icache_tag)),.index_size($size(icache_index)), 
 						.offset_size($size(icache_offset)))address_decoder(.*);

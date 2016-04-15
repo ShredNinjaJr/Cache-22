@@ -29,6 +29,7 @@ logic valid_in, cache_allocate;
 logic datain_mux_sel, write_enable, cache_hit;
 logic dirty_datain, pmem_address_sel;
 logic dirtyout;
+logic addr_reg_load;
 
 L2_cache_datapath datapath(.*);
 

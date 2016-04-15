@@ -21,7 +21,7 @@ module L1_icache
 	 input pmem_resp	 
 );
 
-logic write_enable, cache_hit;
+logic write_enable, cache_hit, addr_reg_load;
 icache_datapath cache_datapath(.*);
 icache_control cache_control(.*);
 

@@ -6,6 +6,7 @@ module icache_control
  output logic mem_resp, 
  input pmem_resp,
  output logic write_enable, 
+ output logic addr_reg_load,
  input cache_hit
 );
 
@@ -42,11 +43,14 @@ end: state_actions
 always_comb
 begin: next_state_logic
 	next_state = state;
-	
+	addr_reg_load = 0;
 	case (state)
 	HIT: begin
 		if(~cache_hit & mem_read)
+		begin
 			next_state = ALLOCATE;
+			addr_reg_load = 1;
+		end
 	end
 	ALLOCATE: begin
 		if(pmem_resp)

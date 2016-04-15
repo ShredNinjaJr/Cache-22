@@ -15,7 +15,8 @@ module L2_cache_datapath
  input pmem_address_sel,
  output pmem_bus pmem_wdata,
  output logic dirtyout,
- input pmem_L1_bus mem_wdata
+ input pmem_L1_bus mem_wdata,
+ input addr_reg_load
 );
 
 
@@ -48,10 +49,18 @@ write_decoder write_decoder
 );
 
 
+lc3b_word pmem_addr_reg;
+
+always_ff @(posedge clk)
+begin
+	if(addr_reg_load)
+		pmem_addr_reg <= mem_address;
+end
+
 mux2 #(.width($size(lc3b_word))) pmem_addr_mux 
 (
 	.sel(pmem_address_sel), 
-	.a(mem_address), .b({tag_mux_out, index, 4'b0}), 
+	.a(pmem_addr_reg), .b({tag_mux_out, index, 4'b0}), 
 	.f(pmem_address)
 );
 

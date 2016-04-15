@@ -16,7 +16,9 @@ module dcache_datapath
  output pmem_L1_bus pmem_wdata,
  output logic dirtyout,
  input lc3b_word mem_wdata,
- input lc3b_mem_wmask mem_byte_enable
+ input lc3b_mem_wmask mem_byte_enable,
+ 
+ input addr_reg_load
 );
 
 
@@ -47,11 +49,18 @@ write_decoder write_decoder
 	.out0(write_decoder_out0), .out1(write_decoder_out1)
 );
 
+lc3b_word pmem_addr_reg;
+
+always_ff @(posedge clk)
+begin
+	if(addr_reg_load)
+		pmem_addr_reg <= mem_address;
+end
 
 mux2 #(.width($size(lc3b_word))) pmem_addr_mux 
 (
 	.sel(pmem_address_sel), 
-	.a(mem_address), .b({tag_mux_out, index, temp_offset}), 
+	.a(pmem_addr_reg), .b({tag_mux_out, index, temp_offset}), 
 	.f(pmem_address)
 );
 
