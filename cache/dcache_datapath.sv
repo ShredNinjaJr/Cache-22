@@ -18,7 +18,8 @@ module dcache_datapath
  input lc3b_word mem_wdata,
  input lc3b_mem_wmask mem_byte_enable,
  
- input addr_reg_load
+ input addr_reg_load,
+ input evict_allocate
 );
 
 
@@ -72,7 +73,7 @@ mux2 #(.width($size(dcache_tag))) tag_mux
 );
 /* Decode address */
 L1_cache_address_decoder #(.tag_size($size(dcache_tag)),.index_size($size(dcache_index)), 
-						.offset_size($size(dcache_offset)))address_decoder(.*, .mem_address((evict_allocate) ? mem_addr_reg: mem_address));
+						.offset_size($size(dcache_offset)))address_decoder(.*, .mem_address((evict_allocate) ? pmem_addr_reg: mem_address));
 
 
 pmem_L1_bus data_writeout;
