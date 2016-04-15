@@ -7,7 +7,8 @@ module icache_control
  input pmem_resp,
  output logic write_enable, 
  output logic addr_reg_load,
- input cache_hit
+ input cache_hit,
+ output logic evict_allocate
 );
 
 enum logic {HIT, ALLOCATE} state, next_state;
@@ -22,6 +23,7 @@ begin: state_actions
     pmem_read = 0;
     write_enable = 0;
 	 mem_resp = 0;
+	 evict_allocate = 0;
     /*State actions */
     unique case(state)
 
@@ -34,6 +36,8 @@ begin: state_actions
 	      pmem_read = 1;
 			if(pmem_resp)
 				write_enable = 1;
+			
+			evict_allocate = 1;
 		 end
     endcase
 

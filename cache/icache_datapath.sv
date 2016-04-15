@@ -12,7 +12,8 @@ module icache_datapath
  input addr_reg_load,
  
  output logic cache_hit,
- input write_enable 
+ input write_enable,
+ input evict_allocate 
 );
 
 
@@ -25,14 +26,19 @@ pmem_L1_bus data_out;
 icache_tag tag_out;
 logic valid_out;
 
+lc3b_word mem_addr_reg;
+
 always_ff @ (posedge clk)
 begin
 	if(addr_reg_load)
-		pmem_address <= mem_address;
+		mem_addr_reg <= mem_address;
 end
+
+assign pmem_address = mem_addr_reg;
+
 /* Decode address */
 L1_cache_address_decoder #(.tag_size($size(icache_tag)),.index_size($size(icache_index)), 
-						.offset_size($size(icache_offset)))address_decoder(.*);
+						.offset_size($size(icache_offset)))address_decoder(.*, .mem_address((evict_allocate) ? mem_addr_reg: mem_address));
 
 
 

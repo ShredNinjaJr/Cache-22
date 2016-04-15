@@ -72,7 +72,7 @@ mux2 #(.width($size(dcache_tag))) tag_mux
 );
 /* Decode address */
 L1_cache_address_decoder #(.tag_size($size(dcache_tag)),.index_size($size(dcache_index)), 
-						.offset_size($size(dcache_offset)))address_decoder(.*);
+						.offset_size($size(dcache_offset)))address_decoder(.*, .mem_address((evict_allocate) ? mem_addr_reg: mem_address));
 
 
 pmem_L1_bus data_writeout;

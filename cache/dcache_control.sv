@@ -11,7 +11,8 @@ module dcache_control
  output logic cache_allocate,
  output logic dirty_datain,
  output logic pmem_address_sel,
- output logic addr_reg_load
+ output logic addr_reg_load,
+ output logic evict_allocate
 );
 
 enum logic[1:0] {
@@ -34,6 +35,7 @@ begin: state_actions
 	 cache_allocate = 0;
 	 dirty_datain = 0;
 	 pmem_address_sel = 0;
+	 evict_allocate = 0;
     /*State actions */
     unique case(state)
 
@@ -59,18 +61,21 @@ begin: state_actions
 
 	    ALLOCATE: begin
 	      pmem_read = 1;
+			evict_allocate = 1;
 			if(pmem_resp)
 			begin
 				valid_in = 1;
 				write_enable = 1;
 				cache_allocate = 1;
 			end
+			
 		 end
 		 
 		 EVICT: begin
 			pmem_address_sel = 1;
 			valid_in = 0;
 			pmem_write = 1;
+			evict_allocate = 1;
 		 end
 		 default: ;
     endcase

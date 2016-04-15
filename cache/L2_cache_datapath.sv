@@ -16,7 +16,8 @@ module L2_cache_datapath
  output pmem_bus pmem_wdata,
  output logic dirtyout,
  input pmem_L1_bus mem_wdata,
- input addr_reg_load
+ input addr_reg_load,
+ input evict_allocate
 );
 
 
@@ -32,9 +33,11 @@ logic valid0_out, valid1_out;
 
 logic way_match;
 L2cache_tag tag_mux_out;
+lc3b_word pmem_addr_reg;
 
-assign tag = mem_address[15 -: $size(tag)];
-assign index = mem_address[(15 - $size(tag)) -: $size(index)];
+
+assign tag = (evict_allocate) ? pmem_addr_reg[15 -: $size(tag)] : (mem_address[15 -: $size(tag)]);
+assign index = (evict_allocate) ? pmem_addr_reg[(15 - $size(tag)) -: $size(index)]: (mem_address[(15 - $size(tag)) -: $size(index)]);
 
 
 /* Write decoder */
@@ -49,7 +52,7 @@ write_decoder write_decoder
 );
 
 
-lc3b_word pmem_addr_reg;
+
 
 always_ff @(posedge clk)
 begin
