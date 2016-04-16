@@ -124,7 +124,7 @@ always_ff @(posedge clk)
 begin
 	state <= next_state;
 	
-	if(next_state == ALLOCATE)
+	if((next_state == ALLOCATE) & (state != ALLOCATE))
 		l2_miss_count <= l2_miss_count + 1;
 end
 

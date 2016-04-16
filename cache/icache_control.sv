@@ -73,7 +73,7 @@ always_ff @(posedge clk)
 begin
 	state <= next_state;
 	
-	if(next_state == ALLOCATE)
+	if((next_state == ALLOCATE) & (state != ALLOCATE))
 		icache_miss_count <= icache_miss_count + 1;
 end
 

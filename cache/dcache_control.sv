@@ -126,7 +126,7 @@ always_ff @(posedge clk)
 begin
 	state <= next_state;
 	
-	if(next_state == ALLOCATE)
+	if((next_state == ALLOCATE) & (state != ALLOCATE))
 		dcache_miss_count <= dcache_miss_count + 1;
 end
 
