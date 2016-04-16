@@ -32,8 +32,8 @@ logic dirty_datain, pmem_address_sel;
 logic dirtyout, addr_reg_load;
 logic evict_allocate;
 
-dcache_datapath cache_datapath(.*);
-dcache_control cache_control(.*);
+dcache_datapath L1_dcache_datapath(.*);
+dcache_control L1_dcache_control(.*);
 
 
 
