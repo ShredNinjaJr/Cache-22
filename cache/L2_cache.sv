@@ -31,8 +31,8 @@ logic dirty_datain, pmem_address_sel;
 logic dirtyout;
 logic addr_reg_load, evict_allocate;
 
-L2_cache_datapath datapath(.*);
+L2_cache_datapath L2_datapath(.*);
 
-L2_cache_control control (.*);
+L2_cache_control L2_control (.*);
 
 endmodule: L2_cache

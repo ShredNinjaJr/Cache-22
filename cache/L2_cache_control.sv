@@ -117,9 +117,15 @@ begin: next_state_logic
 
 end: next_state_logic
 
+logic [31:0] l2_miss_count;
+initial l2_miss_count = 0;
+
 always_ff @(posedge clk)
 begin
 	state <= next_state;
+	
+	if((next_state == ALLOCATE) & (state != ALLOCATE))
+		l2_miss_count <= l2_miss_count + 1;
 end
 
 endmodule: L2_cache_control
