@@ -29,7 +29,9 @@ module L1_dcache
 logic valid_in, cache_allocate;
 logic datain_mux_sel, write_enable, cache_hit;
 logic dirty_datain, pmem_address_sel;
-logic dirtyout;
+logic dirtyout, addr_reg_load;
+logic evict_allocate;
+
 dcache_datapath cache_datapath(.*);
 dcache_control cache_control(.*);
 

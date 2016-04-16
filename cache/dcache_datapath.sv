@@ -16,7 +16,10 @@ module dcache_datapath
  output pmem_L1_bus pmem_wdata,
  output logic dirtyout,
  input lc3b_word mem_wdata,
- input lc3b_mem_wmask mem_byte_enable
+ input lc3b_mem_wmask mem_byte_enable,
+ 
+ input addr_reg_load,
+ input evict_allocate
 );
 
 
@@ -47,11 +50,18 @@ write_decoder write_decoder
 	.out0(write_decoder_out0), .out1(write_decoder_out1)
 );
 
+lc3b_word pmem_addr_reg;
+
+always_ff @(posedge clk)
+begin
+	if(addr_reg_load)
+		pmem_addr_reg <= mem_address;
+end
 
 mux2 #(.width($size(lc3b_word))) pmem_addr_mux 
 (
 	.sel(pmem_address_sel), 
-	.a(mem_address), .b({tag_mux_out, index, temp_offset}), 
+	.a(pmem_addr_reg), .b({tag_mux_out, index, temp_offset}), 
 	.f(pmem_address)
 );
 
@@ -63,7 +73,7 @@ mux2 #(.width($size(dcache_tag))) tag_mux
 );
 /* Decode address */
 L1_cache_address_decoder #(.tag_size($size(dcache_tag)),.index_size($size(dcache_index)), 
-						.offset_size($size(dcache_offset)))address_decoder(.*);
+						.offset_size($size(dcache_offset)))address_decoder(.*, .mem_address((evict_allocate) ? pmem_addr_reg: mem_address));
 
 
 pmem_L1_bus data_writeout;
