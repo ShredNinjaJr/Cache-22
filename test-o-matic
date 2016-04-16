@@ -9,14 +9,14 @@
 #MP project name
 MP=mp3
 #MP directory
-MP_DIR=$HOME/Cache-22
+MP_DIR=$HOME/ece411/Cache-22
 #Location of LC3bAssembler; Should usually be in bin
-ASSEMBLER=$HOME/Cache-22/bin/LC3bAssembler
+ASSEMBLER=$HOME/ece411/Cache-22/bin/LC3bAssembler
 #Addressability of physical memory; from load_memory.sh
 ADDRESSABILITY=16
 
 #Testcode directory;Not required but can be used to avoid entering path everytime
-TESTCODE_DIR=$HOME/Cache-22/testcode/
+TESTCODE_DIR=$HOME/ece411/Cache-22/testcode/
 
 ####
 ####Change according to your design
@@ -26,7 +26,7 @@ TESTCODE_DIR=$HOME/Cache-22/testcode/
 #(not sure if 183 meant 181 and i also uncommented 185)
 # the original path was also incorrect so that was changed
 REG_FILE={/mp3_tb/dut/cpu_datapath/regfile/value_reg/data}
-RUN_TIME=185000ns
+RUN_TIME=5000000ns
 
 #Other debug signals
 #signals can be prefixed with -radix

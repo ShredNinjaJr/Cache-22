@@ -32,7 +32,7 @@ logic stall;
 
 fetch_unit fetch_unit
 (
-	.clk,
+	.clk, .flush, 
 	.imem_rdata, .imem_read, .imem_address, .imem_resp,
 	.stall,
 	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc
@@ -95,7 +95,7 @@ always_ff@ (posedge clk)
 begin
 	if(~flush & ~stall)
 		instr_is_new <= imem_resp;
-	else if(~stall)
+	else if(~stall | flush)
 		instr_is_new <= 0;
 end
 
