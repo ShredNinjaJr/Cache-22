@@ -54,24 +54,24 @@ logic ldi_count;
 logic sti_count;
 
 /* Branch prediction counters */
-lc3b_word branch_count;
-lc3b_word branch_mispredict_count;
+logic [31:0] branch_count;
+logic [31:0] branch_mispredict_count;
 
 initial begin
 	branch_count = 0;
 	branch_mispredict_count = 0;
 end
 
-always_ff
+always_ff @ (posedge clk)
 begin
 	if(valid_in)
 	begin
 		if(opcode_in == op_br)
 		begin
-			branch_count <= branch_count + 16'b1;
+			branch_count <= branch_count + 1;
 			if(branch_enable != predict_in)
 			begin
-				branch_mispredict_count <= branch_mispredict_count + 16'b1;
+				branch_mispredict_count <= branch_mispredict_count + 1;
 			end
 		end
 	end
