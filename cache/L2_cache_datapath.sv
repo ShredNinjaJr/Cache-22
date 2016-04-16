@@ -24,7 +24,7 @@ module L2_cache_datapath
 /* wires */
 L2cache_tag tag;
 L2cache_index index;
-//dcache_offset offset;
+L2cache_offset offset;
 
 pmem_bus datain_mux_out;
 pmem_bus data0_out, data1_out;
@@ -36,8 +36,8 @@ L2cache_tag tag_mux_out;
 lc3b_word pmem_addr_reg;
 
 
-assign tag = (evict_allocate) ? pmem_addr_reg[15 -: $size(tag)] : (mem_address[15 -: $size(tag)]);
-assign index = (evict_allocate) ? pmem_addr_reg[(15 - $size(tag)) -: $size(index)]: (mem_address[(15 - $size(tag)) -: $size(index)]);
+/* Decode address */
+L2_cache_address_decoder address_decoder(.*, .mem_address((evict_allocate) ? pmem_addr_reg: mem_address));
 
 
 /* Write decoder */
@@ -63,7 +63,7 @@ end
 mux2 #(.width($size(lc3b_word))) pmem_addr_mux 
 (
 	.sel(pmem_address_sel), 
-	.a(pmem_addr_reg), .b({tag_mux_out, index, 4'b0}), 
+	.a(pmem_addr_reg), .b({tag_mux_out, index, 5'b0}), 
 	.f(pmem_address)
 );
 
@@ -77,7 +77,21 @@ mux2 #(.width($size(L2cache_tag))) tag_mux
 
 
 pmem_bus data_writeout;
-assign data_writeout = mem_wdata;
+
+pmem_L1_bus write_d0_out, write_d1_out;
+
+mux2 #(.width($size(pmem_L1_bus))) word_decoder0 (.sel(offset), .a(data0_out[127:0]), .b(data0_out[255:128]), .f(write_d0_out));
+mux2 #(.width($size(pmem_L1_bus))) word_decoder1 (.sel(offset), .a(data1_out[127:0]), .b(data1_out[255:128]), .f(write_d1_out));
+
+mux2 #(.width($size(pmem_L1_bus))) mem_rdatamux (.sel (way_match),.b(write_d1_out), .a(write_d0_out), .f(mem_rdata));
+
+
+L2_data_write data_write_module
+(
+	.*
+);
+
+/* Data array */
 
 mux2 #(.width($size(pmem_bus))) datain_mux (.sel(datain_mux_sel), .a(pmem_rdata), .b(data_writeout), .f(datain_mux_out));
 
@@ -96,7 +110,7 @@ array  #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_array
 );
 
 
-mux2 #(.width($size(pmem_bus))) mem_rdatamux (.sel (way_match),.b(data1_out), .a(data0_out), .f(mem_rdata));
+
 
 /* Tag array */
 array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_array0

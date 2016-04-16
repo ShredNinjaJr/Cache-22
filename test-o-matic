@@ -9,14 +9,14 @@
 #MP project name
 MP=mp3
 #MP directory
-MP_DIR=$HOME/ece411/Cache-22
+MP_DIR=$HOME/Cache-22
 #Location of LC3bAssembler; Should usually be in bin
-ASSEMBLER=$HOME/ece411/Cache-22/bin/LC3bAssembler
+ASSEMBLER=$HOME/Cache-22/bin/LC3bAssembler
 #Addressability of physical memory; from load_memory.sh
-ADDRESSABILITY=16
+ADDRESSABILITY=32
 
 #Testcode directory;Not required but can be used to avoid entering path everytime
-TESTCODE_DIR=$HOME/ece411/Cache-22/testcode/
+TESTCODE_DIR=$HOME/Cache-22/testcode/
 
 ####
 ####Change according to your design

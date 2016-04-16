@@ -1,6 +1,6 @@
 package lc3b_types;
 
-typedef logic [127:0] pmem_bus;
+typedef logic [255:0] pmem_bus;
 typedef logic [127:0] pmem_L1_bus;
 
 typedef logic [15:0] lc3b_word;
@@ -28,7 +28,8 @@ typedef logic [2:0] dcache_index;
 typedef logic [2:0] dcache_offset;
 
 typedef logic [6:0] L2cache_tag;
-typedef logic [4:0] L2cache_index;
+typedef logic [3:0] L2cache_index;
+typedef logic L2cache_offset;
 //typedef logic [0:0] L2cache_offset;
 
 
