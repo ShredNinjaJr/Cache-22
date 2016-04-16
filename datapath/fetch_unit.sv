@@ -2,7 +2,7 @@ import lc3b_types::*;
 
 module fetch_unit
 (
-	input clk,
+	input clk, flush,
 	input lc3b_word imem_rdata,
 	input imem_resp,
 	input [1:0] pcmux_sel,
@@ -18,7 +18,7 @@ module fetch_unit
 lc3b_word pc_plus2_out;
 
 logic load_pc, load_ir;
-assign load_pc = (pcmux_sel == 2'b0) ? (imem_resp & ~stall) : 1'b1;
+assign load_pc = (pcmux_sel == 2'b0) ? (imem_resp & ~stall) : (flush | ~stall);
 assign load_ir = load_pc;
 assign imem_address = pc_out; 
 assign imem_read = ~stall;

@@ -281,13 +281,13 @@ begin
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
-	(ldstr_full && (opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode == op_sti 	|| opcode == op_stb || opcode == op_ldb)) || branch_stall || 
+	(ldstr_full && (opcode == op_trap || opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode == op_sti 	|| opcode == op_stb || opcode == op_ldb)) || branch_stall || 
 	!instr_is_new)
 	begin
 		// STALL
 		if(rob_full ||
 			(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
-			(ldstr_full && (opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode === op_sti || opcode == op_stb || opcode == op_ldb)) || 
+			(ldstr_full && (opcode == op_trap || opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode === op_sti || opcode == op_stb || opcode == op_ldb)) || 
 			(instr_is_new & ~branch_stall))
 			stall = 1'b1;
 	end
@@ -518,6 +518,7 @@ begin
 					else		// Wait for Base value
 					begin
 						stall = 1'b1;
+						branch_stall_in = 0;
 					end
 				end
 				else
@@ -558,6 +559,7 @@ begin
 						begin
 							stall = 1'b1;
 							rob_write_enable = 1'b0;
+							branch_stall_in = 0;
 						end
 					end
 					else
