@@ -63,6 +63,7 @@ CDB_arbiter #(.n($size(RS_CDB_out) - 1)) CDB_arbiter
 (
 	.clk,
 	.RS_CDB_in(RS_CDB_out),
+	.flush(flush),
 	
 	.RS_flush(RS_flush),
 	.CDB_out(CDB_out)
