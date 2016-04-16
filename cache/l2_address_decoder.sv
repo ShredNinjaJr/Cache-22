@@ -11,7 +11,7 @@ module L2_cache_address_decoder
 
 assign tag = mem_address[15 -: $size(tag)];
 assign index = mem_address[(15 - $size(tag)) -: $size(index)];
-assign offset = mem_address[5];
+assign offset = mem_address[4];
 
 
 endmodule : L2_cache_address_decoder
