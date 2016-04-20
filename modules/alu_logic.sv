@@ -2,11 +2,17 @@ import lc3b_types::*;
 
 module alu_logic
 (
-	input lc3b_opcode op,
-	input A, D,
+	input lc3b_word instr,
 	output lc3b_aluop aluop
 );
 
+lc3b_opcode op;
+assign op = lc3b_opcode'(instr[15:12]);
+
+logic A;
+assign A = instr[5];
+logic D;
+assign D = instr[4];
 
 always_comb
 begin

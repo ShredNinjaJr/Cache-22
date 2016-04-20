@@ -4,7 +4,7 @@ module alu_res_station #(parameter data_width = 16, parameter tag_width = 3)
 (
 	input clk, flush,
 	input bit5,
-	input lc3b_opcode op_in,
+	input lc3b_word instr_in,
 	input CDB CDB_in,
 	//CDBout
 	input [data_width-1:0] Vj, Vk,
@@ -32,7 +32,7 @@ logic busy_in = 1;
 	
 logic [data_width - 1: 0] Vj_out, Vk_out;
 logic [tag_width - 1: 0] Qj_out, Qk_out, dest_out;
-lc3b_opcode op_out;
+lc3b_word instr_out;
 logic Vk_valid_out;
 logic Vj_valid_out;
 
@@ -53,16 +53,6 @@ res_station res_station_reg (.*);
 assign CDB_out.valid = (Vk_valid_out & Vj_valid_out);
 
 
-logic A,D;	/* bit 5 and 4 of instr, used for SHF */
-always_ff@(posedge clk)
-begin
-	if(ld_op)
-	begin
-		A <= bit5;
-		D <= Vk[15];
-	end
-end
-
 
 lc3b_aluop aluop;
 lc3b_word alu_out;
@@ -71,7 +61,7 @@ assign CDB_out.data = alu_out;
 assign CDB_out.tag = dest_out;
 
 /* logic to compute  appropriate opcode  for  alu */
-alu_logic alu_logic (.op(op_out), .A, .D, .aluop);
+alu_logic alu_logic (.instr(instr_out), .aluop);
 
 alu alu
 (

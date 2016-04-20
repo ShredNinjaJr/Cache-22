@@ -260,7 +260,7 @@ alu_RS_unit alu_RS
 (
 	.clk,
 	.flush(flush),
-	.op_in(res_op_in),
+	.instr_in(ir_out),
 	.CDB_in(C_D_B),
 	.bit5,
 	.load_buffer_CDB_out,
