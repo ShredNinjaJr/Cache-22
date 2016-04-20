@@ -33,6 +33,7 @@ logic valid0_out, valid1_out, valid2_out, valid3_out;
 
 logic [1:0] way_match;
 logic [1:0] lru_dataout;
+logic [2:0] lru_datain, lru_data;
 
 L2cache_tag tag_mux_out;
 lc3b_word pmem_addr_reg;
@@ -197,8 +198,6 @@ assign d_lru_write = cache_hit & (mem_read | mem_write);
 
 /* LRU replacement */
 /* lru of 1 indicates 1 is LRU*/
-logic [2:0] lru_datain, lru_data;
-
 L2_lru_update lru_update (.*);
 
 array #(.width(3), .index_width($size(L2cache_index))) lru_array
