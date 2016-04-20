@@ -30,32 +30,38 @@ begin
 end
 
 /* Datapath */
+lc3b_word pmem_address_mux_out;
 
 /* Arbiter to pmem */
-assign pmem_wdata = dmem_wdata;
-assign pmem_write = dmem_write & (state == D);
-assign pmem_read = (state == I) ? imem_read : dmem_read;
-
+always_ff @ (posedge clk)
+begin
+	pmem_wdata <= dmem_wdata;
+	pmem_write <= dmem_write & (state == D);
+	pmem_read <= (state == I) ? imem_read : dmem_read;
+	
+	pmem_address <= pmem_address_mux_out;
+	/* Arbiter to Cache */
+	imem_rdata <= pmem_rdata;
+	dmem_rdata <= pmem_rdata;
+	
+	if(state == I)
+		imem_resp <= pmem_resp;
+	else
+		imem_resp <= 0;
+	if(state == D)
+		dmem_resp <= pmem_resp;
+	else
+		dmem_resp <= 0;
+end
 mux2 #(.width($size(lc3b_word))) pmem_address_mux
 (
 	.sel((state == I)), 
 	.a(dmem_address), .b(imem_address),
-	.f(pmem_address)
+	.f(pmem_address_mux_out)
 );
 
-/* Arbiter to Cache */
-assign imem_rdata = pmem_rdata;
-assign dmem_rdata = pmem_rdata;
 
-always_comb
-begin:resp
-	imem_resp = 0;
-	dmem_resp = 0;
-	if(state == I)
-		imem_resp = pmem_resp;
-	if(state == D)
-		dmem_resp = pmem_resp;
-end
+
 
 
 /* State machine */
