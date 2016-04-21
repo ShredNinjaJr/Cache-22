@@ -1,25 +1,27 @@
 mport lc3b_types::*;
 
-module branch_target_buffer #(parameter data_width = 16, parameter tag_width = 3, parameter num_entries = 10)
+module branch_target_buffer #(parameter num_entries = 10)
 (
 	input clk,
-
+	
 	/* input */
 	input lc3b_word pc,
 	input lc3b_word bta_in,
-	input valid,
+	input valid_in,
+	input predict_in,
+	
+	input lc3b_word wr_addr,
 	
 	/* load signals */
 	input ld_valid,
 	input ld_tag,
-	input ld_busy,
+	input ld_data,
+	input ld_predict,
 	
 	/* output signals */
 	output hit,
-	
-	output valid_out,
-	output btb_tag tag_out,
-	output lc3b_word bta_out
+	output lc3b_word bta_out,
+	output predict_out
 	
 );
 
@@ -55,8 +57,18 @@ array  #(.width(num_entries), .index_width($size(lc3b_word))) data_array
   .clk,
   .index(branch_index),
   .datain(bta_in), .dataout(bta_out),
-  .write(ld_busy)
+  .write(ld_data)
+);
+
+/* Prediction array */
+array  #(.width(num_entries), .index_width(1)) predict_array
+(
+  .clk,
+  .index(branch_index),
+  .datain(predict_in), .dataout(predict_out),
+  .write(ld_predict)
  );
+ 
  
 
 endmodule: branch_target_buffer

@@ -39,6 +39,34 @@ fetch_unit fetch_unit
 	
 );
 
+
+branch_target_buffer BTB
+(
+	.clk,
+	
+	/* from fetch unit */
+	.pc(pc_out),
+	
+	/* from write results control */
+	.bta_in,
+	.valid_in,
+	
+	.ld_valid,
+	.ld_tag,
+	.ld_data,
+	.ld_predict,
+	
+	/* To issue control && fetch unit */
+	.hit,
+	
+	/* To fetch unit */
+	.bta_out,
+		
+	/* To issue control */
+	.predict_out
+		
+);
+
 /* Reservation station -> Issue Control */
 
 logic alu_RS_busy [0:2];
