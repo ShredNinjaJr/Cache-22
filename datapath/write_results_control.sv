@@ -36,15 +36,20 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	output logic dmem_write,
 	
 	/* To ld/str buffer */
-	output logic ldstr_RE_out
+	output logic ldstr_RE_out,
 		
-);
+	/* To predict unit */
+	output logic ld_pred_unit,
+	output logic br_taken
+	);
 
 assign dest_a = dest_in;
 assign value_out = (opcode_in == op_trap) ? trap_reg : value_in;
 assign new_pc = value_in;
 
 assign dest_wr = dest_in;
+
+assign br_taken = branch_enable;
 
 logic ld_cc;
 lc3b_nzp gencc_out;
@@ -108,6 +113,8 @@ begin
 	flush = 0;
 	dmem_write = 0;
 	ldstr_RE_out = 0;
+	ld_pred_unit = 0;
+	br_taken = 0;
 	if(valid_in)
 	begin
 		case(opcode_in)
@@ -120,6 +127,8 @@ begin
 				flush = 1'b1;
 			 end
 			 RE_out = 1'b1;
+			 ld_pred_unit = 1'b1;
+			 
 		end 
 		op_add, op_and, op_not, op_shf, op_lea, op_ldr, op_ldb: begin
 			ld_regfile_busy = (dest_wr_data == rob_addr);

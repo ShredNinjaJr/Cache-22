@@ -12,6 +12,9 @@ typedef logic [3:0] lc3b_imm4;
 typedef logic [7:0] lc3b_trapvect8;
 typedef logic [10:0] lc3b_offset11;
 
+typedef logic [2:0] lc3b_bht_ind;
+typedef logic [3:0] lc3b_bht_out;
+typedef logic [6:0] lc3b_pht_ind;
 
 typedef logic  [2:0] lc3b_reg;
 typedef logic  [2:0] lc3b_nzp;
