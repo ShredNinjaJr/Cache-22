@@ -22,7 +22,10 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input regfile_t sr1_in, sr2_in, dest_in,
 	// Prediction Unit -> Issue Control
 	input predict_bit,
-
+	// BTB -> Issue Control
+	input btb_hit,
+	input btb_predict,
+	
 	// Issue Control -> Fetch Unit
 	output logic stall,
 	output logic pcmux_sel,
@@ -132,7 +135,7 @@ always_ff @( posedge clk)
 begin
 	case(opcode)
 	op_br: begin
-		if(predict_bit & ~branch_stall & instr_is_new)
+		if( (((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)) & ~branch_stall & instr_is_new)
 			branch_stall <= 1'b1;
 		else
 			branch_stall <= 0;
@@ -477,7 +480,7 @@ begin
 				rob_write_enable = 1'b1;
 				rob_dest = dest_reg;
 				br_pc = curr_pc + adj9_out;
-				if (predict_bit)
+				if (((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit))
 				begin
 					rob_value_in = curr_pc;
 					pcmux_sel = 1'b1;

@@ -37,6 +37,15 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	
 	/* To ld/str buffer */
 	output logic ldstr_RE_out
+	
+	/* To BTB */
+	output lc3b_word btb_waddr,
+	output btb_tag btb_tag_out,
+	output lc3b_word btb_bta_out,
+	output btb_valid_out,
+	output btb_predict_out,
+	output BTB_we
+	
 		
 );
 
@@ -143,6 +152,12 @@ begin
 			 begin
 				pcmux_sel = 1'b1;
 				flush = 1'b1;
+			//	btb_waddr = //appropriate index value based off of pc
+				btb_predict_out = ~predict_in;
+				btb_bta_out = value_in;
+			//	btb_tag_out = //appropriate tag value based off of pc
+				btb_valid_out = 1'b1;
+				btb_we = 1'b1;
 			 end
 			 RE_out = 1'b1;
 		end 

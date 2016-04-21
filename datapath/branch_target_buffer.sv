@@ -10,7 +10,7 @@ module branch_target_buffer #(parameter num_entries = 10)
 	input valid_in,
 	input predict_in,
 	
-	input lc3b_word wr_addr,
+	input btb_index wr_addr,
 	
 	/* load signals */
 	input ld_valid,
@@ -34,37 +34,41 @@ assign branch_index = pc[4:1];
 assign hit = (branch_tag == tag_out) & valid_out;
 
 /* Valid array */
-array #(.width(num_entries), .index_width(1)) valid_array
+array_sepwrite #(.width(num_entries), .index_width(1)) valid_array
 (
   .clk, 
   .index(branch_index), 
+  .index2(wr_addr),
   .datain(valid_in), .dataout(valid_out),
   .write(ld_valid)
 );
 
 /* Tag array */
-array #(.width(num_entries), .index_width($size(btb_tag))) tag_array
+array_sepwrite #(.width(num_entries), .index_width($size(btb_tag))) tag_array
 (
   .clk,
   .index(branch_index),
+  .index2(wr_addr),
   .datain(branch_tag), .dataout(tag_out),
   .write(ld_tag)
 );
 
 /* Data array */
-array  #(.width(num_entries), .index_width($size(lc3b_word))) data_array
+array_sepwrite  #(.width(num_entries), .index_width($size(lc3b_word))) data_array
 (
   .clk,
   .index(branch_index),
+  .index2(wr_addr),
   .datain(bta_in), .dataout(bta_out),
   .write(ld_data)
 );
 
 /* Prediction array */
-array  #(.width(num_entries), .index_width(1)) predict_array
+array_sepwrite  #(.width(num_entries), .index_width(1)) predict_array
 (
   .clk,
   .index(branch_index),
+  .index2(wr_addr),
   .datain(predict_in), .dataout(predict_out),
   .write(ld_predict)
  );

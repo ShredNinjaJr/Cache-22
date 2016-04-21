@@ -29,12 +29,26 @@ logic [1:0] pcmux_sel;
 lc3b_word new_pc;
 lc3b_word br_pc;
 logic stall;
+/* BTB connection signals */
+logic hit_out;
+logic btb_predict;
+logic btb_tag_out;
+logic btb_bta_out;
+logic btb_valid_out;
+logic btb_predict_out;
+btb_index btb_waddr;
+
+lc3bword bta;
+
+assign pcmux_sel[1] = hit_out;
 
 fetch_unit fetch_unit
 (
 	.clk, .flush, 
 	.imem_rdata, .imem_read, .imem_address, .imem_resp,
 	.stall,
+	.hit(hit_out),
+	.bta_in(bta),
 	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc
 	
 );
@@ -48,22 +62,25 @@ branch_target_buffer BTB
 	.pc(pc_out),
 	
 	/* from write results control */
-	.bta_in,
-	.valid_in,
+	.wr_addr(btb_waddr),
+	.bta_in(btb_bta_out),
+	.tag_in(btb_tag_out),
+	.valid_in(btb_valid_out),
+	.predict_in(btb_predict_out),
 	
-	.ld_valid,
-	.ld_tag,
-	.ld_data,
-	.ld_predict,
+	.ld_valid(btb_we),
+	.ld_tag(btb_we),
+	.ld_data(btb_we),
+	.ld_predict(btb_we),
 	
 	/* To issue control && fetch unit */
-	.hit,
-	
+	.hit(hit_out),
+
 	/* To fetch unit */
-	.bta_out,
+	.bta_out(bta),
 		
 	/* To issue control */
-	.predict_out
+	.predict_out(btb_predict)
 		
 );
 
@@ -153,6 +170,11 @@ issue_control issue_control
 	
 	/* prediction unit -> Issue control */
 	.predict_bit(br_predict),
+	
+	// BTB -> Issue Control
+	.btb_hit(hit_out),
+	.btb_predict,
+	
 
 	// Issue Control -> Reservation Station
 	.res_op_in,
@@ -186,6 +208,7 @@ issue_control issue_control
 	.reg_rob_entry,
 	.rob_sr1_read_addr,
 	.rob_sr2_read_addr,
+	
 	
 	/* Issue Control -> Fetch Unit */
 	.stall, .pcmux_sel(pcmux_sel[0]), .br_pc
@@ -270,9 +293,17 @@ write_results_control wr_control
 	/* TO DATAPATH */
 	.flush,
 	/* To fetch Unit */
-	.new_pc, .pcmux_sel(pcmux_sel[1]),
+	.new_pc, .pcmux_sel(pcmux_sel[2]),
 	/* TO MEMORY */
 	.dmem_write,
+	
+	/* TO BTB */
+	.btb_waddr,
+	.btb_tag_out,
+	.btb_bta_out,
+	.btb_valid_out,
+	.btb_predict_out,
+	.BTB_we,
 	
 	.ldstr_RE_out,
 	
