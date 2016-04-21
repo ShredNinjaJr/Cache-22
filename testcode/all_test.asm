@@ -6,6 +6,7 @@ SEGMENT CodeSegment:
 	ADD R1,R1,1
 	BRp NEXT1
 	LDR R6,R0,Bad1 ; Immediate ADD does not work
+	XOR R6, R0, R1
 	BRnzp HALT
 NEXT1:
 	ADD R2,R1,-2
