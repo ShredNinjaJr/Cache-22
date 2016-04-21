@@ -1,6 +1,6 @@
 mport lc3b_types::*;
 
-module branch_target_buffer #(parameter num_entries = 10)
+module branch_target_buffer #(parameter num_entries = 16)
 (
 	input clk,
 	
