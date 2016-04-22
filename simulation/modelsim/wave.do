@@ -21,6 +21,13 @@ add wave -noupdate /mp3_tb/pmem_write
 add wave -noupdate /mp3_tb/pmem_address
 add wave -noupdate /mp3_tb/pmem_rdata
 add wave -noupdate /mp3_tb/pmem_wdata
+add wave -noupdate /mp3_tb/clk
+add wave -noupdate /mp3_tb/pmem_resp
+add wave -noupdate /mp3_tb/pmem_read
+add wave -noupdate /mp3_tb/pmem_write
+add wave -noupdate /mp3_tb/pmem_address
+add wave -noupdate /mp3_tb/pmem_rdata
+add wave -noupdate /mp3_tb/pmem_wdata
 add wave -noupdate /mp3_tb/dut/cpu_datapath/pc_out
 add wave -noupdate -expand /mp3_tb/dut/cpu_datapath/regfile/value_reg/data
 add wave -noupdate /mp3_tb/dut/cpu_datapath/ir_out
@@ -103,6 +110,7 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/dest_out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/valid_out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/value_out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/predict_out
+add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/orig_pc_out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/r_addr
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/ROB/w_addr
 add wave -noupdate /mp3_tb/dut/cpu_datapath/reorder_buffer/inst
@@ -137,6 +145,7 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/rob_addr
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/rob_write_enable
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/btb_hit
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/btb_predict
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/branch_stall
 add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/branch_tag
 add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/branch_index
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/opcode
@@ -151,8 +160,22 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/br_pc
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/adj9/in
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/adj9/out
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/instr
+add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/ld_valid
+add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/ld_tag
+add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/ld_data
+add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/ld_predict
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/ir/data
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/ir/in
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/ir/load
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/pc/in
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/imem_resp
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/imem_rdata
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/imem_address
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/imem_read
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/stall
+add wave -noupdate /mp3_tb/dut/cpu_datapath/fetch_unit/load_pc
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {90050671 ps} 0}
+WaveRestoreCursors {{Cursor 1} {109641015 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100
@@ -168,4 +191,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {89953774 ps} {90216950 ps}
+WaveRestoreZoom {109524367 ps} {109787543 ps}
