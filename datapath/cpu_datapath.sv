@@ -25,20 +25,21 @@ lc3b_word ir_out, pc_out;
 
 logic ld_buf_valid_in;
 
-logic [1:0] pcmux_sel;
+logic [2:0] pcmux_sel;
 lc3b_word new_pc;
 lc3b_word br_pc;
 logic stall;
 /* BTB connection signals */
 logic hit_out;
 logic btb_predict;
-logic btb_tag_out;
-logic btb_bta_out;
+btb_tag btb_tag_out;
+lc3b_word btb_bta_out;
 logic btb_valid_out;
 logic btb_predict_out;
+logic btb_we;
 btb_index btb_waddr;
 
-lc3bword bta;
+lc3b_word bta;
 
 assign pcmux_sel[1] = hit_out;
 
@@ -303,7 +304,7 @@ write_results_control wr_control
 	.btb_bta_out,
 	.btb_valid_out,
 	.btb_predict_out,
-	.BTB_we,
+	.btb_we,
 	
 	.ldstr_RE_out,
 	

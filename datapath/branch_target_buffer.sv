@@ -1,4 +1,4 @@
-mport lc3b_types::*;
+import lc3b_types::*;
 
 module branch_target_buffer #(parameter num_entries = 16)
 (
@@ -7,6 +7,7 @@ module branch_target_buffer #(parameter num_entries = 16)
 	/* input */
 	input lc3b_word pc,
 	input lc3b_word bta_in,
+	input btb_tag tag_in,
 	input valid_in,
 	input predict_in,
 	
@@ -27,6 +28,8 @@ module branch_target_buffer #(parameter num_entries = 16)
 
 btb_tag branch_tag;
 btb_index branch_index;
+logic valid_out;
+logic tag_out;
 
 assign branch_tag = pc[15:5];
 assign branch_index = pc[4:1];
@@ -34,9 +37,9 @@ assign branch_index = pc[4:1];
 assign hit = (branch_tag == tag_out) & valid_out;
 
 /* Valid array */
-array_sepwrite #(.width(num_entries), .index_width(1)) valid_array
+array_sepwrite #(.width(num_entries), .index_width($size(btb_index)), .data_size(1)) valid_array
 (
-  .clk, 
+  .clk(clk),
   .index(branch_index), 
   .index2(wr_addr),
   .datain(valid_in), .dataout(valid_out),
@@ -44,19 +47,19 @@ array_sepwrite #(.width(num_entries), .index_width(1)) valid_array
 );
 
 /* Tag array */
-array_sepwrite #(.width(num_entries), .index_width($size(btb_tag))) tag_array
+array_sepwrite #(.width(num_entries), .index_width($size(btb_index)), .data_size(11)) tag_array
 (
-  .clk,
+  .clk(clk),
   .index(branch_index),
   .index2(wr_addr),
-  .datain(branch_tag), .dataout(tag_out),
+  .datain(tag_in), .dataout(tag_out),
   .write(ld_tag)
 );
 
 /* Data array */
-array_sepwrite  #(.width(num_entries), .index_width($size(lc3b_word))) data_array
+array_sepwrite  #(.width(num_entries), .index_width($size(btb_index)), .data_size(16)) data_array
 (
-  .clk,
+  .clk(clk),
   .index(branch_index),
   .index2(wr_addr),
   .datain(bta_in), .dataout(bta_out),
@@ -64,9 +67,9 @@ array_sepwrite  #(.width(num_entries), .index_width($size(lc3b_word))) data_arra
 );
 
 /* Prediction array */
-array_sepwrite  #(.width(num_entries), .index_width(1)) predict_array
+array_sepwrite  #(.width(num_entries), .index_width($size(btb_index)), .data_size(1)) predict_array
 (
-  .clk,
+  .clk(clk),
   .index(branch_index),
   .index2(wr_addr),
   .datain(predict_in), .dataout(predict_out),

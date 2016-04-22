@@ -36,15 +36,15 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	output logic dmem_write,
 	
 	/* To ld/str buffer */
-	output logic ldstr_RE_out
+	output logic ldstr_RE_out,
 	
 	/* To BTB */
-	output lc3b_word btb_waddr,
+	output btb_index btb_waddr,
 	output btb_tag btb_tag_out,
 	output lc3b_word btb_bta_out,
 	output btb_valid_out,
 	output btb_predict_out,
-	output BTB_we
+	output btb_we
 	
 		
 );
@@ -142,6 +142,12 @@ begin
 	flush = 0;
 	dmem_write = 0;
 	ldstr_RE_out = 0;
+	btb_waddr = 0;
+	btb_predict_out = 0;
+	btb_bta_out = 0;
+	btb_tag_out = 0;
+	btb_valid_out = 0;
+	btb_we = 0;
 	if(valid_in)
 	begin
 		case(opcode_in)
@@ -152,14 +158,16 @@ begin
 			 begin
 				pcmux_sel = 1'b1;
 				flush = 1'b1;
-			//	btb_waddr = //appropriate index value based off of pc
-				btb_predict_out = ~predict_in;
-				btb_bta_out = value_in;
-			//	btb_tag_out = //appropriate tag value based off of pc
-				btb_valid_out = 1'b1;
-				btb_we = 1'b1;
 			 end
 			 RE_out = 1'b1;
+			 
+		 /* Updating BTB everytime */
+		//	btb_waddr = //appropriate index value based off of pc
+			btb_predict_out = ~predict_in;
+			btb_bta_out = value_in;
+		//	btb_tag_out = //appropriate tag value based off of pc
+			btb_valid_out = 1'b1;
+			btb_we = 1'b1;
 		end 
 		op_add, op_and, op_not, op_shf, op_lea, op_ldr, op_ldb: begin
 			ld_regfile_busy = (dest_wr_data == rob_addr);

@@ -11,7 +11,7 @@ module fetch_unit
 	
 	/* From BTB */
 	input hit,
-	input lc3b_word bta,
+	input lc3b_word bta_in,
 	
 	output imem_read,
 	output lc3b_word imem_address,
@@ -35,8 +35,8 @@ mux8 pcmux
 	.sel(pcmux_sel),
 	.a(pc_plus2_out),
 	.b(br_pc),
-	.c(bta), 
-	.d(bta),
+	.c(bta_in), 
+	.d(bta_in),
 	.e(new_pc),
 	.f(new_pc),
 	.g(new_pc),
