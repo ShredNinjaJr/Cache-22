@@ -45,6 +45,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output lc3b_opcode rob_opcode, 
 	output lc3b_reg rob_dest,
 	output logic [data_width-1:0] rob_value_in,
+	output lc3b_word rob_pc_addr,
 	// Issue Control -> Regfile
 	output lc3b_reg reg_dest, sr1, sr2,
 	output logic ld_reg_busy_dest,
@@ -277,6 +278,7 @@ begin
 	reg_rob_entry = 0;
 	pcmux_sel = 0;
 	br_pc = 0;
+	rob_pc_addr = curr_pc;
 	rob_opcode = opcode;
 	
 	if (rob_full || 

@@ -78,6 +78,7 @@ logic rob_write_enable;
 lc3b_opcode rob_opcode_in;
 lc3b_reg rob_dest_in;
 lc3b_word rob_value_in;
+lc3b_word rob_pc_addr;
 
 /* Issue control -> Regfile */
 lc3b_reg reg_dest, sr1, sr2;
@@ -152,6 +153,7 @@ issue_control issue_control
 	.rob_opcode(rob_opcode_in), 
 	.rob_dest(rob_dest_in),
 	.rob_value_in,
+	.rob_pc_addr,
 	// Issue Control -> Regfile
 	.reg_dest, .sr1, .sr2,
 	.ld_reg_busy_dest,
@@ -174,6 +176,8 @@ lc3b_word rob_value_out;
 logic rob_predict_out;
 logic rob_empty;
 lc3b_rob_addr r_rob_addr;
+lc3b_word orig_pc_out;
+
 reorder_buffer reorder_buffer
 (
 	.clk, .flush,
@@ -185,6 +189,7 @@ reorder_buffer reorder_buffer
 	.dest(rob_dest_in),
 	.value(rob_value_in),
 	.predict(br_predict),
+	.orig_pc_in(rob_pc_addr),
 	//.addr(rob_	
 	.CDB_in(C_D_B),
 
@@ -199,6 +204,7 @@ reorder_buffer reorder_buffer
 	.dest_out(rob_dest_out),
 	.value_out(rob_value_out),
 	.predict_out(rob_predict_out),
+	.orig_pc_out,
 	
 	.full_out(rob_full),
 	.empty_out(rob_empty),
