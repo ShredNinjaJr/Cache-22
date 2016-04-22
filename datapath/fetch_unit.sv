@@ -12,10 +12,12 @@ module fetch_unit
 	
 	/* From BTB */
 	input hit,
+	input predict_in,
 	input lc3b_word bta_in,
 	
 	output instr_hit_out,
 	output lc3b_word instr_pc_out,
+	output instr_predict_out,
 	output imem_read,
 	output lc3b_word imem_address,
 	output lc3b_word ir_out,
@@ -24,7 +26,7 @@ module fetch_unit
 
 lc3b_word pc_plus2_out;
 
-logic load_pc, load_ir, hit_out;
+logic load_pc, load_ir;
 assign load_pc = (pcmux_sel == 3'b000) ? (imem_resp & ~stall) : (flush | ~stall | hit);
 assign load_ir = load_pc;
 assign imem_address = pc_out; 
@@ -61,16 +63,18 @@ register #(.width(1)) hitreg
 	.clk, .clr(1'b0),
 	.load(load_pc),
 	.in(hit),
-	.out(hit_out)
+	.out(instr_hit_out)
 );
 
-register #(.width(1)) old_hit
+register #(.width(1)) predictreg
 (
 	.clk, .clr(1'b0),
 	.load(load_pc),
-	.in(hit_out),
-	.out(instr_hit_out)
+	.in(predict_in),
+	.out(instr_predict_out)
 );
+
+
 
 
 register old_pc

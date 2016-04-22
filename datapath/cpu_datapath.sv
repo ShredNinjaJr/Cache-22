@@ -40,6 +40,7 @@ logic btb_predict_out;
 logic btb_we;
 btb_index btb_waddr;
 logic old_hit;
+logic old_predict;
 lc3b_word bta;
 
 assign pcmux_sel[1] = hit_out;
@@ -51,7 +52,9 @@ fetch_unit fetch_unit
 	.stall,
 
 	.hit(hit_out),
+	.predict_in(btb_predict),
 	.instr_hit_out(old_hit),
+	.instr_predict_out(old_predict),
 	.bta_in(bta),
 	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc, .instr_pc_out
 	
@@ -63,7 +66,7 @@ branch_target_buffer BTB
 	.clk,
 	
 	/* from fetch unit */
-	.pc(instr_pc_out),
+	.pc(pc_out),
 	
 	/* from write results control */
 	.wr_addr(btb_waddr),
@@ -156,7 +159,7 @@ issue_control issue_control
 	// Fetch -> Issue Controlj
 	.instr(ir_out),
 	.instr_is_new,
-	.curr_pc(pc_out),
+	.curr_pc(instr_pc_out + 2'b10),
 	.instruction_pc(instr_pc_out),
 	// CDB -> Issue Control
 	.CDB_in(C_D_B),
@@ -179,7 +182,7 @@ issue_control issue_control
 	
 	// BTB -> Issue Control
 	.btb_hit(old_hit),
-	.btb_predict,
+	.btb_predict(old_predict),
 	
 
 	// Issue Control -> Reservation Station

@@ -482,7 +482,7 @@ begin
 			begin
 				rob_write_enable = 1'b1;
 				rob_dest = dest_reg;
-				br_pc = curr_pc + adj9_out;
+				br_pc = curr_pc + 2'b10;
 				rob_value_in = adj9_out;
 				if ((((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)))
 				begin

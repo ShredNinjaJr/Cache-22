@@ -166,21 +166,23 @@ begin
 				
 				pcmux_sel = 1'b1;
 				flush = 1'b1;
+				btb_predict_out = ~predict_in;
 							
 			 end
 			 else 
 				begin
-				 if(predict_in == 1)
-					new_pc = rob_pc_in + value_in + 16'b10;
-				else 
-					new_pc = rob_pc_in + 16'b10 + 16'b10;
+					if(predict_in == 1)
+						new_pc = rob_pc_in + value_in + 16'b10;
+					else 
+						new_pc = rob_pc_in + 16'b10 + 16'b10;
+						
+					btb_predict_out = predict_in;
 				end
 			 
 			RE_out = 1'b1;
 			  
 			 /* Updating BTB everytime */
 			btb_waddr = rob_pc_in[4:1];
-			btb_predict_out = ~predict_in;
 			btb_bta_out = new_pc;
 			btb_tag_out = rob_pc_in[15:5];
 			btb_valid_out = 1'b1;
