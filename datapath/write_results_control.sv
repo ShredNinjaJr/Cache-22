@@ -160,9 +160,9 @@ begin
 			 if(branch_enable != predict_in)
 			 begin
 				if(predict_in == 1)
-					new_pc = rob_pc_in + 16'b10 + 16'b10;
+					new_pc = rob_pc_in + 16'b10;// + 16'b10;
 				else 
-					new_pc = rob_pc_in + value_in + 16'b10;
+					new_pc = rob_pc_in + value_in;// + 16'b10;
 				
 				pcmux_sel = 1'b1;
 				flush = 1'b1;
@@ -172,9 +172,9 @@ begin
 			 else 
 				begin
 					if(predict_in == 1)
-						new_pc = rob_pc_in + value_in + 16'b10;
+						new_pc = rob_pc_in + value_in;// + 16'b10;
 					else 
-						new_pc = rob_pc_in + 16'b10 + 16'b10;
+						new_pc = rob_pc_in + 16'b10;// + 16'b10;
 						
 					btb_predict_out = predict_in;
 				end
