@@ -137,7 +137,7 @@ always_ff @( posedge clk)
 begin
 	case(opcode)
 	op_br: begin
-		if( (((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)) & ~branch_stall & instr_is_new)
+		if( (((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)) & ~branch_stall & instr_is_new & ~stall)
 			branch_stall <= 1'b1;
 		else
 			branch_stall <= 0;
@@ -145,8 +145,14 @@ begin
 	op_jsr, op_jmp: begin
 		branch_stall <= branch_stall_in;
 	end
-	default: branch_stall <= 0;
-				
+	default: 
+	begin
+		if(stall)
+			branch_stall <= branch_stall;
+		else
+			branch_stall <= 0;
+	end
+	
 	endcase
 end
 
