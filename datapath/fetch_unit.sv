@@ -27,7 +27,7 @@ module fetch_unit
 lc3b_word pc_plus2_out;
 
 logic load_pc, load_ir;
-assign load_pc = (pcmux_sel == 3'b000) ? (imem_resp & ~stall) : (flush | (~stall & imem_resp) | (hit & imem_resp & ~stall));
+assign load_pc = (pcmux_sel == 3'b000) ? (imem_resp & ~stall) : (pcmux_sel == 3'b001) ? (~stall) : (flush | (~stall & imem_resp) | (hit & imem_resp & ~stall));
 assign load_ir = load_pc;
 assign imem_address = pc_out; 
 assign imem_read = ~stall;
