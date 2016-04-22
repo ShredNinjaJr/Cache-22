@@ -6,7 +6,7 @@ module L1_cache
 	 input clk,
 
 	 /* Memory signals */
-	/* Cache to pmem */
+	/* CPU to cache */
 	 input imem_read, dmem_read,
 	 input dmem_write,
 	 input lc3b_mem_wmask dmem_byte_enable,
@@ -19,17 +19,17 @@ module L1_cache
 	 /* cache to pmem*/
 	 output lc3b_word pmem_address,
 	 output pmem_read, pmem_write,
-	 output pmem_bus pmem_wdata,
+	 output pmem_L1_bus pmem_wdata,
 	 
 	 /* pmem to cache */
-	 input pmem_bus pmem_rdata,
+	 input pmem_L1_bus pmem_rdata,
 	 input pmem_resp	 
 );
 
 	logic d_pmem_write, d_pmem_read, i_pmem_read;
 	lc3b_word d_pmem_address, i_pmem_address;
-	pmem_bus d_pmem_wdata;
-	pmem_bus d_pmem_rdata, i_pmem_rdata;
+	pmem_L1_bus d_pmem_wdata;
+	pmem_L1_bus d_pmem_rdata, i_pmem_rdata;
 	logic d_pmem_resp, i_pmem_resp;
 
 L1_dcache dcache

@@ -1,4 +1,4 @@
-module dcache_control
+module L2_cache_control
 (
  input clk,
  input mem_read,
@@ -61,21 +61,20 @@ begin: state_actions
 
 	    ALLOCATE: begin
 	      pmem_read = 1;
-			evict_allocate = 1;
 			if(pmem_resp)
 			begin
 				valid_in = 1;
 				write_enable = 1;
 				cache_allocate = 1;
 			end
-			
+			evict_allocate = 1;
 		 end
 		 
 		 EVICT: begin
+			evict_allocate = 1;
 			pmem_address_sel = 1;
 			valid_in = 0;
 			pmem_write = 1;
-			evict_allocate = 1;
 		 end
 		 default: ;
     endcase
@@ -99,7 +98,6 @@ begin: next_state_logic
 					next_state = EVICT;
 				else
 					next_state = ALLOCATE;
-				
 				addr_reg_load = 1;
 			 end
 			
@@ -119,15 +117,15 @@ begin: next_state_logic
 
 end: next_state_logic
 
-logic [31:0] dcache_miss_count;
-initial dcache_miss_count = 0;
+logic [31:0] l2_miss_count;
+initial l2_miss_count = 0;
 
 always_ff @(posedge clk)
 begin
 	state <= next_state;
 	
 	if((next_state == ALLOCATE) & (state != ALLOCATE))
-		dcache_miss_count <= dcache_miss_count + 1;
+		l2_miss_count <= l2_miss_count + 1;
 end
 
-endmodule: dcache_control
+endmodule: L2_cache_control

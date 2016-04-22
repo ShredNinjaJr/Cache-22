@@ -23,8 +23,6 @@ module ldstr_buffer #(parameter data_width = 16, parameter tag_width = 3, parame
 
 lc3b_word mem_val_in;
 
-
-
 /* Decoder unit */
 ldstr_decoder #(.n(n)) LD_STR_decoder (.*);
 
@@ -77,7 +75,6 @@ endgenerate
 assign mem_val_in = dmem_rdata;
 assign RE = ld_buffer_read | wr_RE_out;
 		
-
 assign dmem_read = datamem_read[r_addr_out];		
 assign dmem_wdata = datamem_wdata[r_addr_out];
 assign dmem_addr = datamem_addr[r_addr_out];

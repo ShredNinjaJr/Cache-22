@@ -18,10 +18,10 @@ module L1_dcache
 	 /* cache to pmem*/
 	 output lc3b_word pmem_address,
 	 output logic pmem_read, pmem_write,
-	 output pmem_bus pmem_wdata,
+	 output pmem_L1_bus pmem_wdata,
 	 
 	 /* pmem to cache */
-	 input pmem_bus pmem_rdata,
+	 input pmem_L1_bus pmem_rdata,
 	 input pmem_resp	 
 );
 
@@ -29,9 +29,11 @@ module L1_dcache
 logic valid_in, cache_allocate;
 logic datain_mux_sel, write_enable, cache_hit;
 logic dirty_datain, pmem_address_sel;
-logic dirtyout;
-dcache_datapath cache_datapath(.*);
-dcache_control cache_control(.*);
+logic dirtyout, addr_reg_load;
+logic evict_allocate;
+
+dcache_datapath L1_dcache_datapath(.*);
+dcache_control L1_dcache_control(.*);
 
 
 

@@ -20,40 +20,41 @@ module cdb_ld_str_res_station #(parameter data_width = 16, parameter tag_width =
 
 logic [data_width - 1: 0] Vsrc_in, Vbase_in;
 logic [tag_width - 1: 0] Qsrc_in, Qbase_in, dest_in;
-logic ld_opcode, ld_Qsrc, ld_Vsrc, ld_Qbase, ld_Vbase, ld_offset, ld_dest, ld_busy;
+logic ld_opcode, ld_Qsrc, ld_Vsrc, ld_Qbase, ld_Vbase, ld_offset, ld_dest;
 logic Vbase_valid_input, Vsrc_valid_input;
 
 logic [data_width - 1: 0] Vsrc_out, Vbase_out, mem_val_out, offset_out, offset_b_out;
 logic [tag_width - 1: 0] Qsrc_out, Qbase_out, dest_out;
-logic busy_in, busy_out;
+
 lc3b_opcode opcode_out;
 
 logic mem_val_valid_in;
 logic mem_val_valid_out;
 
+/* Assigning input values for registers */
 assign Qbase_in = Qbase;
 assign Qsrc_in = Qsrc;
 assign dest_in = dest;
-assign busy_in = 1'b1;
-	
 assign Vbase_in = (WE) ? Vbase : CDB_in.data;
 assign Vsrc_in = (WE) ? Vsrc : CDB_in.data;
-
+assign mem_val_valid_in = 1'b1;
 assign Vbase_valid_input = (WE) ? Vbase_valid_in : 1'b1;
 assign Vsrc_valid_input = (WE) ? Vsrc_valid_in : 1'b1;
 
-assign ld_busy = WE;
+/* Assigning ld values for registers */
 assign ld_opcode = WE;
 assign ld_Qsrc = WE;
-assign ld_Vsrc = (WE) ? 1'b1 : ((Qsrc_out == CDB_in.tag) & (opcode_out == op_str | opcode_out == op_stb) & CDB_in.valid & busy_out & ~Vsrc_valid_out);
+assign ld_Vsrc = (WE) ? 1'b1 : ((Qsrc_out == CDB_in.tag) & (opcode_out == op_str | opcode_out == op_stb) & CDB_in.valid & ~Vsrc_valid_out);
 assign ld_Qbase = WE;
-assign ld_Vbase = (WE) ?  1'b1 : ((Qbase_out == CDB_in.tag) & CDB_in.valid & busy_out &  ~Vbase_valid_out);
+assign ld_Vbase = (WE) ?  1'b1 : ((Qbase_out == CDB_in.tag) & CDB_in.valid &  ~Vbase_valid_out);
 assign ld_offset = WE;
 assign ld_dest = WE;
-assign mem_val_valid_in = 1'b1;
 
 
 ld_str_res_station ld_str_res_station_reg (.*);
+
+
+/* Assigning dmem control signals */
 
 assign dmem_addr = Vbase_out + offset_out;
 
@@ -71,6 +72,7 @@ begin
 	endcase
 end
 
+/* Assigning values to be broadcast to CDB */
 assign CDB_out.valid  = mem_val_valid_out;
 assign CDB_out.tag = dest_out;
 assign CDB_out.data = (opcode_out == op_ldb) ? (dmem_addr[0] ? ({8'b0,mem_val_out[15:8]}) : ({8'b0,mem_val_out[7:0]})) : mem_val_out;

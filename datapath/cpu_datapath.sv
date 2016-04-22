@@ -32,7 +32,7 @@ logic stall;
 
 fetch_unit fetch_unit
 (
-	.clk,
+	.clk, .flush, 
 	.imem_rdata, .imem_read, .imem_address, .imem_resp,
 	.stall,
 	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc
@@ -98,13 +98,16 @@ lc3b_rob_addr reg_rob_entry;
 lc3b_rob_addr rob_sr1_read_addr, rob_sr2_read_addr;
 logic [2:0] res_station_id;
 
+/* Branch prediction */
+logic br_predict = 1'b0;
+
 logic instr_is_new;
 initial instr_is_new = 0;
 always_ff@ (posedge clk)
 begin
 	if(~flush & ~stall)
 		instr_is_new <= imem_resp;
-	else if(~stall)
+	else if(~stall | flush)
 		instr_is_new <= 0;
 end
 

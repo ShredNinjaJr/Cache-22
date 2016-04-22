@@ -58,6 +58,31 @@ logic branch_enable;
 logic ldi_count;
 logic sti_count;
 
+/* Branch prediction counters */
+logic [31:0] branch_count;
+logic [31:0] branch_mispredict_count;
+
+initial begin
+	branch_count = 0;
+	branch_mispredict_count = 0;
+end
+
+always_ff @ (posedge clk)
+begin
+	if(valid_in)
+	begin
+		if(opcode_in == op_br)
+		begin
+			branch_count <= branch_count + 1;
+			if(branch_enable != predict_in)
+			begin
+				branch_mispredict_count <= branch_mispredict_count + 1;
+			end
+		end
+	end
+end
+
+
 initial
 begin
 	ldi_count <= 0;
@@ -73,12 +98,12 @@ begin
 			else if(ldi_count == 1 && valid_in == 1'b1)
 				ldi_count <= 0;
 		end
-		op_sti: begin
+		/*op_sti: begin
 			if(sti_count == 0 && valid_in == 1'b1)
 				sti_count <= 1;
 			else if(sti_count == 1)
 				sti_count <= 0;
-		end
+		end*/
 		default: ;
 	endcase
 

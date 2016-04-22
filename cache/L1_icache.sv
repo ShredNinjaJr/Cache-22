@@ -17,13 +17,15 @@ module L1_icache
 	 output logic pmem_read,
 	 
 	 /* pmem to cache */
-	 input pmem_bus pmem_rdata,
+	 input pmem_L1_bus pmem_rdata,
 	 input pmem_resp	 
 );
 
-logic write_enable, cache_hit;
-icache_datapath cache_datapath(.*);
-icache_control cache_control(.*);
+logic write_enable, cache_hit, addr_reg_load;
+logic evict_allocate;
+
+icache_datapath L1_icache_datapath(.*);
+icache_control L1_icache_control(.*);
 
 
 
