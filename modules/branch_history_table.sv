@@ -1,19 +1,19 @@
 import lc3b_types::*;
 
-module branch_history_table
+module branch_history_table #(parameter data_out = 4, parameter table_index = 3)
 (
 	input clk,
-	input lc3b_bht_ind pc_pred_in,
+	input logic [table_index-1:0] pc_pred_in,
 	input ld_bht, taken_in,
-	input lc3b_bht_ind pc_taken_in,
+	input logic [table_index-1:0] pc_taken_in,
 	
-	output lc3b_bht_out bht_out
+	output [data_out-1:0] bht_out
 );
 
-logic lc3b_bht_out bht [2:0];
-logic [2:0] bht_old;
+logic [data_out-1:0] bht [(2**(table_index) - 1):0];
+logic [data_out-2:0] bht_old;
 
-assign bht_old = bht[pc_taken_in][2:0];
+assign bht_old = (bht[pc_taken_in])[data_out-2:0];
 
 initial
 begin
