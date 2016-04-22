@@ -7,6 +7,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input lc3b_word instr,
 	input instr_is_new,
 	input lc3b_word curr_pc,
+	input lc3b_word instruction_pc,
 	// CDB -> Issue Control
 	input CDB CDB_in,
 	// Reservation Station -> Issue Control
@@ -48,6 +49,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output lc3b_opcode rob_opcode, 
 	output lc3b_reg rob_dest,
 	output logic [data_width-1:0] rob_value_in,
+	output lc3b_word rob_pc_addr,
 	// Issue Control -> Regfile
 	output lc3b_reg reg_dest, sr1, sr2,
 	output logic ld_reg_busy_dest,
@@ -280,6 +282,7 @@ begin
 	reg_rob_entry = 0;
 	pcmux_sel = 0;
 	br_pc = 0;
+	rob_pc_addr = instruction_pc;
 	rob_opcode = opcode;
 	
 	if (rob_full || 
@@ -480,16 +483,15 @@ begin
 				rob_write_enable = 1'b1;
 				rob_dest = dest_reg;
 				br_pc = curr_pc + adj9_out;
-				if (((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit))
+				rob_value_in = adj9_out;
+				if ((((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)))
 				begin
-					rob_value_in = curr_pc;
+					//rob_value_in = curr_pc;
 					pcmux_sel = 1'b1;
 				end
-				else
-				begin
-					rob_value_in = br_pc;
-				end
-
+				//else 
+					//rob_value_in = br_pc;
+	
 			end
 			
 			// LEA Only uses ROB

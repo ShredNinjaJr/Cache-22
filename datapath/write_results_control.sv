@@ -10,6 +10,7 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	input lc3b_reg dest_in,
 	input [data_width - 1:0] value_in,
 	input predict_in,
+	input lc3b_word rob_pc_in,
 	input rob_empty,
 	input lc3b_rob_addr dest_wr_data,
 	input lc3b_rob_addr rob_addr,
@@ -42,16 +43,16 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	output btb_index btb_waddr,
 	output btb_tag btb_tag_out,
 	output lc3b_word btb_bta_out,
-	output btb_valid_out,
-	output btb_predict_out,
-	output btb_we
+	output logic btb_valid_out,
+	output logic btb_predict_out,
+	output logic btb_we
 	
 		
 );
 
 assign dest_a = dest_in;
 assign value_out = (opcode_in == op_trap) ? trap_reg : value_in;
-assign new_pc = value_in;
+
 
 assign dest_wr = dest_in;
 
@@ -148,24 +149,40 @@ begin
 	btb_tag_out = 0;
 	btb_valid_out = 0;
 	btb_we = 0;
+	new_pc = 0;
 	if(valid_in)
 	begin
 		case(opcode_in)
 		op_br: begin
 			/* If it is a branch, Check for misprediction and flush
 			 * the datapath if the branch was mispredicted */
+			 
 			 if(branch_enable != predict_in)
 			 begin
+				if(predict_in == 1)
+					new_pc = rob_pc_in + 16'b10 + 16'b10;
+				else 
+					new_pc = rob_pc_in + value_in + 16'b10;
+				
 				pcmux_sel = 1'b1;
 				flush = 1'b1;
+							
 			 end
-			 RE_out = 1'b1;
+			 else 
+				begin
+				 if(predict_in == 1)
+					new_pc = rob_pc_in + value_in + 16'b10;
+				else 
+					new_pc = rob_pc_in + 16'b10 + 16'b10;
+				end
 			 
-		 /* Updating BTB everytime */
-		//	btb_waddr = //appropriate index value based off of pc
+			RE_out = 1'b1;
+			  
+			 /* Updating BTB everytime */
+			btb_waddr = rob_pc_in[4:1];
 			btb_predict_out = ~predict_in;
-			btb_bta_out = value_in;
-		//	btb_tag_out = //appropriate tag value based off of pc
+			btb_bta_out = new_pc;
+			btb_tag_out = rob_pc_in[15:5];
 			btb_valid_out = 1'b1;
 			btb_we = 1'b1;
 		end 
@@ -206,6 +223,7 @@ begin
 		end
 		op_trap: begin
 			pcmux_sel = 1'b1;
+			new_pc = value_in;
 			flush = 1'b1;
 			ld_regfile_value = 1'b1;
 			RE_out = 1'b1;

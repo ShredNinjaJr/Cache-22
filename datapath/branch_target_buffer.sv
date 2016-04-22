@@ -29,7 +29,7 @@ module branch_target_buffer #(parameter num_entries = 16)
 btb_tag branch_tag;
 btb_index branch_index;
 logic valid_out;
-logic tag_out;
+btb_tag tag_out;
 
 assign branch_tag = pc[15:5];
 assign branch_index = pc[4:1];
