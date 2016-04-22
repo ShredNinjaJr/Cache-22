@@ -7,6 +7,8 @@ import lc3b_types::*;
   value: The value stored into the regfile
   predict: Only useful for branch instruction. Contains the prediction made.
   	  Used to detect mispredicts.
+  orig_pc: pc_address of instruction
+  bht_in: the value received from the bht to index into pht
 */
 
 module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
@@ -17,10 +19,12 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	input lc3b_opcode inst_in,	
 	input lc3b_reg dest_in,			
 	input logic [data_width-1:0] value_in_fifo, value_in_addr,	
-	input logic predict_in,		
+	input logic predict_in,
+	input lc3b_word orig_pc_in,
+	input lc3b_bht_out bht_in,
 	
 	/* load signals */
-	input ld_value, ld_dest, ld_inst, ld_valid, ld_predict,
+	input ld_value, ld_dest, ld_inst, ld_valid, ld_predict, ld_orig_pc, ld_bht,
 
 	/* Addr to write to in non FIFO manner ( for the value and valid field) */
 	input [tag_width-1:0] addr_in,	
@@ -34,6 +38,8 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	output logic valid_out,
 	output logic [data_width-1:0] value_out,
 	output logic predict_out,
+	output lc3b_word orig_pc_out,
+	output lc3b_bht_out bht_out,
 
 	/* The current tail address of the FIFO*/
 	output [tag_width-1:0] w_addr_out, r_addr_out,
@@ -55,6 +61,8 @@ logic [tag_width-1:0] dest	[2**tag_width-1:0];
 lc3b_opcode inst [2**tag_width-1:0];
 logic valid [2**tag_width - 1:0];
 logic predict [2**tag_width - 1:0];
+logic [15:0] orig_pc [2**tag_width-1:0];
+logic [3:0] bht [2**tag_width-1:0];
 
 logic [tag_width : 0] cnt;
 
@@ -68,6 +76,8 @@ assign inst_out = inst[r_addr];
 assign dest_out = dest[r_addr];
 assign valid_out = valid[r_addr];
 assign predict_out = predict[r_addr];
+assign orig_pc_out = orig_pc[r_addr];
+assign bht_out = bht[r_addr];
 
 assign w_addr_out = w_addr;
 assign r_addr_out = r_addr;
@@ -91,6 +101,8 @@ begin
 		valid[i] <= 0;
 		predict[i] <= 0;
 		cnt <= 0;
+		orig_pc[i] <= 0;
+		bht[i] <= 0;
 	end
 end
 
@@ -123,6 +135,8 @@ begin: Write_logic
 				endcase
 				
 				predict[w_addr] <= predict_in;
+				orig_pc[w_addr] <= orig_pc_in;
+				bht[w_addr] <= bht_in;
 				w_addr <= w_addr + 1'b1;
 			end
 		end		

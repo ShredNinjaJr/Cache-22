@@ -28,6 +28,7 @@ logic ld_buf_valid_in;
 logic [1:0] pcmux_sel;
 lc3b_word new_pc;
 lc3b_word br_pc;
+lc3b_word instr_pc_out;
 logic stall;
 
 fetch_unit fetch_unit
@@ -35,7 +36,7 @@ fetch_unit fetch_unit
 	.clk, .flush, 
 	.imem_rdata, .imem_read, .imem_address, .imem_resp,
 	.stall,
-	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc
+	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc, .instr_pc_out
 	
 );
 
@@ -43,13 +44,20 @@ fetch_unit fetch_unit
 logic br_predict;
 logic ld_pred_unit;
 logic br_taken;
+lc3b_bht_out bht_pred;
+lc3b_bht_out bht_taken;
+lc3b_word pc_taken;
 
 predict_unit predict_unit
 (
 	.clk,
 	.ld_pred_unit,
 	.new_pc,
+	.taken_in(br_taken),
+	.old_pc(pc_taken),
+	.bht_taken(bht_taken),
 	
+	.bht_pred_out(bht_pred),
 	.pred_out(br_predict)
 );
 
@@ -91,6 +99,8 @@ logic rob_write_enable;
 lc3b_opcode rob_opcode_in;
 lc3b_reg rob_dest_in;
 lc3b_word rob_value_in;
+lc3b_word rob_pc_addr;
+lc3b_bht_out rob_bht_out;
 
 /* Issue control -> Regfile */
 lc3b_reg reg_dest, sr1, sr2;
@@ -117,6 +127,7 @@ issue_control issue_control
 	.instr(ir_out),
 	.instr_is_new,
 	.curr_pc(pc_out),
+	.instruction_pc(instr_pc_out),
 	// CDB -> Issue Control
 	.CDB_in(C_D_B),
 	// Reservation Station -> Issue Control
@@ -135,6 +146,7 @@ issue_control issue_control
 	
 	/* prediction unit -> Issue control */
 	.predict_bit(br_predict),
+	.bht_in(bht_pred),
 
 	// Issue Control -> Reservation Station
 	.res_op_in,
@@ -162,6 +174,8 @@ issue_control issue_control
 	.rob_opcode(rob_opcode_in), 
 	.rob_dest(rob_dest_in),
 	.rob_value_in,
+	.rob_pc_addr,
+	.rob_bht_out,
 	// Issue Control -> Regfile
 	.reg_dest, .sr1, .sr2,
 	.ld_reg_busy_dest,
@@ -184,6 +198,9 @@ lc3b_word rob_value_out;
 logic rob_predict_out;
 logic rob_empty;
 lc3b_rob_addr r_rob_addr;
+lc3b_word orig_pc_out;
+lc3b_bht_out bht_out;
+
 reorder_buffer reorder_buffer
 (
 	.clk, .flush,
@@ -195,6 +212,8 @@ reorder_buffer reorder_buffer
 	.dest(rob_dest_in),
 	.value(rob_value_in),
 	.predict(br_predict),
+	.orig_pc_in(rob_pc_addr),
+	.bht_in(rob_bht_out),
 	//.addr(rob_	
 	.CDB_in(C_D_B),
 
@@ -209,6 +228,8 @@ reorder_buffer reorder_buffer
 	.dest_out(rob_dest_out),
 	.value_out(rob_value_out),
 	.predict_out(rob_predict_out),
+	.orig_pc_out,
+	.bht_out,
 	
 	.full_out(rob_full),
 	.empty_out(rob_empty),
@@ -237,6 +258,8 @@ write_results_control wr_control
 	.dest_in(rob_dest_out),
 	.value_in(rob_value_out),
 	.predict_in(rob_predict_out),
+	.rob_pc_in(orig_pc_out),
+	.rob_bht_in(bht_out),
 	.rob_empty,
 	.rob_addr(r_rob_addr),
 	.dmem_resp,
@@ -265,7 +288,9 @@ write_results_control wr_control
 	
 	/* TO PREDICT UNIT */
 	.ld_pred_unit,
-	.br_taken
+	.br_taken,
+	.bht_taken_out(bht_taken),
+	.pc_taken
 	
 );
 

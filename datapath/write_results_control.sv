@@ -10,6 +10,8 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	input lc3b_reg dest_in,
 	input [data_width - 1:0] value_in,
 	input predict_in,
+	input lc3b_word rob_pc_in,
+	input lc3b_bht_out rob_bht_in,
 	input rob_empty,
 	input lc3b_rob_addr dest_wr_data,
 	input lc3b_rob_addr rob_addr,
@@ -40,7 +42,9 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 		
 	/* To predict unit */
 	output logic ld_pred_unit,
-	output logic br_taken
+	output logic br_taken,
+	output lc3b_bht_out bht_taken_out,
+	output lc3b_word pc_taken
 	);
 
 logic branch_enable;
@@ -52,6 +56,8 @@ assign new_pc = value_in;
 assign dest_wr = dest_in;
 
 assign br_taken = branch_enable;
+assign bht_taken_out = rob_bht_in;
+assign pc_taken = rob_pc_in;
 
 logic ld_cc;
 lc3b_nzp gencc_out;

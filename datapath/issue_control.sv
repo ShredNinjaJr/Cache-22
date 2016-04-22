@@ -7,6 +7,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input lc3b_word instr,
 	input instr_is_new,
 	input lc3b_word curr_pc,
+	input lc3b_word instruction_pc,
 	// CDB -> Issue Control
 	input CDB CDB_in,
 	// Reservation Station -> Issue Control
@@ -22,6 +23,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input regfile_t sr1_in, sr2_in, dest_in,
 	// Prediction Unit -> Issue Control
 	input predict_bit,
+	input lc3b_bht_out bht_in,
 
 	// Issue Control -> Fetch Unit
 	output logic stall,
@@ -45,6 +47,8 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output lc3b_opcode rob_opcode, 
 	output lc3b_reg rob_dest,
 	output logic [data_width-1:0] rob_value_in,
+	output lc3b_word rob_pc_addr,
+	output lc3b_bht_out rob_bht_out,
 	// Issue Control -> Regfile
 	output lc3b_reg reg_dest, sr1, sr2,
 	output logic ld_reg_busy_dest,
@@ -277,6 +281,8 @@ begin
 	reg_rob_entry = 0;
 	pcmux_sel = 0;
 	br_pc = 0;
+	rob_pc_addr = instruction_pc;
+	rob_bht_out = bht_in;
 	rob_opcode = opcode;
 	
 	if (rob_full || 

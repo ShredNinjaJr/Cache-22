@@ -9,6 +9,8 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	input lc3b_reg dest,
 	input [data_width - 1:0] value,
 	input predict,
+	input lc3b_word orig_pc_in,
+	input logic [3:0] bht_in,
 	//input [tag_width-1:0] addr,
 	input CDB CDB_in,
 
@@ -24,6 +26,8 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	output lc3b_reg dest_out, 
 	output logic [data_width - 1:0] value_out,
 	output logic predict_out,
+	output lc3b_word orig_pc_out,
+	output logic [3:0] bht_out,
 	/* Output if full */
 	output logic empty_out,
 	output logic full_out,
@@ -40,7 +44,7 @@ lc3b_reg dest_in;
 
 logic [data_width - 1: 0] value_in_fifo, value_in_addr;
 logic predict_in;
-logic ld_value, ld_dest, ld_inst, ld_valid, ld_predict;
+logic ld_value, ld_dest, ld_inst, ld_valid, ld_predict, ld_orig_pc, ld_bht;
 logic [2:0] addr_in;
 logic empty, full;
 
@@ -60,6 +64,8 @@ assign value_in_addr = CDB_in.data;
 assign predict_in = predict;
 assign ld_predict = WE;
 
+assign ld_orig_pc = WE;
+assign ld_bht = WE;
 assign addr_in = CDB_in.tag;
 
 assign empty_out = empty;

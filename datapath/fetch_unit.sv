@@ -6,9 +6,10 @@ module fetch_unit
 	input lc3b_word imem_rdata,
 	input imem_resp,
 	input [1:0] pcmux_sel,
-	input lc3b_word new_pc, br_pc,
+	input lc3b_word new_pc, br_pc, 
 	input stall, 
 	
+	output lc3b_word instr_pc_out,
 	output imem_read,
 	output lc3b_word imem_address,
 	output lc3b_word ir_out,
@@ -41,6 +42,14 @@ register pc
 	.load(load_pc),
 	.in(pcmux_out),
 	.out(pc_out)
+);
+
+register old_pc
+(
+	.clk, .clr(1'b0),
+	.load(load_pc),
+	.in(pc_out),
+	.out(instr_pc_out)
 );
 
 register ir
