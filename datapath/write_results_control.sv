@@ -43,6 +43,8 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	output logic br_taken
 	);
 
+logic branch_enable;
+	
 assign dest_a = dest_in;
 assign value_out = (opcode_in == op_trap) ? trap_reg : value_in;
 assign new_pc = value_in;
@@ -54,7 +56,7 @@ assign br_taken = branch_enable;
 logic ld_cc;
 lc3b_nzp gencc_out;
 lc3b_nzp cc_out;
-logic branch_enable;
+
 logic ldi_count;
 logic sti_count;
 
@@ -139,7 +141,6 @@ begin
 	dmem_write = 0;
 	ldstr_RE_out = 0;
 	ld_pred_unit = 0;
-	br_taken = 0;
 	if(valid_in)
 	begin
 		case(opcode_in)

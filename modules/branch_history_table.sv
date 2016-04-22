@@ -1,4 +1,3 @@
-import lc3b_types::*;
 
 module branch_history_table #(parameter data_out = 4, parameter table_index = 3)
 (
@@ -7,13 +6,13 @@ module branch_history_table #(parameter data_out = 4, parameter table_index = 3)
 	input ld_bht, taken_in,
 	input logic [table_index-1:0] pc_taken_in,
 	
-	output [data_out-1:0] bht_out
+	output logic [data_out-1:0] bht_out
 );
 
 logic [data_out-1:0] bht [(2**(table_index) - 1):0];
 logic [data_out-2:0] bht_old;
 
-assign bht_old = (bht[pc_taken_in])[data_out-2:0];
+assign bht_old = bht[pc_taken_in][data_out-2:0];
 
 initial
 begin

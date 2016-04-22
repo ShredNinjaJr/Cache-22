@@ -12,14 +12,14 @@ module predict_unit
 	input ld_pred_unit,
 	input lc3b_word new_pc, old_pc,
 	input taken_in,
-	input lc3b_word pc_taken_in,
 	
-	output pred_out
+	output logic pred_out
 );
 
-lc3b_bht_ind pc_in;
+lc3b_bht_ind pc_in, pc_taken_in;
 lc3b_bht_out bht_out;
 lc3b_pht_ind pht_ind;
+
 
 assign pht_ind = {pc_in, bht_out};
 assign pc_in = new_pc[3:1];
@@ -41,10 +41,10 @@ branch_history_table BHT
 pattern_history_table PHT
 (
 	.clk(clk),
-	.pht_pred_ind(pht_ind),
+	.pc_pred_in(pht_ind),
 	.ld_pht(ld_pred_unit),
 	.taken_in(taken_in),
-	.pht_taken_in(pc_taken_in),
+	.pc_taken_in(pc_taken_in),
 	
 	.pred_out(pred_out)
 );

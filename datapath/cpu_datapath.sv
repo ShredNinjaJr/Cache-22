@@ -42,6 +42,7 @@ fetch_unit fetch_unit
 /* Branch prediction */
 logic br_predict;
 logic ld_pred_unit;
+logic br_taken;
 
 predict_unit predict_unit
 (
@@ -97,9 +98,6 @@ logic ld_reg_busy_dest;
 lc3b_rob_addr reg_rob_entry;
 lc3b_rob_addr rob_sr1_read_addr, rob_sr2_read_addr;
 logic [2:0] res_station_id;
-
-/* Branch prediction */
-logic br_predict = 1'b0;
 
 logic instr_is_new;
 initial instr_is_new = 0;
@@ -229,8 +227,7 @@ logic ld_regfile_value, rob_ld_regfile_busy;
 lc3b_reg dest_wr;
 lc3b_rob_addr dest_wr_data;
 
-logic ld_pred_unit;
-logic br_taken;
+
 
 write_results_control wr_control
 (
