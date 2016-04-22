@@ -28,6 +28,7 @@ logic ld_buf_valid_in;
 logic [1:0] pcmux_sel;
 lc3b_word new_pc;
 lc3b_word br_pc;
+lc3b_word instr_pc_out;
 logic stall;
 
 fetch_unit fetch_unit
@@ -35,7 +36,7 @@ fetch_unit fetch_unit
 	.clk, .flush, 
 	.imem_rdata, .imem_read, .imem_address, .imem_resp,
 	.stall,
-	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc
+	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc, .instr_pc_out
 	
 );
 
@@ -108,6 +109,7 @@ issue_control issue_control
 	.instr(ir_out),
 	.instr_is_new,
 	.curr_pc(pc_out),
+	.instruction_pc(instr_pc_out),
 	// CDB -> Issue Control
 	.CDB_in(C_D_B),
 	// Reservation Station -> Issue Control

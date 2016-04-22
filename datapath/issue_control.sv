@@ -7,6 +7,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input lc3b_word instr,
 	input instr_is_new,
 	input lc3b_word curr_pc,
+	input lc3b_word instruction_pc,
 	// CDB -> Issue Control
 	input CDB CDB_in,
 	// Reservation Station -> Issue Control
@@ -278,7 +279,7 @@ begin
 	reg_rob_entry = 0;
 	pcmux_sel = 0;
 	br_pc = 0;
-	rob_pc_addr = curr_pc;
+	rob_pc_addr = instruction_pc;
 	rob_opcode = opcode;
 	
 	if (rob_full || 
