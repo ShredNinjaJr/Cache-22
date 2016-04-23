@@ -23,6 +23,9 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input regfile_t sr1_in, sr2_in, dest_in,
 	// Prediction Unit -> Issue Control
 	input predict_bit,
+
+	input lc3b_bht_out bht_in,
+
 	// BTB -> Issue Control
 	input btb_hit,
 	input btb_predict,
@@ -53,6 +56,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output lc3b_reg rob_dest,
 	output logic [data_width-1:0] rob_value_in,
 	output lc3b_word rob_pc_addr,
+	output lc3b_bht_out rob_bht_out,
 	// Issue Control -> Regfile
 	output lc3b_reg reg_dest, sr1, sr2,
 	output logic ld_reg_busy_dest,
@@ -157,7 +161,6 @@ begin
 		else
 			branch_stall <= 0;
 	end
-	
 	endcase
 end
 
@@ -294,6 +297,7 @@ begin
 	pcmux_sel = 0;
 	br_pc = 0;
 	rob_pc_addr = instruction_pc;
+	rob_bht_out = bht_in;
 	rob_opcode = opcode;
 	predict_out = predict_bit;
 	
@@ -494,7 +498,7 @@ begin
 			begin
 				rob_write_enable = 1'b1;
 				rob_dest = dest_reg;
-				br_pc = curr_pc + adj9_out; 
+				br_pc = (predict_bit) ? curr_pc + adj9_out : curr_pc; 
 				rob_value_in = adj9_out;
 				if ((((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)))
 				begin
@@ -549,19 +553,19 @@ begin
 			begin
 				branch_stall_in = 1;
 				rob_write_enable = 1'b1;
-				
+				rob_value_in = curr_pc;
 				rob_dest = 3'b111;
 				ld_reg_busy_dest = 1'b1;
 				reg_rob_entry = rob_addr;
 				reg_dest = 3'b111;
 				pcmux_sel = 1'b1;
-				
+				//predict_bit = 1'b0;
 
 				if(instr[11]) //JSR
 				begin
-					predict_out = 1'b1;
-					rob_value_in = curr_pc + adj11_out;
-					if(btb_hit)
+				//	predict_out = 1'b1;
+					
+					/*if(btb_hit)
 					begin
 						pcmux_sel = 1'b0;
 						branch_stall_in = 0;
@@ -570,14 +574,14 @@ begin
 					begin
 						pcmux_sel = 1'b1;
 						branch_stall_in = 1;
-					end
+					end*/
 					
 					br_pc = curr_pc + adj11_out;
 				end
 				else 	//JSRR
 				begin
-					predict_out = 1'b0;
-					rob_value_in = curr_pc;
+			//		predict_out = 1'b0;
+			//		rob_value_in = curr_pc;
 					branch_stall_in = 1;
 					if (sr1_reg_busy)	// Base not ready
 					begin

@@ -60,10 +60,30 @@ fetch_unit fetch_unit
 	
 );
 
+/* Branch prediction */
+logic br_predict;
+logic ld_pred_unit;
+logic br_taken;
+lc3b_bht_out bht_pred;
+lc3b_bht_out bht_taken;
+lc3b_word pc_taken;
+
+predict_unit predict_unit
+(
+	.clk,
+	.ld_pred_unit,
+	.new_pc(pc_out),
+	.taken_in(br_taken),
+	.old_pc(pc_taken),
+	.bht_taken(bht_taken),
+	
+	.bht_pred_out(bht_pred),
+	.pred_out(br_predict)
+);
 
 branch_target_buffer BTB
 (
-	.clk,
+	.clk(clk),
 	
 	/* from fetch unit */
 	.pc(pc_out),
@@ -92,7 +112,6 @@ branch_target_buffer BTB
 );
 
 /* Reservation station -> Issue Control */
-
 logic alu_RS_busy [0:2];
 
 /* Load Buffer -> Issue Control */
@@ -131,6 +150,7 @@ lc3b_opcode rob_opcode_in;
 lc3b_reg rob_dest_in;
 lc3b_word rob_value_in;
 lc3b_word rob_pc_addr;
+lc3b_bht_out rob_bht_out;
 
 /* Issue control -> Regfile */
 lc3b_reg reg_dest, sr1, sr2;
@@ -139,9 +159,6 @@ lc3b_rob_addr reg_rob_entry;
 lc3b_rob_addr rob_sr1_read_addr, rob_sr2_read_addr;
 logic [2:0] res_station_id;
 logic predict_out;
-
-/* Branch prediction */
-logic br_predict = 1'b1;
 
 logic instr_is_new;
 initial instr_is_new = 0;
@@ -180,7 +197,7 @@ issue_control issue_control
 	
 	/* prediction unit -> Issue control */
 	.predict_bit(br_predict),
-	
+	.bht_in(bht_pred),
 	// BTB -> Issue Control
 	.btb_hit(old_hit),
 	.btb_predict(old_predict),
@@ -214,6 +231,7 @@ issue_control issue_control
 	.rob_dest(rob_dest_in),
 	.rob_value_in,
 	.rob_pc_addr,
+	.rob_bht_out,
 	// Issue Control -> Regfile
 	.reg_dest, .sr1, .sr2,
 	.ld_reg_busy_dest,
@@ -238,6 +256,7 @@ logic rob_predict_out;
 logic rob_empty;
 lc3b_rob_addr r_rob_addr;
 lc3b_word orig_pc_out;
+lc3b_bht_out bht_out;
 
 reorder_buffer reorder_buffer
 (
@@ -251,6 +270,7 @@ reorder_buffer reorder_buffer
 	.value(rob_value_in),
 	.predict(predict_out),
 	.orig_pc_in(rob_pc_addr),
+	.bht_in(rob_bht_out),
 	//.addr(rob_	
 	.CDB_in(C_D_B),
 
@@ -266,6 +286,7 @@ reorder_buffer reorder_buffer
 	.value_out(rob_value_out),
 	.predict_out(rob_predict_out),
 	.orig_pc_out,
+	.bht_out,
 	
 	.full_out(rob_full),
 	.empty_out(rob_empty),
@@ -284,6 +305,8 @@ logic ld_regfile_value, rob_ld_regfile_busy;
 lc3b_reg dest_wr;
 lc3b_rob_addr dest_wr_data;
 
+
+
 write_results_control wr_control
 (
 	.clk,
@@ -293,6 +316,7 @@ write_results_control wr_control
 	.value_in(rob_value_out),
 	.predict_in(rob_predict_out),
 	.rob_pc_in(orig_pc_out),
+	.rob_bht_in(bht_out),
 	.rob_empty,
 	.rob_addr(r_rob_addr),
 	.dmem_resp,
@@ -325,7 +349,13 @@ write_results_control wr_control
 	.ldstr_RE_out,
 	
 	/* FROM REGFILE */
-	.dest_wr_data
+	.dest_wr_data,
+	
+	/* TO PREDICT UNIT */
+	.ld_pred_unit,
+	.br_taken,
+	.bht_taken_out(bht_taken),
+	.pc_taken
 	
 );
 

@@ -11,6 +11,7 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	input [data_width - 1:0] value_in,
 	input predict_in,
 	input lc3b_word rob_pc_in,
+	input lc3b_bht_out rob_bht_in,
 	input rob_empty,
 	input lc3b_rob_addr dest_wr_data,
 	input lc3b_rob_addr rob_addr,
@@ -45,21 +46,31 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	output lc3b_word btb_bta_out,
 	output logic btb_valid_out,
 	output logic btb_predict_out,
-	output logic btb_we
+	output logic btb_we,
 	
-		
-);
+	/* To predict unit */
+	output logic ld_pred_unit,
+	output logic br_taken,
+	output lc3b_bht_out bht_taken_out,
+	output lc3b_word pc_taken
+	);
 
+logic branch_enable;
+	
 assign dest_a = dest_in;
-assign value_out = (opcode_in == op_trap) ? trap_reg : ((opcode_in == op_jsr) & predict_in) ? (rob_pc_in + 2'b10) : value_in;
+assign value_out = (opcode_in == op_trap) ? trap_reg : /*((opcode_in == op_jsr) & predict_in) ? (rob_pc_in + 2'b10)*/value_in;
 
 
 assign dest_wr = dest_in;
 
+assign br_taken = branch_enable;
+assign bht_taken_out = rob_bht_in;
+assign pc_taken = rob_pc_in;
+
 logic ld_cc;
 lc3b_nzp gencc_out;
 lc3b_nzp cc_out;
-logic branch_enable;
+
 logic ldi_count;
 logic sti_count;
 
@@ -143,6 +154,7 @@ begin
 	flush = 0;
 	dmem_write = 0;
 	ldstr_RE_out = 0;
+	ld_pred_unit = 0;
 	btb_waddr = 0;
 	btb_predict_out = 0;
 	btb_bta_out = 0;
@@ -168,19 +180,19 @@ begin
 				flush = 1'b1;
 				btb_predict_out = ~predict_in;
 							
-			 end
+			 end 
 			 else 
-				begin
-					if(predict_in == 1)
-						new_pc = rob_pc_in + value_in + 16'b10;
-					else 
-						new_pc = rob_pc_in + 16'b10;
-						
-					btb_predict_out = predict_in;
-				end
+			 begin
+				if(predict_in == 1)
+					new_pc = rob_pc_in + value_in + 16'b10;
+				else 
+					new_pc = rob_pc_in + 16'b10;
+					
+				btb_predict_out = predict_in;
+			end
 			 
 			RE_out = 1'b1;
-			  
+			ld_pred_unit = 1'b1;
 			 /* Updating BTB everytime */
 			btb_waddr = rob_pc_in[6:1];
 			btb_bta_out = new_pc;
@@ -218,7 +230,7 @@ begin
 			ld_regfile_value = 1'b1;
 			RE_out = 1'b1;
 			
-			if(predict_in)
+		/*	if(predict_in)
 			begin
 				//Updating BTB everytime
 				btb_waddr = rob_pc_in[6:1];
@@ -227,7 +239,7 @@ begin
 				btb_valid_out = 1'b1;
 				btb_we = 1'b1;
 			end
-		
+		*/
 		end
 		op_str, op_stb: begin
 			dmem_write = 1'b1;
