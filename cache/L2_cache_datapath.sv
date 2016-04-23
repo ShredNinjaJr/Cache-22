@@ -84,28 +84,28 @@ assign data_writeout = mem_wdata;
 
 mux2 #(.width($size(pmem_bus))) datain_mux (.sel(datain_mux_sel), .a(pmem_rdata), .b(data_writeout), .f(datain_mux_out));
 
-array  #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_array0
+l2_array  #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_l2_array0
 (
   .clk, .index, 
   .datain(datain_mux_out), .dataout(data0_out),
   .write(write_decoder_out0)
  );
  
- array #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_array1
+ l2_array #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_l2_array1
 (
   .clk, .index, 
   .datain(datain_mux_out), .dataout(data1_out),
   .write(write_decoder_out1)
 );
 
-array  #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_array2
+l2_array  #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_l2_array2
 (
   .clk, .index, 
   .datain(datain_mux_out), .dataout(data2_out),
   .write(write_decoder_out2)
  );
  
- array #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_array3
+ l2_array #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_l2_array3
 (
   .clk, .index, 
   .datain(datain_mux_out), .dataout(data3_out),
@@ -119,29 +119,29 @@ mux4 #(.width($size(pmem_bus))) mem_rdatamux
 	.f(mem_rdata)
 );
 
-/* Tag array */
-array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_array0
+/* Tag l2_array */
+l2_array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_l2_array0
 (
   .clk, .index, 
   .datain(tag), .dataout(tag0_out),
   .write(write_decoder_out0)
 );
 
-array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_array1
+l2_array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_l2_array1
 (
   .clk, .index, 
   .datain(tag), .dataout(tag1_out),
   .write(write_decoder_out1)
 );
 
-array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_array2
+l2_array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_l2_array2
 (
   .clk, .index, 
   .datain(tag), .dataout(tag2_out),
   .write(write_decoder_out2)
 );
 
-array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_array3
+l2_array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_l2_array3
 (
   .clk, .index, 
   .datain(tag), .dataout(tag3_out),
@@ -149,29 +149,29 @@ array #(.width($size(tag)), .index_width($size(L2cache_index))) tag_array3
 );
 
 
-/* Valid array */
-array #(.width(1), .index_width($size(L2cache_index))) valid_array0
+/* Valid l2_array */
+l2_array #(.width(1), .index_width($size(L2cache_index))) valid_l2_array0
 (
   .clk, .index, 
   .datain(valid_in), .dataout(valid0_out),
   .write(write_decoder_out0)
 );
 
-array #(.width(1), .index_width($size(L2cache_index))) valid_array1
+l2_array #(.width(1), .index_width($size(L2cache_index))) valid_l2_array1
 (
   .clk, .index, 
   .datain(valid_in), .dataout(valid1_out),
   .write(write_decoder_out1)
 );
 
-array #(.width(1), .index_width($size(L2cache_index))) valid_array2
+l2_array #(.width(1), .index_width($size(L2cache_index))) valid_l2_array2
 (
   .clk, .index, 
   .datain(valid_in), .dataout(valid2_out),
   .write(write_decoder_out2)
 );
 
-array #(.width(1), .index_width($size(L2cache_index))) valid_array3
+l2_array #(.width(1), .index_width($size(L2cache_index))) valid_l2_array3
 (
   .clk, .index, 
   .datain(valid_in), .dataout(valid3_out),
@@ -200,7 +200,7 @@ assign d_lru_write = cache_hit & (mem_read | mem_write);
 /* lru of 1 indicates 1 is LRU*/
 L2_lru_update lru_update (.*);
 
-array #(.width(3), .index_width($size(L2cache_index))) lru_array
+array #(.width(3), .index_width($size(L2cache_index))) lru_l2_array
 (
   .clk, .index, 
   .datain(lru_datain), .dataout(lru_data),
@@ -209,27 +209,27 @@ array #(.width(3), .index_width($size(L2cache_index))) lru_array
 
 logic dirty0_out, dirty1_out, dirty2_out, dirty3_out;
 
-/* Dirty Arrays */
-array #(.width(1), .index_width($size(L2cache_index))) dirty_array0
+/* Dirty l2_arrays */
+l2_array #(.width(1), .index_width($size(L2cache_index))) dirty_l2_array0
 (
 	.clk, .index,
 	.datain(dirty_datain), .dataout(dirty0_out),
 	.write(write_decoder_out0)
 );
-array #(.width(1), .index_width($size(L2cache_index))) dirty_array1
+l2_array #(.width(1), .index_width($size(L2cache_index))) dirty_l2_array1
 (
 	.clk, .index,
 	.datain(dirty_datain), .dataout(dirty1_out),
 	.write(write_decoder_out1)
 );
 
-array #(.width(1), .index_width($size(L2cache_index))) dirty_array2
+l2_array #(.width(1), .index_width($size(L2cache_index))) dirty_l2_array2
 (
 	.clk, .index,
 	.datain(dirty_datain), .dataout(dirty2_out),
 	.write(write_decoder_out2)
 );
-array #(.width(1), .index_width($size(L2cache_index))) dirty_array3
+l2_array #(.width(1), .index_width($size(L2cache_index))) dirty_l2_array3
 (
 	.clk, .index,
 	.datain(dirty_datain), .dataout(dirty3_out),

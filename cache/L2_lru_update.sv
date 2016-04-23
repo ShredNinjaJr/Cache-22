@@ -17,7 +17,7 @@ begin
 	endcase
 	
 	case(lru_data)
-		3'b011, 3'b111: lru_dataout = 2'b001;
+		3'b011, 3'b111: lru_dataout = 2'b00;
 		3'b001, 3'b101: lru_dataout = 2'b01;
 		3'b100, 3'b110: lru_dataout = 2'b10;
 		3'b000, 3'b010: lru_dataout = 2'b11;
