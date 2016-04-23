@@ -9,6 +9,7 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	input lc3b_reg dest,
 	input [data_width - 1:0] value,
 	input predict,
+	input lc3b_word orig_pc_in,
 	//input [tag_width-1:0] addr,
 	input CDB CDB_in,
 
@@ -24,6 +25,7 @@ module reorder_buffer #(parameter data_width = 16, parameter tag_width = 3)
 	output lc3b_reg dest_out, 
 	output logic [data_width - 1:0] value_out,
 	output logic predict_out,
+	output lc3b_word orig_pc_out,
 	/* Output if full */
 	output logic empty_out,
 	output logic full_out,
@@ -40,9 +42,16 @@ lc3b_reg dest_in;
 
 logic [data_width - 1: 0] value_in_fifo, value_in_addr;
 logic predict_in;
-logic ld_value, ld_dest, ld_inst, ld_valid, ld_predict;
+logic ld_value, ld_dest, ld_inst, ld_valid, ld_predict, ld_orig_pc;
 logic [2:0] addr_in;
 logic empty, full;
+logic [data_width-1:0] data_sr1_value_out, data_sr2_value_out;
+lc3b_opcode sr1_opcode, sr2_opcode;
+lc3b_word sr1_orig_pc_out, sr2_orig_pc_out;
+
+assign sr1_value_out = ((sr1_opcode == op_jsr) & predict_out) ? (sr1_orig_pc_out + 2'b10) : data_sr1_value_out;
+
+assign sr2_value_out = ((sr1_opcode == op_jsr) & predict_out) ? (sr2_orig_pc_out + 2'b10) : data_sr2_value_out;
 
 assign ld_inst = WE;
 assign inst_in = inst;
@@ -59,6 +68,8 @@ assign value_in_addr = CDB_in.data;
 
 assign predict_in = predict;
 assign ld_predict = WE;
+
+assign ld_orig_pc = WE;
 
 assign addr_in = CDB_in.tag;
 

@@ -73,6 +73,32 @@ set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "1 us" -section_id alu_re
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME alu_res_testbench -section_id alu_res_tb
 
 set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
+set_global_assignment -name EDA_TEST_BENCH_FILE mp3_tb.sv -section_id mp3_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE memory/physical_memory.sv -section_id mp3_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE test_benches/rob_testbench_2.sv -section_id rob_testbench_2
+set_global_assignment -name EDA_TEST_BENCH_FILE test_benches/alu_res_testbench.sv -section_id alu_res_tb
+set_global_assignment -name DEVICE_FILTER_SPEED_GRADE FASTEST
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA ON
+set_global_assignment -name STRATIXII_OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
+set_global_assignment -name AUTO_PACKED_REGISTERS_STRATIXII NORMAL
+set_global_assignment -name ADV_NETLIST_OPT_SYNTH_WYSIWYG_REMAP ON
+set_global_assignment -name MUX_RESTRUCTURE OFF
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+
+set_global_assignment -name SYSTEMVERILOG_FILE modules/array_sepwrite.sv
+set_global_assignment -name SYSTEMVERILOG_FILE modules/mux8.sv
 set_global_assignment -name SYSTEMVERILOG_FILE datapath/ldstr_buffer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/ld_str_res_station.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/ldstr_decoder.sv
@@ -127,29 +153,9 @@ set_global_assignment -name SYSTEMVERILOG_FILE datapath/CDB_arbiter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/RS_decoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE datapath/alu_RS_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE modules/two_write_regfile.sv
-set_global_assignment -name EDA_TEST_BENCH_FILE mp3_tb.sv -section_id mp3_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE memory/physical_memory.sv -section_id mp3_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE test_benches/rob_testbench_2.sv -section_id rob_testbench_2
-set_global_assignment -name EDA_TEST_BENCH_FILE test_benches/alu_res_testbench.sv -section_id alu_res_tb
-set_global_assignment -name DEVICE_FILTER_SPEED_GRADE FASTEST
 set_global_assignment -name SYSTEMVERILOG_FILE cache/L2_cache_datapath.sv
 set_global_assignment -name SYSTEMVERILOG_FILE cache/cache.sv
 set_global_assignment -name SYSTEMVERILOG_FILE cache/L2_cache.sv
 set_global_assignment -name SYSTEMVERILOG_FILE cache/L2_cache_control.sv
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
-set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
-set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
-set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA ON
-set_global_assignment -name STRATIXII_OPTIMIZATION_TECHNIQUE SPEED
-set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
-set_global_assignment -name AUTO_PACKED_REGISTERS_STRATIXII NORMAL
-set_global_assignment -name ADV_NETLIST_OPT_SYNTH_WYSIWYG_REMAP ON
-set_global_assignment -name MUX_RESTRUCTURE OFF
-set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
-set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name SYSTEMVERILOG_FILE datapath/branch_target_buffer.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

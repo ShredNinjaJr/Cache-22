@@ -7,6 +7,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input lc3b_word instr,
 	input instr_is_new,
 	input lc3b_word curr_pc,
+	input lc3b_word instruction_pc,
 	// CDB -> Issue Control
 	input CDB CDB_in,
 	// Reservation Station -> Issue Control
@@ -22,7 +23,13 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input regfile_t sr1_in, sr2_in, dest_in,
 	// Prediction Unit -> Issue Control
 	input predict_bit,
-
+	// BTB -> Issue Control
+	input btb_hit,
+	input btb_predict,
+	
+	
+	// Issue Control -> Prediction Unit
+	output logic predict_out,
 	// Issue Control -> Fetch Unit
 	output logic stall,
 	output logic pcmux_sel,
@@ -45,6 +52,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	output lc3b_opcode rob_opcode, 
 	output lc3b_reg rob_dest,
 	output logic [data_width-1:0] rob_value_in,
+	output lc3b_word rob_pc_addr,
 	// Issue Control -> Regfile
 	output lc3b_reg reg_dest, sr1, sr2,
 	output logic ld_reg_busy_dest,
@@ -132,16 +140,24 @@ always_ff @( posedge clk)
 begin
 	case(opcode)
 	op_br: begin
-		if(predict_bit & ~branch_stall & instr_is_new)
+		if( (((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)) & ~branch_stall & instr_is_new & ~stall)
 			branch_stall <= 1'b1;
+		else if(stall)
+			branch_stall <= branch_stall;
 		else
 			branch_stall <= 0;
 	end
 	op_jsr, op_jmp: begin
 		branch_stall <= branch_stall_in;
 	end
-	default: branch_stall <= 0;
-				
+	default: 
+	begin
+		if(stall)
+			branch_stall <= branch_stall;
+		else
+			branch_stall <= 0;
+	end
+	
 	endcase
 end
 
@@ -277,7 +293,9 @@ begin
 	reg_rob_entry = 0;
 	pcmux_sel = 0;
 	br_pc = 0;
+	rob_pc_addr = instruction_pc;
 	rob_opcode = opcode;
+	predict_out = predict_bit;
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
@@ -476,17 +494,16 @@ begin
 			begin
 				rob_write_enable = 1'b1;
 				rob_dest = dest_reg;
-				br_pc = curr_pc + adj9_out;
-				if (predict_bit)
+				br_pc = curr_pc + adj9_out; 
+				rob_value_in = adj9_out;
+				if ((((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)))
 				begin
-					rob_value_in = curr_pc;
+					//rob_value_in = curr_pc;
 					pcmux_sel = 1'b1;
 				end
-				else
-				begin
-					rob_value_in = br_pc;
-				end
-
+				//else 
+					//rob_value_in = br_pc;
+	
 			end
 			
 			// LEA Only uses ROB
@@ -532,19 +549,36 @@ begin
 			begin
 				branch_stall_in = 1;
 				rob_write_enable = 1'b1;
-				rob_value_in = curr_pc;
+				
 				rob_dest = 3'b111;
 				ld_reg_busy_dest = 1'b1;
 				reg_rob_entry = rob_addr;
 				reg_dest = 3'b111;
 				pcmux_sel = 1'b1;
+				
 
 				if(instr[11]) //JSR
 				begin
+					predict_out = 1'b1;
+					rob_value_in = curr_pc + adj11_out;
+					if(btb_hit)
+					begin
+						pcmux_sel = 1'b0;
+						branch_stall_in = 0;
+					end
+					else
+					begin
+						pcmux_sel = 1'b1;
+						branch_stall_in = 1;
+					end
+					
 					br_pc = curr_pc + adj11_out;
 				end
 				else 	//JSRR
 				begin
+					predict_out = 1'b0;
+					rob_value_in = curr_pc;
+					branch_stall_in = 1;
 					if (sr1_reg_busy)	// Base not ready
 					begin
 						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
