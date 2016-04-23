@@ -32,8 +32,8 @@ typedef logic [4:0] L2cache_index;
 //typedef logic [0:0] L2cache_offset;
 
 /* BTB types */
-typedef logic [10:0] btb_tag;
-typedef logic [3:0] btb_index;
+typedef logic [8:0] btb_tag;
+typedef logic [5:0] btb_index;
 
 
 typedef enum bit [3:0] {

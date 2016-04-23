@@ -51,7 +51,7 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 );
 
 assign dest_a = dest_in;
-assign value_out = (opcode_in == op_trap) ? trap_reg : value_in;
+assign value_out = (opcode_in == op_trap) ? trap_reg : ((opcode_in == op_jsr) & predict_in) ? (rob_pc_in + 2'b10) : value_in;
 
 
 assign dest_wr = dest_in;
@@ -160,7 +160,7 @@ begin
 			 if(branch_enable != predict_in)
 			 begin
 				if(predict_in == 1)
-					new_pc = rob_pc_in + 16'b10;// + 16'b10;
+					new_pc = rob_pc_in + 16'b10;
 				else 
 					new_pc = rob_pc_in + value_in + 16'b10;
 				
@@ -174,7 +174,7 @@ begin
 					if(predict_in == 1)
 						new_pc = rob_pc_in + value_in + 16'b10;
 					else 
-						new_pc = rob_pc_in + 16'b10;// + 16'b10;
+						new_pc = rob_pc_in + 16'b10;
 						
 					btb_predict_out = predict_in;
 				end
@@ -182,9 +182,9 @@ begin
 			RE_out = 1'b1;
 			  
 			 /* Updating BTB everytime */
-			btb_waddr = rob_pc_in[4:1];
+			btb_waddr = rob_pc_in[6:1];
 			btb_bta_out = new_pc;
-			btb_tag_out = rob_pc_in[15:5];
+			btb_tag_out = rob_pc_in[15:7];
 			btb_valid_out = 1'b1;
 			btb_we = 1'b1;
 		end 
@@ -217,6 +217,17 @@ begin
 			ld_regfile_busy = (dest_wr_data == rob_addr);
 			ld_regfile_value = 1'b1;
 			RE_out = 1'b1;
+			
+			if(predict_in)
+			begin
+				//Updating BTB everytime
+				btb_waddr = rob_pc_in[6:1];
+				btb_bta_out = value_in;
+				btb_tag_out = rob_pc_in[15:7];
+				btb_valid_out = 1'b1;
+				btb_we = 1'b1;
+			end
+		
 		end
 		op_str, op_stb: begin
 			dmem_write = 1'b1;

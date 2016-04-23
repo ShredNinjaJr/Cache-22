@@ -1,6 +1,6 @@
 import lc3b_types::*;
 
-module branch_target_buffer #(parameter num_entries = 16)
+module branch_target_buffer #(parameter num_entries = 64)
 (
 	input clk,
 	
@@ -31,8 +31,8 @@ btb_index branch_index;
 logic valid_out;
 btb_tag tag_out;
 
-assign branch_tag = pc[15:5];
-assign branch_index = pc[4:1];
+assign branch_tag = pc[15:7];
+assign branch_index = pc[6:1];
 
 assign hit = (branch_tag == tag_out) & valid_out;
 
@@ -47,7 +47,7 @@ array_sepwrite #(.width(num_entries), .index_width($size(btb_index)), .data_size
 );
 
 /* Tag array */
-array_sepwrite #(.width(num_entries), .index_width($size(btb_index)), .data_size(11)) tag_array
+array_sepwrite #(.width(num_entries), .index_width($size(btb_index)), .data_size(9)) tag_array
 (
   .clk(clk),
   .index(branch_index),

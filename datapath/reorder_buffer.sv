@@ -45,6 +45,13 @@ logic predict_in;
 logic ld_value, ld_dest, ld_inst, ld_valid, ld_predict, ld_orig_pc;
 logic [2:0] addr_in;
 logic empty, full;
+logic [data_width-1:0] data_sr1_value_out, data_sr2_value_out;
+lc3b_opcode sr1_opcode, sr2_opcode;
+lc3b_word sr1_orig_pc_out, sr2_orig_pc_out;
+
+assign sr1_value_out = ((sr1_opcode == op_jsr) & predict_out) ? (sr1_orig_pc_out + 2'b10) : data_sr1_value_out;
+
+assign sr2_value_out = ((sr1_opcode == op_jsr) & predict_out) ? (sr2_orig_pc_out + 2'b10) : data_sr2_value_out;
 
 assign ld_inst = WE;
 assign inst_in = inst;

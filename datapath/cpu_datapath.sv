@@ -138,6 +138,7 @@ logic ld_reg_busy_dest;
 lc3b_rob_addr reg_rob_entry;
 lc3b_rob_addr rob_sr1_read_addr, rob_sr2_read_addr;
 logic [2:0] res_station_id;
+logic predict_out;
 
 /* Branch prediction */
 logic br_predict = 1'b1;
@@ -184,7 +185,8 @@ issue_control issue_control
 	.btb_hit(old_hit),
 	.btb_predict(old_predict),
 	
-
+	.predict_out,
+		
 	// Issue Control -> Reservation Station
 	.res_op_in,
 	.res_Vj, .res_Vk,
@@ -247,7 +249,7 @@ reorder_buffer reorder_buffer
 	.inst(rob_opcode_in),
 	.dest(rob_dest_in),
 	.value(rob_value_in),
-	.predict(br_predict),
+	.predict(predict_out),
 	.orig_pc_in(rob_pc_addr),
 	//.addr(rob_	
 	.CDB_in(C_D_B),

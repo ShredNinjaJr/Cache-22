@@ -44,9 +44,15 @@ module reorder_buffer_data #(parameter data_width = 16, parameter tag_width = 3)
 	/* Signals if the Buffer is empty/full */
 	output logic empty, full,
 
-	output logic [data_width-1:0] sr1_value_out,
+	output lc3b_opcode sr1_opcode,
+	output lc3b_opcode sr2_opcode,
+	
+	output lc3b_word sr1_orig_pc_out,
+	output lc3b_word sr2_orig_pc_out,
+	
+	output logic [data_width-1:0] data_sr1_value_out,
 	output logic sr1_valid_out,
-	output logic [data_width-1:0] sr2_value_out,
+	output logic [data_width-1:0] data_sr2_value_out,
 	output logic sr2_valid_out
 );
 
@@ -78,9 +84,13 @@ assign w_addr_out = w_addr;
 assign r_addr_out = r_addr;
 
 /* Assign non FIFO style outputs */
-assign sr1_value_out = value[sr1_read_addr];
+assign sr1_orig_pc_out = orig_pc[sr1_read_addr];
+assign sr2_orig_pc_out = orig_pc[sr2_read_addr];
+assign sr1_opcode = inst[sr1_read_addr];
+assign sr2_opcode = inst[sr2_read_addr];
+assign data_sr1_value_out = value[sr1_read_addr];
 assign sr1_valid_out = valid[sr1_read_addr];
-assign sr2_value_out = value[sr2_read_addr];
+assign data_sr2_value_out = value[sr2_read_addr];
 assign sr2_valid_out = valid[sr2_read_addr];
 
 /* Clear the buffer initially */

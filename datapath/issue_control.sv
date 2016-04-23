@@ -27,6 +27,9 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	input btb_hit,
 	input btb_predict,
 	
+	
+	// Issue Control -> Prediction Unit
+	output logic predict_out,
 	// Issue Control -> Fetch Unit
 	output logic stall,
 	output logic pcmux_sel,
@@ -292,6 +295,7 @@ begin
 	br_pc = 0;
 	rob_pc_addr = instruction_pc;
 	rob_opcode = opcode;
+	predict_out = predict_bit;
 	
 	if (rob_full || 
 	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
@@ -490,7 +494,7 @@ begin
 			begin
 				rob_write_enable = 1'b1;
 				rob_dest = dest_reg;
-				br_pc = curr_pc + adj9_out; // THIS MUST BE CHANGED BASED ON PREDICTION
+				br_pc = curr_pc + adj9_out; 
 				rob_value_in = adj9_out;
 				if ((((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)))
 				begin
@@ -545,19 +549,36 @@ begin
 			begin
 				branch_stall_in = 1;
 				rob_write_enable = 1'b1;
-				rob_value_in = curr_pc;
+				
 				rob_dest = 3'b111;
 				ld_reg_busy_dest = 1'b1;
 				reg_rob_entry = rob_addr;
 				reg_dest = 3'b111;
 				pcmux_sel = 1'b1;
+				
 
 				if(instr[11]) //JSR
 				begin
+					predict_out = 1'b1;
+					rob_value_in = curr_pc + adj11_out;
+					if(btb_hit)
+					begin
+						pcmux_sel = 1'b0;
+						branch_stall_in = 0;
+					end
+					else
+					begin
+						pcmux_sel = 1'b1;
+						branch_stall_in = 1;
+					end
+					
 					br_pc = curr_pc + adj11_out;
 				end
 				else 	//JSRR
 				begin
+					predict_out = 1'b0;
+					rob_value_in = curr_pc;
+					branch_stall_in = 1;
 					if (sr1_reg_busy)	// Base not ready
 					begin
 						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for Base
