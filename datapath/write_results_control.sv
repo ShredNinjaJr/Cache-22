@@ -39,7 +39,15 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 	
 	/* To ld/str buffer */
 	output logic ldstr_RE_out,
-		
+	
+	/* To BTB */
+	output btb_index btb_waddr,
+	output btb_tag btb_tag_out,
+	output lc3b_word btb_bta_out,
+	output logic btb_valid_out,
+	output logic btb_predict_out,
+	output logic btb_we,
+	
 	/* To predict unit */
 	output logic ld_pred_unit,
 	output logic br_taken,
@@ -50,8 +58,8 @@ module write_results_control #(parameter data_width = 16, parameter tag_width = 
 logic branch_enable;
 	
 assign dest_a = dest_in;
-assign value_out = (opcode_in == op_trap) ? trap_reg : value_in;
-assign new_pc = value_in;
+assign value_out = (opcode_in == op_trap) ? trap_reg : /*((opcode_in == op_jsr) & predict_in) ? (rob_pc_in + 2'b10)*/value_in;
+
 
 assign dest_wr = dest_in;
 
@@ -147,20 +155,50 @@ begin
 	dmem_write = 0;
 	ldstr_RE_out = 0;
 	ld_pred_unit = 0;
+	btb_waddr = 0;
+	btb_predict_out = 0;
+	btb_bta_out = 0;
+	btb_tag_out = 0;
+	btb_valid_out = 0;
+	btb_we = 0;
+	new_pc = 0;
 	if(valid_in)
 	begin
 		case(opcode_in)
 		op_br: begin
 			/* If it is a branch, Check for misprediction and flush
 			 * the datapath if the branch was mispredicted */
+			 
 			 if(branch_enable != predict_in)
 			 begin
+				if(predict_in == 1)
+					new_pc = rob_pc_in + 16'b10;
+				else 
+					new_pc = rob_pc_in + value_in + 16'b10;
+				
 				pcmux_sel = 1'b1;
 				flush = 1'b1;
-			 end
-			 RE_out = 1'b1;
-			 ld_pred_unit = 1'b1;
+				btb_predict_out = ~predict_in;
+							
+			 end 
+			 else 
+			 begin
+				if(predict_in == 1)
+					new_pc = rob_pc_in + value_in + 16'b10;
+				else 
+					new_pc = rob_pc_in + 16'b10;
+					
+				btb_predict_out = predict_in;
+			end
 			 
+			RE_out = 1'b1;
+			ld_pred_unit = 1'b1;
+			 /* Updating BTB everytime */
+			btb_waddr = rob_pc_in[6:1];
+			btb_bta_out = new_pc;
+			btb_tag_out = rob_pc_in[15:7];
+			btb_valid_out = 1'b1;
+			btb_we = 1'b1;
 		end 
 		op_add, op_and, op_not, op_shf, op_lea, op_ldr, op_ldb: begin
 			ld_regfile_busy = (dest_wr_data == rob_addr);
@@ -191,6 +229,17 @@ begin
 			ld_regfile_busy = (dest_wr_data == rob_addr);
 			ld_regfile_value = 1'b1;
 			RE_out = 1'b1;
+			
+		/*	if(predict_in)
+			begin
+				//Updating BTB everytime
+				btb_waddr = rob_pc_in[6:1];
+				btb_bta_out = value_in;
+				btb_tag_out = rob_pc_in[15:7];
+				btb_valid_out = 1'b1;
+				btb_we = 1'b1;
+			end
+		*/
 		end
 		op_str, op_stb: begin
 			dmem_write = 1'b1;
@@ -199,6 +248,7 @@ begin
 		end
 		op_trap: begin
 			pcmux_sel = 1'b1;
+			new_pc = value_in;
 			flush = 1'b1;
 			ld_regfile_value = 1'b1;
 			RE_out = 1'b1;

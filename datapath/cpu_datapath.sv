@@ -25,17 +25,37 @@ lc3b_word ir_out, pc_out;
 
 logic ld_buf_valid_in;
 
-logic [1:0] pcmux_sel;
+logic [2:0] pcmux_sel;
 lc3b_word new_pc;
 lc3b_word br_pc;
 lc3b_word instr_pc_out;
 logic stall;
+/* BTB connection signals */
+logic hit_out;
+logic btb_predict;
+btb_tag btb_tag_out;
+lc3b_word btb_bta_out;
+logic btb_valid_out;
+logic btb_predict_out;
+logic btb_we;
+btb_index btb_waddr;
+logic old_hit;
+logic old_predict;
+lc3b_word bta;
+
+assign pcmux_sel[1] = hit_out;
 
 fetch_unit fetch_unit
 (
 	.clk, .flush, 
 	.imem_rdata, .imem_read, .imem_address, .imem_resp,
 	.stall,
+
+	.hit(hit_out),
+	.predict_in(btb_predict),
+	.instr_hit_out(old_hit),
+	.instr_predict_out(old_predict),
+	.bta_in(bta),
 	.pcmux_sel, .ir_out, .pc_out, .new_pc, .br_pc, .instr_pc_out
 	
 );
@@ -52,13 +72,43 @@ predict_unit predict_unit
 (
 	.clk,
 	.ld_pred_unit,
-	.new_pc,
+	.new_pc(pc_out),
 	.taken_in(br_taken),
 	.old_pc(pc_taken),
 	.bht_taken(bht_taken),
 	
 	.bht_pred_out(bht_pred),
 	.pred_out(br_predict)
+);
+
+branch_target_buffer BTB
+(
+	.clk(clk),
+	
+	/* from fetch unit */
+	.pc(pc_out),
+	
+	/* from write results control */
+	.wr_addr(btb_waddr),
+	.bta_in(btb_bta_out),
+	.tag_in(btb_tag_out),
+	.valid_in(btb_valid_out),
+	.predict_in(btb_predict_out),
+	
+	.ld_valid(btb_we),
+	.ld_tag(btb_we),
+	.ld_data(btb_we),
+	.ld_predict(btb_we),
+	
+	/* To issue control && fetch unit */
+	.hit(hit_out),
+
+	/* To fetch unit */
+	.bta_out(bta),
+		
+	/* To issue control */
+	.predict_out(btb_predict)
+		
 );
 
 /* Reservation station -> Issue Control */
@@ -108,6 +158,7 @@ logic ld_reg_busy_dest;
 lc3b_rob_addr reg_rob_entry;
 lc3b_rob_addr rob_sr1_read_addr, rob_sr2_read_addr;
 logic [2:0] res_station_id;
+logic predict_out;
 
 logic instr_is_new;
 initial instr_is_new = 0;
@@ -126,7 +177,7 @@ issue_control issue_control
 	// Fetch -> Issue Controlj
 	.instr(ir_out),
 	.instr_is_new,
-	.curr_pc(pc_out),
+	.curr_pc(instr_pc_out + 2'b10),
 	.instruction_pc(instr_pc_out),
 	// CDB -> Issue Control
 	.CDB_in(C_D_B),
@@ -147,7 +198,12 @@ issue_control issue_control
 	/* prediction unit -> Issue control */
 	.predict_bit(br_predict),
 	.bht_in(bht_pred),
-
+	// BTB -> Issue Control
+	.btb_hit(old_hit),
+	.btb_predict(old_predict),
+	
+	.predict_out,
+		
 	// Issue Control -> Reservation Station
 	.res_op_in,
 	.res_Vj, .res_Vk,
@@ -183,6 +239,7 @@ issue_control issue_control
 	.rob_sr1_read_addr,
 	.rob_sr2_read_addr,
 	
+	
 	/* Issue Control -> Fetch Unit */
 	.stall, .pcmux_sel(pcmux_sel[0]), .br_pc
 
@@ -211,7 +268,7 @@ reorder_buffer reorder_buffer
 	.inst(rob_opcode_in),
 	.dest(rob_dest_in),
 	.value(rob_value_in),
-	.predict(br_predict),
+	.predict(predict_out),
 	.orig_pc_in(rob_pc_addr),
 	.bht_in(rob_bht_out),
 	//.addr(rob_	
@@ -277,9 +334,17 @@ write_results_control wr_control
 	/* TO DATAPATH */
 	.flush,
 	/* To fetch Unit */
-	.new_pc, .pcmux_sel(pcmux_sel[1]),
+	.new_pc, .pcmux_sel(pcmux_sel[2]),
 	/* TO MEMORY */
 	.dmem_write,
+	
+	/* TO BTB */
+	.btb_waddr,
+	.btb_tag_out,
+	.btb_bta_out,
+	.btb_valid_out,
+	.btb_predict_out,
+	.btb_we,
 	
 	.ldstr_RE_out,
 	

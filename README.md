@@ -10,4 +10,11 @@ No advanced design = 3,103,015,000 ps
 Expanding pmem bus to 256 bits = 3,127,875,000 ps
 	L2 specs: 2-way, 16 sets, 32bytes/set = 1Kb
 	L1 specs same as above
+	
+BTB for competition.asm
+	
+	no BTB/no advanced design: 3,103,015,000 ps
+	16 entry BTB: 3057905000 ps
+	64 entry BTB: 3038815000 ps
+	128 entry BTB: 3038255000 ps
 
