@@ -139,6 +139,8 @@ begin
 	op_br: begin
 		if( (((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)) & ~branch_stall & instr_is_new & ~stall)
 			branch_stall <= 1'b1;
+		else if(stall)
+			branch_stall <= branch_stall;
 		else
 			branch_stall <= 0;
 	end
@@ -488,7 +490,7 @@ begin
 			begin
 				rob_write_enable = 1'b1;
 				rob_dest = dest_reg;
-				br_pc = instruction_pc + 2'b10;
+				br_pc = curr_pc + adj9_out; // THIS MUST BE CHANGED BASED ON PREDICTION
 				rob_value_in = adj9_out;
 				if ((((predict_bit != btb_predict) & btb_hit) | ((predict_bit) & ~btb_hit)))
 				begin

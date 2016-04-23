@@ -27,7 +27,7 @@ module fetch_unit
 lc3b_word pc_plus2_out;
 
 logic load_pc, load_ir;
-assign load_pc = (pcmux_sel == 3'b000) ? (imem_resp & ~stall) : (pcmux_sel == 3'b001) ? (~stall) : (flush | (~stall & imem_resp) | (hit & imem_resp & ~stall));
+assign load_pc = (pcmux_sel == 3'b000) ? (imem_resp & ~stall) : (pcmux_sel == 3'b001) ? (~stall) : (pcmux_sel == 3'b011) ? (~stall) : (flush | (~stall & imem_resp) | (hit & imem_resp & ~stall));
 assign load_ir = load_pc;
 assign imem_address = pc_out; 
 assign imem_read = ~stall;
@@ -41,7 +41,7 @@ mux8 pcmux
 	.a(pc_plus2_out),
 	.b(br_pc),
 	.c(bta_in), 
-	.d(bta_in),
+	.d(br_pc),
 	.e(new_pc),
 	.f(new_pc),
 	.g(new_pc),
@@ -73,8 +73,6 @@ register #(.width(1)) predictreg
 	.in(predict_in),
 	.out(instr_predict_out)
 );
-
-
 
 
 register old_pc

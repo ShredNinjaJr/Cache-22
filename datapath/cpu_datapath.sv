@@ -140,7 +140,7 @@ lc3b_rob_addr rob_sr1_read_addr, rob_sr2_read_addr;
 logic [2:0] res_station_id;
 
 /* Branch prediction */
-logic br_predict = 1'b0;
+logic br_predict = 1'b1;
 
 logic instr_is_new;
 initial instr_is_new = 0;
