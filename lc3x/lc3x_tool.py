@@ -29,7 +29,8 @@ for line in fin:
 		sr1 = int(regs[1][1]);
 		sr2 = int(regs[2][1]);
 		bitcode = (dest << 9) | (sr1 << 6) | (int(bit_dict[instr]) << 3) | sr2;
-		newline = ('\t' + 'DATA2 4x' + (hex(instr_dict[instr]))[2:] + (hex(bitcode))[2:] + '\n')
+		newline = ('\t' + 'DATA2 4x' + (hex(instr_dict[instr]))[2:] + (hex(bitcode))[2:] + 
+				 ' ;' + line)
 		print newline
 
 	

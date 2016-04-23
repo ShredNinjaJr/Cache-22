@@ -29,7 +29,7 @@ begin
 	end
 		
 	case(res_station_id)
-	3'b0, 3'b1, 3'b10: begin
+	3'b0, 3'b1, 3'b10, 3'b11, 3'b100: begin
 		RS_ld_busy[res_station_id] = ld_busy;
 		RS_issue_ld_Vj[res_station_id] = issue_ld_Vj;
 		RS_issue_ld_Vk[res_station_id] = issue_ld_Vk;

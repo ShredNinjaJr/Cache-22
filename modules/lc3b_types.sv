@@ -27,8 +27,8 @@ typedef logic [8:0] dcache_tag;
 typedef logic [2:0] dcache_index;
 typedef logic [2:0] dcache_offset;
 
-typedef logic [6:0] L2cache_tag;
-typedef logic [4:0] L2cache_index;
+typedef logic [9:0] L2cache_tag;
+typedef logic [1:0] L2cache_index;
 //typedef logic [0:0] L2cache_offset;
 
 
@@ -82,6 +82,11 @@ typedef struct packed
 	lc3b_reg rob_entry;
 	lc3b_word data; 
 } regfile_t;
+
+parameter num_RS_units = 4;
+
+parameter num_mult_cycles = 2;
+parameter num_div_cycles = 10;
 
 
 endpackage : lc3b_types
