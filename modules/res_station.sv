@@ -6,14 +6,14 @@ module res_station #(parameter data_width = 16, parameter tag_width = 3)
 	input ld_op, ld_Vj, ld_Qj, ld_Vk, ld_Qk, ld_busy, ld_dest,
 	input [data_width - 1: 0] Vj_in, Vk_in,
 	input [tag_width - 1: 0] Qj_in, Qk_in, dest_in,
-	input lc3b_opcode op_in,
+	input lc3b_word instr_in,
 	input busy_in,
 	input Vk_valid_in,
 	input Vj_valid_in,
 	
 	output logic [data_width - 1: 0] Vj_out, Vk_out,
 	output logic [tag_width - 1: 0] Qj_out, Qk_out, dest_out,
-	output lc3b_opcode op_out,
+	output lc3b_word instr_out,
 	output logic busy_out,
 	output logic Vk_valid_out,
 	output logic Vj_valid_out	
@@ -75,11 +75,11 @@ register #(.width(1)) busy
     .out(busy_out)
 );
 
-register #(.width(4)) op
+register #(.width(16)) op
 (
     .clk, .load(ld_op), .clr(flush),
-    .in(op_in),
-    .out({op_out})
+    .in(instr_in),
+    .out(instr_out)
 );
 
 

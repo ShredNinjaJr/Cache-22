@@ -112,7 +112,7 @@ branch_target_buffer BTB
 );
 
 /* Reservation station -> Issue Control */
-logic alu_RS_busy [0:2];
+logic alu_RS_busy [0:num_RS_units];
 
 /* Load Buffer -> Issue Control */
 logic ldstr_full;
@@ -182,7 +182,7 @@ issue_control issue_control
 	// CDB -> Issue Control
 	.CDB_in(C_D_B),
 	// Reservation Station -> Issue Control
-	.alu_res1_busy(alu_RS_busy[0]), .alu_res2_busy(alu_RS_busy[1]), .alu_res3_busy(alu_RS_busy[2]),
+	.alu_RS_busy,
 	.ldstr_full(ldstr_full),
 	// ROB -> Issue Control
 	.rob_full,
@@ -362,11 +362,11 @@ write_results_control wr_control
 
 logic ld_buffer_flush;
 
-alu_RS_unit alu_RS
+alu_RS_unit #(.n(num_RS_units)) alu_RS
 (
 	.clk,
 	.flush(flush),
-	.op_in(res_op_in),
+	.instr_in(ir_out),
 	.CDB_in(C_D_B),
 	.bit5,
 	.load_buffer_CDB_out,

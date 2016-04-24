@@ -17,7 +17,7 @@ module L2_cache_control
 
 enum logic[1:0] {
     /* List of states */
-	 HIT, EVICT, ALLOCATE
+	 HIT, HIT_1, EVICT, ALLOCATE
 } state, next_state;
 
 initial state = HIT;
@@ -39,7 +39,8 @@ begin: state_actions
     /*State actions */
     unique case(state)
 
-	    HIT: begin
+	    HIT_1: begin
+			 evict_allocate = 1;
 			 if(cache_hit)
 			 begin
 				 if((mem_read))
@@ -90,18 +91,20 @@ begin: next_state_logic
 	addr_reg_load = 0;
 	case(state)
 	HIT: begin
+		if(mem_read | mem_write)
+			next_state = HIT_1;
+		addr_reg_load = 1;
+	end
+	HIT_1: begin
 	if(mem_resp == 0)
-		begin
-			 if(mem_read | mem_write)
-			 begin
-				if(dirtyout)
-					next_state = EVICT;
-				else
-					next_state = ALLOCATE;
-				addr_reg_load = 1;
-			 end
-			
-		end
+	begin
+			if(dirtyout)
+				next_state = EVICT;
+			else
+				next_state = ALLOCATE;		
+	end
+	else 
+		next_state = HIT;
 	end
 	ALLOCATE: begin
 		if(pmem_resp)
