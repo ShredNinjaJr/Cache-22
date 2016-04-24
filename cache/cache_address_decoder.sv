@@ -9,8 +9,8 @@ module L1_cache_address_decoder #(parameter tag_size, parameter index_size, para
 );
 
 
-assign tag = mem_address [15:7];
-assign index = mem_address [6:4];
+assign tag = mem_address [15 -: tag_size];
+assign index = mem_address [4 +: index_size];
 assign offset = mem_address [3:1];
 
 
