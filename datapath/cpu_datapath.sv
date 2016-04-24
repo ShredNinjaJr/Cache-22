@@ -72,7 +72,7 @@ predict_unit predict_unit
 (
 	.clk,
 	.ld_pred_unit,
-	.new_pc(pc_out),
+	.new_pc(instr_pc_out),
 	.taken_in(br_taken),
 	.old_pc(pc_taken),
 	.bht_taken(bht_taken),
