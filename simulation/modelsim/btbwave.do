@@ -26,6 +26,7 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/opcode
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/rob_write_enable
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/btb_hit
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/btb_predict
+add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/predict_bit
 add wave -noupdate /mp3_tb/dut/cpu_datapath/issue_control/branch_stall
 add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/branch_tag
 add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/branch_index
@@ -33,8 +34,12 @@ add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/valid_array/data
 add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/tag_array/data
 add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/data_array/data
 add wave -noupdate /mp3_tb/dut/cpu_datapath/BTB/predict_array/data
+add wave -noupdate /mp3_tb/dut/cpu_datapath/predict_unit/BHT/bht
+add wave -noupdate /mp3_tb/dut/cpu_datapath/predict_unit/PHT/pht
+add wave -noupdate /mp3_tb/dut/cpu_datapath/predict_unit/new_pc
+add wave -noupdate /mp3_tb/dut/cpu_datapath/predict_unit/pred_out
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {109641015 ps} 0}
+WaveRestoreCursors {{Cursor 1} {2065000 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 213
 configure wave -valuecolwidth 100
@@ -50,4 +55,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {199749983 ps} {200013159 ps}
+WaveRestoreZoom {0 ps} {4210816 ps}
