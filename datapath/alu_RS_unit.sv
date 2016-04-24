@@ -1,9 +1,9 @@
 import lc3b_types::*;
 
-module alu_RS_unit #(parameter data_width = 16, parameter tag_width = 3, parameter n = 2)
+module alu_RS_unit #(parameter data_width = 16, parameter tag_width = 3, parameter n = 4)
 (
 	input clk, flush,
-	input lc3b_opcode op_in,
+	input lc3b_word instr_in,
 	input bit5,
 	input CDB CDB_in,
 	//CDBout
@@ -21,7 +21,7 @@ module alu_RS_unit #(parameter data_width = 16, parameter tag_width = 3, paramet
 
 /* Decoder unit */
 
-RS_decoder RS_decoder (.*);
+RS_decoder #(.n(n)) RS_decoder (.*);
 
 /* RS wires */
 logic RS_flush   [0:n+1];
@@ -37,15 +37,14 @@ assign RS_CDB_out[n+1] = load_buffer_CDB_out;
 
 /* Generate the RS */
 genvar i;
-generate for(i = 0; i <= n; i++)
+generate for(i = 0; i <= n-2; i++)
 begin: RS_generate
 	alu_res_station RS
 	(
 		.clk,
 		.flush(RS_flush[i] | flush),
-		.op_in(op_in),
-		.CDB_in(CDB_in),
-		.bit5,
+		.instr_in,
+		.CDB_in,
 		.Vj, .Vk, .Qj, .Qk, .dest,
 		.ld_busy(RS_ld_busy[i]),
 		.issue_ld_Vj(RS_issue_ld_Vj[i]),
@@ -58,6 +57,25 @@ begin: RS_generate
 end
 endgenerate
 
+generate for(i = n-1; i <= n; i++)
+begin: MD_generate
+	mul_div_res_station MD_RS
+	(
+		.clk,
+		.flush(RS_flush[i] | flush),
+		.instr_in,
+		.CDB_in,
+		.Vj, .Vk, .Qj, .Qk, .dest,
+		.ld_busy(RS_ld_busy[i]),
+		.issue_ld_Vj(RS_issue_ld_Vj[i]),
+		.issue_ld_Vk(RS_issue_ld_Vk[i]),
+		.issue_ld_Qj(RS_issue_ld_Qj[i]),
+		.issue_ld_Qk(RS_issue_ld_Qk[i]),
+		.CDB_out(RS_CDB_out[i]),
+		.busy_out(busy_out[i])
+	);
+end
+endgenerate
 
 CDB_arbiter #(.n($size(RS_CDB_out) - 1)) CDB_arbiter
 (

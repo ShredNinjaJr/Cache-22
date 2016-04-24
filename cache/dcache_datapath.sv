@@ -50,12 +50,15 @@ write_decoder write_decoder
 	.out0(write_decoder_out0), .out1(write_decoder_out1)
 );
 
-lc3b_word pmem_addr_reg;
+lc3b_word pmem_addr_reg, mem_wdata_reg;
 
 always_ff @(posedge clk)
 begin
 	if(addr_reg_load)
+	begin
 		pmem_addr_reg <= mem_address;
+		mem_wdata_reg <= mem_wdata;
+	end
 end
 
 mux2 #(.width($size(lc3b_word))) pmem_addr_mux 
@@ -80,7 +83,7 @@ pmem_L1_bus data_writeout;
 /* Data array */
 data_write data_write_module
 (
-	.*
+	.*, .mem_wdata((evict_allocate) ? mem_wdata_reg : mem_wdata)
 );
 
 mux2 #(.width($size(pmem_L1_bus))) datain_mux (.sel(datain_mux_sel), .a(pmem_rdata), .b(data_writeout), .f(datain_mux_out));

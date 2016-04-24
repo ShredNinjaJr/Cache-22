@@ -10,7 +10,7 @@ module issue_control #(parameter data_width = 16, parameter tag_width = 3)
 	// CDB -> Issue Control
 	input CDB CDB_in,
 	// Reservation Station -> Issue Control
-	input alu_res1_busy, alu_res2_busy, alu_res3_busy, ldstr_full,
+	input alu_RS_busy[0:num_RS_units], ldstr_full,
 	// ROB -> Issue Control
 	input rob_full,
 	input lc3b_rob_addr rob_addr,
@@ -124,7 +124,7 @@ assign sr1_rob_valid = rob_sr1_valid_out;
 assign sr2_rob_valid = rob_sr2_valid_out;
 
 assign rob_sr1_read_addr = sr1_in.rob_entry;
-assign rob_sr2_read_addr = (opcode == op_str || opcode == op_stb) ? dest_in.rob_entry : sr2_in.rob_entry;
+assign rob_sr2_read_addr = (opcode == op_sti || opcode == op_str || opcode == op_stb) ? dest_in.rob_entry : sr2_in.rob_entry;
 
 logic branch_stall;
 initial branch_stall = 0;
@@ -250,7 +250,6 @@ adj #(.width(11)) adj11
 	.out(adj11_out)
 );
 
-
 always_comb
 begin
 	stall = 0;
@@ -288,14 +287,16 @@ begin
 	rob_opcode = opcode;
 	
 	if (rob_full || 
-	(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
-	(ldstr_full && (opcode == op_trap || opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode == op_sti 	|| opcode == op_stb || opcode == op_ldb)) || branch_stall || 
+	(alu_RS_busy[0] & alu_RS_busy[1] & alu_RS_busy[2] & (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
+	 (alu_RS_busy[3] & alu_RS_busy[4] & (opcode == op_rti)) || 
+	(ldstr_full & (opcode == op_trap || opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode == op_sti || opcode == op_stb || opcode == op_ldb)) || branch_stall || 
 	!instr_is_new)
 	begin
 		// STALL
 		if(rob_full ||
-			(alu_res1_busy && alu_res2_busy && alu_res3_busy && (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
-			(ldstr_full && (opcode == op_trap || opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode === op_sti || opcode == op_stb || opcode == op_ldb)) || 
+			(alu_RS_busy[0] & alu_RS_busy[1] & alu_RS_busy[2] & (opcode == op_add || opcode == op_and || opcode == op_not || opcode == op_shf)) ||
+			(alu_RS_busy[3] & alu_RS_busy[4] & (opcode == op_rti)) || 
+			(ldstr_full & (opcode == op_trap || opcode == op_ldr || opcode == op_str || opcode === op_ldi || opcode === op_sti || opcode == op_stb || opcode == op_ldb)) || 
 			(instr_is_new & ~branch_stall))
 			stall = 1'b1;
 	end
@@ -305,9 +306,9 @@ begin
 			// ADD, AND, NOT, SHF
 			op_add, op_and, op_not, op_shf:
 			begin
-				if (!alu_res1_busy)
+				if (!alu_RS_busy[0])
 					res_station_id = 3'b000;
-				else if (!alu_res2_busy)
+				else if (!alu_RS_busy[1])
 					res_station_id = 3'b001;
 				else
 					res_station_id = 3'b010;
@@ -755,7 +756,75 @@ begin
 			end
 			
 			
-			default:;
+			op_rti:
+			begin
+				if (!alu_RS_busy[3])
+					res_station_id = 3'b011;
+				else
+					res_station_id = 3'b100;
+				/*		RESERVATION STATION OUTPUTS 	*/
+				res_op_in = opcode;
+				issue_ld_busy_dest = 1'b1;
+				/* J */
+				if (sr1_reg_busy) // sr1_reg busy
+				begin
+					if (CDB_in.valid == 1'b1 && CDB_in.tag == sr1_rob_e)	// CDB has value for J
+					begin
+						res_Vj = CDB_in.data;
+						issue_ld_Vj = 1'b1;
+					end
+					else if (sr1_rob_valid) // ROB has value for J
+					begin
+						res_Vj = sr1_rob_value;
+						issue_ld_Vj = 1'b1;
+					end
+					else
+					begin
+						res_Qj = sr1_rob_e;
+						issue_ld_Qj = 1'b1;
+					end
+				end
+				else	// sr1_reg not busy
+				begin
+					res_Vj = sr1_value;
+					issue_ld_Vj = 1'b1;
+				end
+				
+				begin
+					if (sr2_reg_busy) // sr2_reg_busy
+					begin
+						if (CDB_in.valid == 1'b1 && CDB_in.tag == sr2_rob_e)	// CDB has value for K
+						begin
+							res_Vk = CDB_in.data;
+							issue_ld_Vk = 1'b1;
+						end
+						else if (sr2_rob_valid) // ROB has value for J
+						begin
+							res_Vk = sr2_rob_value;
+							issue_ld_Vk = 1'b1;
+						end
+						else
+						begin
+							res_Qk = sr2_rob_e;
+							issue_ld_Qk = 1'b1;
+						end
+					end	// sr2_reg not busy
+					else
+					begin
+						res_Vk = sr2_value;
+						issue_ld_Vk = 1'b1;
+					end
+				end
+				
+				/* ROB OUTPUTS */
+				rob_write_enable = 1'b1;
+				rob_dest = dest_reg;
+				
+				/* REGFILE OUTPUTS */
+				reg_dest = dest_reg;
+				ld_reg_busy_dest = 1'b1;
+				reg_rob_entry = rob_addr;
+			end
 		endcase
 	end
 end

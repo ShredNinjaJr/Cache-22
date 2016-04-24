@@ -9,6 +9,7 @@ module alu
 
 always_comb
 begin
+	 f = a;
     case (aluop)
         alu_add: f = a + b;
         alu_and: f = a & b;
@@ -17,6 +18,13 @@ begin
         alu_sll: f = a << b[3:0];
         alu_srl: f = a >> b[3:0];
         alu_sra: f = $signed(a) >>> b[3:0];
+		  alu_nand: f = ~(a & b);
+		  alu_xor: f = a ^ b;
+		  alu_xnor: f = ~(a ^ b);
+		  alu_or: f = a | b;
+		  alu_nor: f = ~(a | b);
+		  alu_sub: f = a - b;
+
         default: $display("Unknown aluop");
     endcase
 end

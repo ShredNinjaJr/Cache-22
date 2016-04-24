@@ -146,7 +146,7 @@ begin
 			 end
 			 RE_out = 1'b1;
 		end 
-		op_add, op_and, op_not, op_shf, op_lea, op_ldr, op_ldb: begin
+		op_add, op_and, op_not, op_shf, op_lea, op_ldr, op_ldb, op_rti: begin
 			ld_regfile_busy = (dest_wr_data == rob_addr);
 			ld_regfile_value = 1'b1;
 			ld_cc = 1'b1;

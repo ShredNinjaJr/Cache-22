@@ -51,14 +51,20 @@ typedef enum bit [3:0] {
     op_trap = 4'b1111
 } lc3b_opcode;
 
-typedef enum bit [2:0] {
+typedef enum bit [3:0] {
     alu_add,
     alu_and,
     alu_not,
     alu_pass,
     alu_sll,
     alu_srl,
-    alu_sra
+    alu_sra,
+	alu_sub,
+	alu_xor,
+	alu_or, 
+	alu_nand,
+	alu_nor,
+	alu_xnor
 } lc3b_aluop;
 
 
@@ -76,6 +82,11 @@ typedef struct packed
 	lc3b_reg rob_entry;
 	lc3b_word data; 
 } regfile_t;
+
+parameter num_RS_units = 4;
+
+parameter num_mult_cycles = 2;
+parameter num_div_cycles = 10;
 
 
 endpackage : lc3b_types
