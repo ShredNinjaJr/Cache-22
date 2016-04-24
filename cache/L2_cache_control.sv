@@ -40,6 +40,7 @@ begin: state_actions
     unique case(state)
 
 	    HIT_1: begin
+			 evict_allocate = 1;
 			 if(cache_hit)
 			 begin
 				 if((mem_read))

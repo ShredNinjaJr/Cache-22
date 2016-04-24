@@ -194,13 +194,13 @@ encoder4 way_encoder
 );
 
 logic d_lru_write, q_lru_write;
-assign d_lru_write = cache_hit & (mem_read | mem_write);
+assign d_lru_write = cache_hit & (mem_read | mem_write) & evict_allocate;
 
 /* LRU replacement */
 /* lru of 1 indicates 1 is LRU*/
 L2_lru_update lru_update (.*);
 
-array #(.width(3), .index_width($size(L2cache_index))) lru_l2_array
+l2_array #(.width(3), .index_width($size(L2cache_index))) lru_l2_array
 (
   .clk, .index, 
   .datain(lru_datain), .dataout(lru_data),
