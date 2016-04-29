@@ -81,12 +81,14 @@ mux4 #(.width($size(L2cache_tag))) tag_mux
 
 pmem_bus data_writeout;
 
-pmem_L1_bus write_d0_out, write_d1_out;
+pmem_L1_bus write_d0_out, write_d1_out, write_d2_out, write_d3_out;
 
 mux2 #(.width($size(pmem_L1_bus))) word_decoder0 (.sel(offset), .a(data0_out[127:0]), .b(data0_out[255:128]), .f(write_d0_out));
 mux2 #(.width($size(pmem_L1_bus))) word_decoder1 (.sel(offset), .a(data1_out[127:0]), .b(data1_out[255:128]), .f(write_d1_out));
+mux2 #(.width($size(pmem_L1_bus))) word_decoder2 (.sel(offset), .a(data2_out[127:0]), .b(data2_out[255:128]), .f(write_d2_out));
+mux2 #(.width($size(pmem_L1_bus))) word_decoder3 (.sel(offset), .a(data3_out[127:0]), .b(data3_out[255:128]), .f(write_d3_out));
 
-mux2 #(.width($size(pmem_L1_bus))) mem_rdatamux (.sel (way_match),.b(write_d1_out), .a(write_d0_out), .f(mem_rdata));
+
 
 
 L2_data_write data_write_module
@@ -127,10 +129,10 @@ l2_array  #(.width($size(pmem_bus)), .index_width($size(L2cache_index))) data_l2
 );
 
 
-mux4 #(.width($size(pmem_bus))) mem_rdatamux 
+mux4 #(.width($size(pmem_L1_bus))) mem_rdatamux 
 (
 	.sel (way_match),
-	.b(data1_out), .a(data0_out), .c(data2_out), .d(data3_out),
+	.b(write_d1_out), .a(write_d0_out), .c(write_d2_out), .d(write_d3_out),
 	.f(mem_rdata)
 );
 
