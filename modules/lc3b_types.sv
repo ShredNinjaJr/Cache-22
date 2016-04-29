@@ -22,8 +22,8 @@ typedef logic  [2:0] lc3b_nzp;
 typedef logic  [1:0] lc3b_mem_wmask;
 
 /* Cache types */
-typedef logic [8:0] icache_tag;
-typedef logic [2:0] icache_index;
+typedef logic [4:0] icache_tag;
+typedef logic [6:0] icache_index;
 typedef logic [2:0] icache_offset;
 
 typedef logic [8:0] dcache_tag;
